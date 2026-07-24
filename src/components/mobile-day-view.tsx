@@ -45,13 +45,15 @@ export function MobileDayView({
   tourExpensesTotal: number;
   receiptCount: number;
 }) {
-  const [toast, setToast] = useState<string | null>(null);
+  const [toastMsg, setToastMsg] = useState("");
+  const [toastVisible, setToastVisible] = useState(false);
   const [showExpense, setShowExpense] = useState(false);
   const [pending, startTransition] = useTransition();
 
   function fireToast(msg: string) {
-    setToast(msg);
-    setTimeout(() => setToast((t) => (t === msg ? null : t)), 2600);
+    setToastMsg(msg);
+    setToastVisible(true);
+    setTimeout(() => setToastVisible(false), 2600);
   }
 
   function tap(key: (typeof ACTIONS)[number]["key"]) {
@@ -133,12 +135,17 @@ export function MobileDayView({
         )}
       </div>
 
-      {toast && (
-        <div className="mb-4 flex items-center gap-2.5 rounded-xl border border-accent/35 bg-accent-soft px-3.5 py-2.5 text-[12.5px]">
-          <span className="h-[7px] w-[7px] flex-none animate-tp-pulse rounded-full bg-accent" />
-          {toast}
-        </div>
-      )}
+      <div
+        className="pointer-events-none fixed inset-x-4 z-20 mx-auto flex max-w-[440px] items-center gap-2.5 rounded-xl border border-accent/35 bg-[#151b16] px-3.5 py-2.5 text-[12.5px] shadow-lg transition-all duration-300 ease-out"
+        style={{
+          bottom: "calc(env(safe-area-inset-bottom) + 20px)",
+          opacity: toastVisible ? 1 : 0,
+          transform: toastVisible ? "translateY(0)" : "translateY(12px)",
+        }}
+      >
+        <span className="h-[7px] w-[7px] flex-none animate-tp-pulse rounded-full bg-accent" />
+        {toastMsg}
+      </div>
 
       {nextShow && (
         <>
@@ -177,8 +184,8 @@ export function MobileDayView({
       </div>
 
       {showExpense && (
-        <div className="fixed inset-0 z-10 flex items-end justify-center bg-black/60" onClick={() => setShowExpense(false)}>
-          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-[480px] rounded-t-2xl border-t border-border bg-surface p-5 pb-8">
+        <div className="animate-tp-fade fixed inset-0 z-10 flex items-end justify-center bg-black/60" onClick={() => setShowExpense(false)}>
+          <div onClick={(e) => e.stopPropagation()} className="animate-tp-sheet w-full max-w-[480px] rounded-t-2xl border-t border-border bg-surface p-5 pb-8">
             <div className="mb-4 text-[16px] font-semibold">Log expense</div>
             <form
               action={(fd) =>
