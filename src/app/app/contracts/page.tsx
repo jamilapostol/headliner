@@ -15,6 +15,7 @@ export default async function ContractsPage() {
     status: c.status,
     date: c.signedDate ? c.signedDate.toLocaleDateString("en-US", { month: "short", day: "2-digit", timeZone: "UTC" }) : null,
     renewsAt: c.renewsAt ? c.renewsAt.toISOString() : null,
+    fileName: c.fileName,
   }));
 
   return <ContractsView contracts={dtos} plan={workspace.plan} />;

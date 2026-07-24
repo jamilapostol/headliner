@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { planUnlocksAI, summarizeContract } from "@/lib/ai";
+import { uploadContractDocument, removeContractDocument, type ActionState } from "@/lib/actions/contracts";
 
 export type ContractDTO = {
   id: string;
@@ -13,6 +14,7 @@ export type ContractDTO = {
   status: "DRAFT" | "AWAITING_SIGN" | "SIGNED" | "ACTIVE";
   date: string | null;
   renewsAt: string | null;
+  fileName: string | null;
 };
 
 const STATUS_STYLE: Record<string, { bg: string; color: string; label: string }> = {
@@ -108,6 +110,8 @@ export function ContractsView({ contracts, plan }: { contracts: ContractDTO[]; p
               </div>
             ))}
 
+          {selected && <DocumentCard key={selected.id} contract={selected} />}
+
           <div className="rounded-card border border-border bg-surface px-4 py-[18px]">
             <div className="mb-2.5 text-[14.5px] font-semibold">Renewals coming up</div>
             {renewals.length === 0 && <div className="text-[13px] text-white/40">Nothing on the horizon.</div>}
@@ -126,6 +130,55 @@ export function ContractsView({ contracts, plan }: { contracts: ContractDTO[]; p
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+const initialUploadState: ActionState = {};
+
+function DocumentCard({ contract }: { contract: ContractDTO }) {
+  const [uploadState, uploadAction, uploadPending] = useActionState(uploadContractDocument, initialUploadState);
+  const [, startTransition] = useTransition();
+  const formRef = useRef<HTMLFormElement>(null);
+
+  return (
+    <div className="rounded-card border border-border bg-surface px-4 py-[18px]">
+      <div className="mb-2.5 text-[14.5px] font-semibold">Document</div>
+      {contract.fileName ? (
+        <div className="flex items-center gap-2.5">
+          <span className="flex-1 truncate text-[12.5px] text-white/80">{contract.fileName}</span>
+          <a
+            href={`/api/contracts/${contract.id}/document`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="cursor-pointer rounded-lg border border-white/15 px-2.5 py-1.5 text-[11.5px] text-white/70 hover:border-white/35"
+          >
+            View
+          </a>
+          <button
+            onClick={() => startTransition(() => void removeContractDocument(contract.id))}
+            className="cursor-pointer px-1 text-[13px] text-white/40 hover:text-orange"
+            aria-label="Remove document"
+          >
+            ×
+          </button>
+        </div>
+      ) : (
+        <form ref={formRef} action={uploadAction} className="flex flex-col gap-2">
+          <input type="hidden" name="contractId" value={contract.id} />
+          <label className="cursor-pointer rounded-[10px] border border-dashed border-white/20 px-3 py-4 text-center text-[12.5px] text-white/50 hover:border-accent/40 hover:text-white/70">
+            {uploadPending ? "Uploading…" : "Click to upload a PDF or document"}
+            <input
+              type="file"
+              name="file"
+              accept=".pdf,.doc,.docx,image/*"
+              className="hidden"
+              onChange={() => formRef.current?.requestSubmit()}
+            />
+          </label>
+          {uploadState.error && <div className="text-[12px] text-orange">{uploadState.error}</div>}
+        </form>
+      )}
     </div>
   );
 }

@@ -13,6 +13,9 @@ export default async function ContactsPage() {
     role: c.role,
     category: c.category,
     city: c.city,
+    email: c.email,
+    phone: c.phone,
+    notes: c.notes,
     strength: c.strength,
     lastContactedAt: c.lastContactedAt ? c.lastContactedAt.toISOString() : null,
   }));

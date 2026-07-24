@@ -198,6 +198,8 @@ model Contract {
   status      ContractStatus @default(DRAFT)
   signedDate  DateTime?
   renewsAt    DateTime?
+  filePath    String? // path within the private "contracts" storage bucket
+  fileName    String? // original filename, for display
   createdAt   DateTime       @default(now())
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
