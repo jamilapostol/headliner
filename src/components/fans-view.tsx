@@ -31,7 +31,7 @@ export function FansView({ fans, plan }: { fans: FanDTO[]; plan: string }) {
   const patronCount = fans.filter((f) => f.tier === "Patron").length;
 
   return (
-    <div className="max-w-[1100px] px-4 py-5 sm:px-8 sm:py-7">
+    <div className="mx-auto max-w-[1100px] px-4 py-5 sm:px-8 sm:py-7">
       <div className="mb-1 flex flex-wrap items-baseline justify-between gap-2">
         <h1 className="text-[22px] tracking-[-.02em] sm:text-[26px]">Fans</h1>
         <div className="flex flex-wrap items-center gap-3">

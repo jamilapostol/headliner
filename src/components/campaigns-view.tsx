@@ -41,7 +41,7 @@ export function CampaignsView({
   const avgOpen = campaigns.length ? Math.round((campaigns.reduce((a, c) => a + c.openRate, 0) / campaigns.length) * 100) : 0;
 
   return (
-    <div className="max-w-[1100px] px-4 py-5 sm:px-8 sm:py-7">
+    <div className="mx-auto max-w-[1100px] px-4 py-5 sm:px-8 sm:py-7">
       <div className="mb-1 flex flex-wrap items-baseline justify-between gap-2">
         <h1 className="text-[22px] tracking-[-.02em] sm:text-[26px]">Campaigns</h1>
         <button onClick={() => setShowNew(true)} className="cursor-pointer rounded-lg bg-accent px-4 py-2 text-[12.5px] font-semibold text-canvas">

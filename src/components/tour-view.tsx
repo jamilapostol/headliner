@@ -32,7 +32,7 @@ export function TourView({ tour }: { tour: TourDTO }) {
   const totalMiles = tour.stops.reduce((a, s) => a + (s.driveMiles ?? 0), 0);
 
   return (
-    <div className="max-w-[1200px] px-4 py-5 sm:px-8 sm:py-7">
+    <div className="mx-auto max-w-[1200px] px-4 py-5 sm:px-8 sm:py-7">
       <h1 className="mb-1 text-[22px] tracking-[-.02em] sm:text-[26px]">{tour.name}</h1>
       <div className="mb-[18px] text-[13px] text-white/50">
         {new Date(tour.startDate).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" })} –{" "}

@@ -51,7 +51,7 @@ export default async function CalendarPage({
   const next = addMonths(anchor, 1);
 
   return (
-    <div className="max-w-[1150px] px-4 py-5 sm:px-8 sm:py-7">
+    <div className="mx-auto max-w-[1150px] px-4 py-5 sm:px-8 sm:py-7">
       <div className="mb-1 flex flex-wrap items-baseline justify-between gap-2">
         <h1 className="text-[22px] tracking-[-.02em] sm:text-[26px]">Calendar</h1>
         <div className="flex items-center gap-3">

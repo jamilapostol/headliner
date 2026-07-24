@@ -27,7 +27,7 @@ export default async function MerchPage() {
   }));
 
   return (
-    <div className="max-w-[1150px] px-4 py-5 sm:px-8 sm:py-7">
+    <div className="mx-auto max-w-[1150px] px-4 py-5 sm:px-8 sm:py-7">
       <MerchTable items={dtos} />
 
       <div className="mt-3.5 grid grid-cols-1 gap-3.5 sm:grid-cols-2">

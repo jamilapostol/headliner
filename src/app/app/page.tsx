@@ -53,7 +53,7 @@ export default async function DashboardPage() {
   ];
 
   return (
-    <div className="max-w-[1200px] px-4 py-5 sm:px-8 sm:py-7">
+    <div className="mx-auto max-w-[1200px] px-4 py-5 sm:px-8 sm:py-7">
       <div className="mb-1.5 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
         <h1 className="text-[22px] tracking-[-.02em] sm:text-[26px]">Good morning, {user.name.split(" ")[0]}</h1>
         <div className="font-mono text-[12px] text-white/45">

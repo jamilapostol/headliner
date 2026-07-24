@@ -39,7 +39,7 @@ export function ContactsTable({ contacts }: { contacts: ContactDTO[] }) {
   }, [contacts, query, cat]);
 
   return (
-    <div className="max-w-[1100px] px-4 py-5 sm:px-8 sm:py-7">
+    <div className="mx-auto max-w-[1100px] px-4 py-5 sm:px-8 sm:py-7">
       <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
         <h1 className="text-[22px] tracking-[-.02em] sm:text-[26px]">Contacts</h1>
         <button onClick={() => setShowNew(true)} className="cursor-pointer rounded-lg bg-accent px-3.5 py-1.5 text-[12.5px] font-semibold text-canvas">

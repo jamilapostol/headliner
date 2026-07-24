@@ -55,7 +55,7 @@ export default async function AnalyticsPage() {
   ];
 
   return (
-    <div className="max-w-[1150px] px-4 py-5 sm:px-8 sm:py-7">
+    <div className="mx-auto max-w-[1150px] px-4 py-5 sm:px-8 sm:py-7">
       <h1 className="mb-1 text-[22px] tracking-[-.02em] sm:text-[26px]">Analytics</h1>
       <div className="mb-5 text-[13px] text-white/50">Last 12 months across shows, merch and audience.</div>
 
