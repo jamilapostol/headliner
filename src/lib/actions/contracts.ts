@@ -7,6 +7,36 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 export type ActionState = { error?: string; success?: string };
 
+const KINDS = ["Performance", "Sponsorship", "Licensing", "Insurance", "Work-for-hire", "Other"] as const;
+const STATUSES = ["DRAFT", "AWAITING_SIGN", "SIGNED", "ACTIVE"] as const;
+
+export async function createContract(formData: FormData) {
+  const session = await getSession();
+  if (!session) return;
+
+  const name = String(formData.get("name") ?? "").trim();
+  const kind = String(formData.get("kind") ?? "Other");
+  const counterparty = String(formData.get("counterparty") ?? "").trim();
+  const value = String(formData.get("value") ?? "").trim();
+  const status = String(formData.get("status") ?? "DRAFT");
+  const renewsAtRaw = String(formData.get("renewsAt") ?? "").trim();
+
+  if (!name || !KINDS.includes(kind as (typeof KINDS)[number]) || !STATUSES.includes(status as (typeof STATUSES)[number])) return;
+
+  await db.contract.create({
+    data: {
+      workspaceId: session.workspaceId,
+      name,
+      kind,
+      counterparty,
+      value,
+      status: status as (typeof STATUSES)[number],
+      renewsAt: renewsAtRaw ? new Date(renewsAtRaw) : null,
+    },
+  });
+  revalidatePath("/app/contracts");
+}
+
 async function requireOwnedContract(contractId: string, workspaceId: string) {
   const contract = await db.contract.findUnique({ where: { id: contractId } });
   if (!contract || contract.workspaceId !== workspaceId) return null;

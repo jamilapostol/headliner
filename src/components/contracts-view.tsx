@@ -3,7 +3,7 @@
 import { useActionState, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { planUnlocksAI, summarizeContract } from "@/lib/ai";
-import { uploadContractDocument, removeContractDocument, type ActionState } from "@/lib/actions/contracts";
+import { createContract, uploadContractDocument, removeContractDocument, type ActionState } from "@/lib/actions/contracts";
 
 export type ContractDTO = {
   id: string;
@@ -33,13 +33,19 @@ function renewLabel(iso: string) {
 
 export function ContractsView({ contracts, plan }: { contracts: ContractDTO[]; plan: string }) {
   const [selId, setSelId] = useState(contracts[0]?.id ?? null);
+  const [showNew, setShowNew] = useState(false);
   const selected = contracts.find((c) => c.id === selId) ?? contracts[0];
   const aiUnlocked = planUnlocksAI(plan);
   const renewals = contracts.filter((c) => c.renewsAt).sort((a, b) => new Date(a.renewsAt!).getTime() - new Date(b.renewsAt!).getTime());
 
   return (
     <div className="mx-auto max-w-[1100px] px-4 py-5 sm:px-8 sm:py-7">
-      <h1 className="mb-1 text-[22px] tracking-[-.02em] sm:text-[26px]">Contracts</h1>
+      <div className="mb-1 flex flex-wrap items-baseline justify-between gap-2">
+        <h1 className="text-[22px] tracking-[-.02em] sm:text-[26px]">Contracts</h1>
+        <button onClick={() => setShowNew(true)} className="cursor-pointer rounded-lg bg-accent px-3.5 py-1.5 text-[12.5px] font-semibold text-canvas">
+          + New contract
+        </button>
+      </div>
       <div className="mb-[18px] text-[13px] text-white/50">Agreements, riders and renewals.</div>
 
       <div className="grid grid-cols-1 items-start gap-3.5 lg:grid-cols-[1.6fr_1fr]">
@@ -130,11 +136,91 @@ export function ContractsView({ contracts, plan }: { contracts: ContractDTO[]; p
           </div>
         </div>
       </div>
+
+      {showNew && <NewContractForm onClose={() => setShowNew(false)} />}
     </div>
   );
 }
 
 const initialUploadState: ActionState = {};
+
+function NewContractForm({ onClose }: { onClose: () => void }) {
+  const [pending, startTransition] = useTransition();
+
+  function submit(formData: FormData) {
+    startTransition(async () => {
+      await createContract(formData);
+      onClose();
+    });
+  }
+
+  return (
+    <div className="fixed inset-0 z-10 flex items-center justify-center bg-black/60 px-4" onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} className="w-full max-w-[420px] rounded-2xl border border-border bg-surface p-6">
+        <div className="mb-4 text-[17px] font-semibold">New contract</div>
+        <form action={submit} className="flex flex-col gap-3">
+          <Field label="Name" name="name" placeholder="Performance agreement — The Bluebird" />
+          <label className="flex flex-col gap-1.5">
+            <span className="text-[12px] font-medium text-white/50">Kind</span>
+            <select
+              name="kind"
+              defaultValue="Performance"
+              className="rounded-[10px] border border-border bg-surface-nested px-3.5 py-2.5 text-[13.5px] text-text outline-none focus:border-accent/50"
+            >
+              {["Performance", "Sponsorship", "Licensing", "Insurance", "Work-for-hire", "Other"].map((k) => (
+                <option key={k} value={k}>
+                  {k}
+                </option>
+              ))}
+            </select>
+          </label>
+          <Field label="Counterparty" name="counterparty" placeholder="J. Reyes" />
+          <Field label="Value" name="value" placeholder="$1,800" />
+          <div className="grid grid-cols-2 gap-3">
+            <label className="flex flex-col gap-1.5">
+              <span className="text-[12px] font-medium text-white/50">Status</span>
+              <select
+                name="status"
+                defaultValue="DRAFT"
+                className="rounded-[10px] border border-border bg-surface-nested px-3.5 py-2.5 text-[13.5px] text-text outline-none focus:border-accent/50"
+              >
+                {["DRAFT", "AWAITING_SIGN", "SIGNED", "ACTIVE"].map((s) => (
+                  <option key={s} value={s}>
+                    {STATUS_STYLE[s].label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <Field label="Renews (optional)" name="renewsAt" type="date" />
+          </div>
+          <div className="mt-2 flex gap-2">
+            <button type="button" onClick={onClose} className="flex-1 cursor-pointer rounded-[10px] border border-border py-2.5 text-[13.5px] text-white/70">
+              Cancel
+            </button>
+            <button type="submit" disabled={pending} className="flex-1 cursor-pointer rounded-[10px] bg-accent py-2.5 text-[13.5px] font-semibold text-canvas disabled:opacity-60">
+              {pending ? "Adding…" : "Add contract"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function Field({ label, name, placeholder, type = "text" }: { label: string; name: string; placeholder?: string; type?: string }) {
+  return (
+    <label className="flex flex-col gap-1.5">
+      <span className="text-[12px] font-medium text-white/50">{label}</span>
+      <input
+        name={name}
+        type={type}
+        placeholder={placeholder}
+        required={type !== "date"}
+        className="rounded-[10px] border border-border bg-surface-nested px-3.5 py-2.5 text-[13.5px] text-text outline-none focus:border-accent/50"
+      />
+    </label>
+  );
+}
 
 function DocumentCard({ contract }: { contract: ContractDTO }) {
   const [uploadState, uploadAction, uploadPending] = useActionState(uploadContractDocument, initialUploadState);
