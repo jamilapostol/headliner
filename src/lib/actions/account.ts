@@ -36,6 +36,9 @@ export async function updateProfile(_prev: ActionState, formData: FormData): Pro
 }
 
 export async function changeEmail(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  const session = await getSession();
+  if (!session) return { error: "Not signed in." };
+
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   if (!email) return { error: "Email is required." };
 
@@ -47,6 +50,9 @@ export async function changeEmail(_prev: ActionState, formData: FormData): Promi
 }
 
 export async function changePassword(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  const session = await getSession();
+  if (!session) return { error: "Not signed in." };
+
   const password = String(formData.get("password") ?? "");
   const confirm = String(formData.get("confirm") ?? "");
 
