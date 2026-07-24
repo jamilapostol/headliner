@@ -1,0 +1,146 @@
+"use client";
+
+import { useState, useTransition } from "react";
+import { money } from "@/lib/format";
+import { adjustStock, createMerchItem } from "@/lib/actions/merch";
+
+export type MerchItemDTO = {
+  id: string;
+  name: string;
+  variant: string | null;
+  price: number;
+  cogs: number;
+  stock: number;
+  maxStock: number;
+  glyph: string;
+  color: string;
+};
+
+export function MerchTable({ items }: { items: MerchItemDTO[] }) {
+  const [showNew, setShowNew] = useState(false);
+  const [, startTransition] = useTransition();
+
+  const totalUnits = items.reduce((a, i) => a + i.stock, 0);
+  const retailValue = items.reduce((a, i) => a + i.stock * i.price, 0);
+
+  return (
+    <div>
+      <div className="mb-1 flex items-baseline justify-between">
+        <h1 className="text-[26px] tracking-[-.02em]">Merchandise</h1>
+        <div className="flex items-center gap-3">
+          <div className="font-mono text-[12px] text-white/45">
+            {totalUnits} units in van · {money(retailValue)} retail
+          </div>
+          <button onClick={() => setShowNew(true)} className="cursor-pointer rounded-lg bg-accent px-3.5 py-1.5 text-[12.5px] font-semibold text-canvas">
+            + New item
+          </button>
+        </div>
+      </div>
+      <div className="mb-[18px] text-[13px] text-white/50">Inventory travels with the tour — adjust counts after each settle-up.</div>
+
+      <div className="overflow-hidden rounded-card border border-border bg-surface">
+        <div className="grid grid-cols-[1.8fr_.8fr_.8fr_1.1fr_1fr] gap-2.5 border-b border-border px-[18px] py-[11px] font-mono text-[10.5px] tracking-[.1em] text-white/40">
+          <div>ITEM</div>
+          <div>PRICE</div>
+          <div>MARGIN</div>
+          <div>STOCK</div>
+          <div>STATUS</div>
+        </div>
+        {items.map((m) => {
+          const pct = m.maxStock ? m.stock / m.maxStock : 0;
+          const low = pct < 0.25;
+          const margin = m.price ? Math.round(((m.price - m.cogs) / m.price) * 100) : 0;
+          return (
+            <div key={m.id} className="grid grid-cols-[1.8fr_.8fr_.8fr_1.1fr_1fr] items-center gap-2.5 border-b border-white/[.05] px-[18px] py-3 hover:bg-white/[.03]">
+              <div className="flex items-center gap-2.5">
+                <div className="grid h-[30px] w-[30px] flex-none place-items-center rounded-[7px] text-[12px] font-bold text-canvas" style={{ background: m.color }}>
+                  {m.glyph}
+                </div>
+                <div>
+                  <div className="text-[13px] font-semibold">{m.name}</div>
+                  <div className="text-[11px] text-white/40">{m.variant}</div>
+                </div>
+              </div>
+              <div className="font-mono text-[12.5px]">{money(m.price)}</div>
+              <div className="font-mono text-[12.5px] text-accent">{margin}%</div>
+              <div>
+                <div className="mb-1 flex items-center gap-2 font-mono text-[12.5px]">
+                  <span>
+                    {m.stock}/{m.maxStock}
+                  </span>
+                  <button onClick={() => startTransition(() => adjustStock(m.id, -1))} className="cursor-pointer text-white/40 hover:text-text" title="Sell one">
+                    −
+                  </button>
+                  <button onClick={() => startTransition(() => adjustStock(m.id, 10))} className="cursor-pointer text-white/40 hover:text-text" title="Restock +10">
+                    +10
+                  </button>
+                </div>
+                <div className="h-1 w-14 rounded-full bg-white/[.07]">
+                  <div className="h-1 rounded-full" style={{ width: `${Math.round(pct * 100)}%`, background: low ? "#e8983f" : "#3fe87a" }} />
+                </div>
+              </div>
+              <div
+                className="w-fit rounded-full px-2.5 py-[3px] font-mono text-[10.5px]"
+                style={{ background: low ? "rgba(232,152,63,.12)" : "rgba(63,232,122,.1)", color: low ? "#e8983f" : "#3fe87a" }}
+              >
+                {low ? "LOW STOCK" : "OK"}
+              </div>
+            </div>
+          );
+        })}
+        {items.length === 0 && <div className="px-[18px] py-7 text-center text-[13px] text-white/40">No merch items yet.</div>}
+      </div>
+
+      {showNew && (
+        <div className="fixed inset-0 z-10 flex items-center justify-center bg-black/60 px-4" onClick={() => setShowNew(false)}>
+          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-[420px] rounded-2xl border border-border bg-surface p-6">
+            <div className="mb-4 text-[17px] font-semibold">New merch item</div>
+            <form
+              action={(fd) =>
+                startTransition(async () => {
+                  await createMerchItem(fd);
+                  setShowNew(false);
+                })
+              }
+              className="flex flex-col gap-3"
+            >
+              <F label="Name" name="name" placeholder="Tour Tee" />
+              <F label="Variant" name="variant" placeholder="Black · S–XL" />
+              <div className="grid grid-cols-2 gap-3">
+                <F label="Price ($)" name="price" type="number" placeholder="30" />
+                <F label="Margin (%)" name="margin" type="number" placeholder="65" />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <F label="Starting stock" name="stock" type="number" placeholder="50" />
+                <F label="Max stock" name="maxStock" type="number" placeholder="50" />
+              </div>
+              <div className="mt-2 flex gap-2">
+                <button type="button" onClick={() => setShowNew(false)} className="flex-1 cursor-pointer rounded-[10px] border border-border py-2.5 text-[13.5px] text-white/70">
+                  Cancel
+                </button>
+                <button type="submit" className="flex-1 cursor-pointer rounded-[10px] bg-accent py-2.5 text-[13.5px] font-semibold text-canvas">
+                  Add item
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function F({ label, name, placeholder, type = "text" }: { label: string; name: string; placeholder?: string; type?: string }) {
+  return (
+    <label className="flex flex-col gap-1.5">
+      <span className="text-[12px] font-medium text-white/50">{label}</span>
+      <input
+        name={name}
+        type={type}
+        required
+        placeholder={placeholder}
+        className="rounded-[10px] border border-border bg-surface-nested px-3.5 py-2.5 text-[13.5px] text-text outline-none focus:border-accent/50"
+      />
+    </label>
+  );
+}

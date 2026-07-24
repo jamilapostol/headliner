@@ -36,6 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# prisma (legacy local sqlite, no longer used — Postgres via Supabase now)
+prisma/*.db
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

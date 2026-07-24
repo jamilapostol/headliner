@@ -1,0 +1,22 @@
+import Image from "next/image";
+import Link from "next/link";
+import { AuthForm } from "@/components/auth-form";
+import { signUp } from "@/lib/actions/auth";
+
+export default function SignupPage() {
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-center px-6">
+      <div className="w-full max-w-[380px]">
+        <Link href="/" className="mb-8 flex items-center justify-center gap-2.5">
+          <Image src="/logo.svg" alt="HEADLINER" width={28} height={28} />
+          <span className="text-[15px] font-bold">HEADLINER</span>
+        </Link>
+        <h1 className="mb-1 text-center text-[26px] font-semibold tracking-tight">Start free</h1>
+        <p className="mb-7 text-center text-[13.5px] text-muted">
+          Your first 10 bookings are on us. No card required.
+        </p>
+        <AuthForm mode="signup" action={signUp} />
+      </div>
+    </div>
+  );
+}

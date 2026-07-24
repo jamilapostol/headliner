@@ -1,0 +1,267 @@
+// HEADLINER — data model
+// Postgres via Supabase. Auth is owned by Supabase (the auth.users table,
+// not modeled here) — Membership.userId stores that auth user's id as a
+// plain string; there's no local User table or password storage.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL") // pooled (transaction mode, port 6543) — app runtime
+  directUrl = env("DIRECT_URL") // pooled (session mode, port 5432) — migrations/db push
+}
+
+enum Role {
+  artist
+  manager
+  agent
+  tour_manager
+  merch
+  accountant
+  assistant
+}
+
+enum Plan {
+  free
+  pro
+  touring
+  team
+}
+
+enum BookingStage {
+  Lead
+  Contacted
+  Negotiating
+  Offer_Sent
+  Confirmed
+  Paid
+}
+
+enum ContactCategory {
+  Venues
+  Promoters
+  Festivals
+  Media
+  Sponsors
+}
+
+enum TransactionKind {
+  income
+  expense
+}
+
+model Workspace {
+  id               String   @id @default(cuid())
+  name             String
+  plan             Plan     @default(free)
+  billingCycle     String   @default("monthly") // monthly | annual
+  stripeCustomerId String?
+  stripeSubId      String?
+  trialEndsAt      DateTime?
+  createdAt        DateTime @default(now())
+
+  memberships  Membership[]
+  contacts     Contact[]
+  bookings     Booking[]
+  transactions Transaction[]
+  tasks        Task[]
+  tours        Tour[]
+  merchItems   MerchItem[]
+  contracts    Contract[]
+  fans         Fan[]
+  campaigns    Campaign[]
+  automations  Automation[]
+}
+
+model Membership {
+  id          String   @id @default(cuid())
+  workspaceId String
+  userId      String // Supabase auth.users.id
+  role        Role     @default(artist)
+  invitedBy   String?
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@index([userId])
+}
+
+model Contact {
+  id              String          @id @default(cuid())
+  workspaceId     String
+  name            String
+  org             String?
+  role            String?
+  category        ContactCategory @default(Venues)
+  city            String?
+  email           String?
+  phone           String?
+  strength        Int             @default(3) // 1-5
+  lastContactedAt DateTime?
+  notes           String?
+  createdAt       DateTime        @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  bookings  Booking[]
+}
+
+model Booking {
+  id          String       @id @default(cuid())
+  workspaceId String
+  contactId   String?
+  venue       String
+  city        String
+  date        DateTime
+  stage       BookingStage @default(Lead)
+  fee         Int          @default(0) // cents
+  deposit     Int          @default(0) // cents
+  promoter    String?
+  notes       String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  contact   Contact?  @relation(fields: [contactId], references: [id])
+  tourStop  TourStop?
+}
+
+model Tour {
+  id        String   @id @default(cuid())
+  workspaceId String
+  name      String
+  startDate DateTime
+  endDate   DateTime
+  createdAt DateTime @default(now())
+
+  workspace Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  stops     TourStop[]
+}
+
+model TourStop {
+  id         String  @id @default(cuid())
+  tourId     String
+  bookingId  String? @unique
+  seq        Int
+  driveMiles Int?
+  hotel      String?
+  merchNote  String?
+  schedule   String // JSON-encoded array of { time, what, who }
+
+  tour    Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  booking Booking? @relation(fields: [bookingId], references: [id])
+}
+
+model MerchItem {
+  id          String  @id @default(cuid())
+  workspaceId String
+  name        String
+  variant     String?
+  price       Int // cents
+  cogs        Int // cents
+  stock       Int     @default(0)
+  maxStock    Int     @default(1)
+  glyph       String  @default("M")
+  color       String  @default("#3fe87a")
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+enum ContractStatus {
+  DRAFT
+  AWAITING_SIGN
+  SIGNED
+  ACTIVE
+}
+
+model Contract {
+  id          String         @id @default(cuid())
+  workspaceId String
+  name        String
+  kind        String
+  counterparty String
+  value       String
+  status      ContractStatus @default(DRAFT)
+  signedDate  DateTime?
+  renewsAt    DateTime?
+  createdAt   DateTime       @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model Task {
+  id          String    @id @default(cuid())
+  workspaceId String
+  title       String
+  dueLabel    String
+  done        Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model Transaction {
+  id          String           @id @default(cuid())
+  workspaceId String
+  kind        TransactionKind
+  category    String
+  amount      Int // cents; expenses stored positive, kind marks sign
+  source      String?
+  occurredAt  DateTime         @default(now())
+  createdAt   DateTime         @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+enum FanTier {
+  VIP
+  Patron
+  Donor
+  Fan
+}
+
+model Fan {
+  id            String   @id @default(cuid())
+  workspaceId   String
+  name          String
+  email         String?
+  tier          FanTier  @default(Fan)
+  tierNote      String?
+  lifetimeSpend Int      @default(0) // cents
+  showsAttended Int      @default(0)
+  lastSeenLabel String?
+  notes         String?
+  createdAt     DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model Campaign {
+  id            String   @id @default(cuid())
+  workspaceId   String
+  name          String
+  audienceLabel String
+  sentAt        DateTime
+  openRate      Float
+  clickRate     Float
+  revenue       Int? // cents; null when not applicable (e.g. patron updates)
+  createdAt     DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model Automation {
+  id          String  @id @default(cuid())
+  workspaceId String
+  key         String
+  name        String
+  trigger     String
+  enabled     Boolean @default(true)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, key])
+}
