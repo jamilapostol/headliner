@@ -60,6 +60,12 @@ model Workspace {
   stripeCustomerId String?
   stripeSubId      String?
   trialEndsAt      DateTime?
+  addressLine1     String?
+  addressLine2     String?
+  city             String?
+  state            String?
+  postalCode       String?
+  country          String?
   createdAt        DateTime @default(now())
 
   memberships  Membership[]

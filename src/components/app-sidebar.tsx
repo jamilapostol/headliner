@@ -14,15 +14,29 @@ const PLAN_LABEL: Record<string, string> = {
   team: "Team plan",
 };
 
-export function AppSidebar({ userName, plan }: { userName: string; plan: string }) {
+export function AppSidebar({ userName, plan, avatarUrl }: { userName: string; plan: string; avatarUrl: string | null }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const initials = userName
     .split(" ")
     .map((w) => w[0])
     .join("")
     .slice(0, 2)
     .toUpperCase();
+
+  const avatar = avatarUrl ? (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={avatarUrl} alt={userName} className="h-8 w-8 flex-none rounded-full object-cover" />
+  ) : (
+    <div className="grid h-8 w-8 flex-none place-items-center rounded-full bg-yellow text-[13px] font-bold text-canvas">{initials}</div>
+  );
+  const avatarSm = avatarUrl ? (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={avatarUrl} alt={userName} className="h-7 w-7 rounded-full object-cover" />
+  ) : (
+    <div className="grid h-7 w-7 place-items-center rounded-full bg-yellow text-[11px] font-bold text-canvas">{initials}</div>
+  );
 
   return (
     <>
@@ -35,7 +49,7 @@ export function AppSidebar({ userName, plan }: { userName: string; plan: string 
           <Image src="/logo.svg" alt="HEADLINER" width={24} height={24} />
           <span className="text-[15px] font-bold tracking-[-.02em]">HEADLINER</span>
         </div>
-        <div className="grid h-7 w-7 place-items-center rounded-full bg-yellow text-[11px] font-bold text-canvas">{initials}</div>
+        {avatarSm}
       </div>
 
       {/* Mobile drawer backdrop */}
@@ -75,17 +89,52 @@ export function AppSidebar({ userName, plan }: { userName: string; plan: string 
           <span className="w-4 font-mono text-[11px] opacity-70">▤</span>
           Show-day view
         </Link>
-        <div className="flex items-center gap-2.5 border-t border-border p-3.5">
-          <div className="grid h-8 w-8 flex-none place-items-center rounded-full bg-yellow text-[13px] font-bold text-canvas">{initials}</div>
-          <div className="min-w-0 flex-1">
-            <div className="truncate text-[13px] font-semibold">{userName}</div>
-            <div className="text-[11px] text-white/45">{PLAN_LABEL[plan] ?? plan}</div>
-          </div>
-          <form action={logOut}>
-            <button type="submit" title="Log out" className="cursor-pointer px-1.5 text-[12px] text-white/40 hover:text-text">
-              ⏻
-            </button>
-          </form>
+        <div className="relative border-t border-border p-3.5">
+          {menuOpen && (
+            <>
+              <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
+              <div className="absolute bottom-full left-3.5 z-50 mb-2 w-[190px] overflow-hidden rounded-[10px] border border-white/10 bg-[#1a211b] shadow-xl">
+                <Link
+                  href="/app/account"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    setOpen(false);
+                  }}
+                  className="flex items-center gap-2 px-3.5 py-2.5 text-[13px] text-text hover:bg-white/5"
+                >
+                  Profile
+                </Link>
+                <Link
+                  href="/app/billing"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    setOpen(false);
+                  }}
+                  className="flex items-center gap-2 px-3.5 py-2.5 text-[13px] text-text hover:bg-white/5"
+                >
+                  Billing
+                </Link>
+                <form action={logOut}>
+                  <button
+                    type="submit"
+                    className="flex w-full cursor-pointer items-center gap-2 border-t border-white/10 px-3.5 py-2.5 text-left text-[13px] text-white/70 hover:bg-white/5"
+                  >
+                    Log out
+                  </button>
+                </form>
+              </div>
+            </>
+          )}
+          <button
+            onClick={() => setMenuOpen((v) => !v)}
+            className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg p-1 hover:bg-white/5"
+          >
+            {avatar}
+            <div className="min-w-0 flex-1 text-left">
+              <div className="truncate text-[13px] font-semibold">{userName}</div>
+              <div className="text-[11px] text-white/45">{PLAN_LABEL[plan] ?? plan}</div>
+            </div>
+          </button>
         </div>
       </div>
     </>

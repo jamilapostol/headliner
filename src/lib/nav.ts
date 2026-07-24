@@ -10,5 +10,4 @@ export const NAV_ITEMS: Array<{ href: string; label: string; glyph: string; soon
   { href: "/app/campaigns", label: "Campaigns", glyph: "✉" },
   { href: "/app/contracts", label: "Contracts", glyph: "§" },
   { href: "/app/analytics", label: "Analytics", glyph: "∿" },
-  { href: "/app/billing", label: "Billing", glyph: "◆" },
 ];

@@ -9,5 +9,5 @@ export async function requireWorkspace() {
   const workspace = await db.workspace.findUnique({ where: { id: session.workspaceId } });
   if (!workspace) redirect("/login");
 
-  return { user: { name: session.name, email: session.email }, workspace };
+  return { user: { name: session.name, email: session.email, avatarUrl: session.avatarUrl }, workspace };
 }

@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { createClient } from "@/lib/supabase/server";
 
-export type Session = { userId: string; workspaceId: string; email: string; name: string };
+export type Session = { userId: string; workspaceId: string; email: string; name: string; avatarUrl: string | null };
 
 // Resolves the Supabase-authenticated user plus their workspace membership.
 // Keeps the same {userId, workspaceId} shape the rest of the app (all the
@@ -18,5 +18,6 @@ export async function getSession(): Promise<Session | null> {
   if (!membership) return null;
 
   const name = (user.user_metadata?.name as string | undefined) ?? user.email ?? "";
-  return { userId: user.id, workspaceId: membership.workspaceId, email: user.email ?? "", name };
+  const avatarUrl = (user.user_metadata?.avatar_url as string | undefined) ?? null;
+  return { userId: user.id, workspaceId: membership.workspaceId, email: user.email ?? "", name, avatarUrl };
 }
