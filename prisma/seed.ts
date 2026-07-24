@@ -37,7 +37,7 @@ async function main() {
       name: "Mara Voss",
       plan: "pro",
       billingCycle: "monthly",
-      memberships: { create: { userId, role: "artist" } },
+      memberships: { create: { userId, role: "artist", acceptedAt: new Date() } },
     },
   });
 

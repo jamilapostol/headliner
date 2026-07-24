@@ -87,6 +87,7 @@ model Membership {
   userId      String // Supabase auth.users.id
   role        Role     @default(artist)
   invitedBy   String?
+  acceptedAt  DateTime? // null while an invite is pending
   createdAt   DateTime @default(now())
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)

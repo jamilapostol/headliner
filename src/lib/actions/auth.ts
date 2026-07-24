@@ -32,7 +32,7 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
     data: {
       name,
       plan: "free",
-      memberships: { create: { userId: data.user.id, role: "artist" } },
+      memberships: { create: { userId: data.user.id, role: "artist", acceptedAt: new Date() } },
     },
   });
 
