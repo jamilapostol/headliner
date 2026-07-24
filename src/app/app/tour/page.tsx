@@ -1,6 +1,6 @@
 import { requireWorkspace } from "@/lib/workspace";
 import { db } from "@/lib/db";
-import { ComingSoon } from "@/components/coming-soon";
+import { NewTourForm } from "@/components/new-tour-form";
 import { TourView, type TourDTO } from "@/components/tour-view";
 
 export default async function TourPage() {
@@ -13,10 +13,16 @@ export default async function TourPage() {
   });
 
   if (!tour) {
-    return <ComingSoon title="Tour" phase="PHASE 2 — ROAD KIT" description="Create a tour from your bookings to see routing and day sheets here." />;
+    return <NewTourForm />;
   }
 
+  const eligibleBookings = await db.booking.findMany({
+    where: { workspaceId: workspace.id, stage: { in: ["Confirmed", "Paid"] }, tourStop: null },
+    orderBy: { date: "asc" },
+  });
+
   const dto: TourDTO = {
+    id: tour.id,
     name: tour.name,
     startDate: tour.startDate.toISOString(),
     endDate: tour.endDate.toISOString(),
@@ -28,10 +34,14 @@ export default async function TourPage() {
       fee: s.booking?.fee ?? 0,
       driveMiles: s.driveMiles,
       hotel: s.hotel,
+      hotelConfNo: s.hotelConfNo,
       merchNote: s.merchNote,
+      perDiemCents: s.perDiemCents,
       schedule: JSON.parse(s.schedule),
     })),
   };
 
-  return <TourView tour={dto} />;
+  const eligibleDTOs = eligibleBookings.map((b) => ({ id: b.id, venue: b.venue, city: b.city, date: b.date.toISOString() }));
+
+  return <TourView tour={dto} eligibleBookings={eligibleDTOs} />;
 }
