@@ -57,9 +57,9 @@ export function BookingsBoard({ bookings, plan, artistName }: { bookings: Bookin
     : [];
 
   return (
-    <div className="flex h-full flex-col px-8 py-7">
-      <div className="mb-1 flex items-baseline gap-3.5">
-        <h1 className="text-[26px] tracking-[-.02em]">Booking pipeline</h1>
+    <div className="flex h-full flex-col px-4 py-5 sm:px-8 sm:py-7">
+      <div className="mb-1 flex flex-wrap items-baseline gap-x-3.5 gap-y-1">
+        <h1 className="text-[22px] tracking-[-.02em] sm:text-[26px]">Booking pipeline</h1>
         <div className="font-mono text-[12px] text-white/45">{money(pipelineTotal)} in play</div>
         <button
           onClick={() => setShowNew(true)}
@@ -115,7 +115,7 @@ export function BookingsBoard({ bookings, plan, artistName }: { bookings: Bookin
       </div>
 
       {open && (
-        <div className="fixed top-0 right-0 box-border h-screen w-[380px] overflow-y-auto border-l border-white/[.09] bg-[#121813] px-6 py-[22px]">
+        <div className="animate-tp-fade fixed inset-0 z-20 box-border h-screen w-full overflow-y-auto border-l border-white/[.09] bg-[#121813] px-5 py-[18px] sm:inset-auto sm:top-0 sm:right-0 sm:w-[380px] sm:px-6 sm:py-[22px]">
           <div className="mb-1 flex items-center justify-between">
             <div className="text-[18px] font-bold">{open.venue}</div>
             <button

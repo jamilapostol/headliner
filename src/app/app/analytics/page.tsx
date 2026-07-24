@@ -55,11 +55,11 @@ export default async function AnalyticsPage() {
   ];
 
   return (
-    <div className="max-w-[1150px] px-8 py-7">
-      <h1 className="mb-1 text-[26px] tracking-[-.02em]">Analytics</h1>
+    <div className="max-w-[1150px] px-4 py-5 sm:px-8 sm:py-7">
+      <h1 className="mb-1 text-[22px] tracking-[-.02em] sm:text-[26px]">Analytics</h1>
       <div className="mb-5 text-[13px] text-white/50">Last 12 months across shows, merch and audience.</div>
 
-      <div className="mb-[18px] grid grid-cols-4 gap-3.5">
+      <div className="mb-[18px] grid grid-cols-2 gap-3.5 lg:grid-cols-4">
         {stats.map((s) => (
           <div key={s.label} className="rounded-card border border-border bg-surface px-[18px] py-4">
             <div className="mb-2 font-mono text-[10.5px] tracking-[.1em] text-white/45">{s.label}</div>
@@ -69,10 +69,10 @@ export default async function AnalyticsPage() {
         ))}
       </div>
 
-      <div className="grid grid-cols-[1.5fr_1fr] items-start gap-3.5">
-        <div className="rounded-card border border-border bg-surface px-5 py-[18px]">
+      <div className="grid grid-cols-1 items-start gap-3.5 lg:grid-cols-[1.5fr_1fr]">
+        <div className="overflow-hidden rounded-card border border-border bg-surface px-5 py-[18px]">
           <div className="mb-4 text-[14.5px] font-semibold">Monthly revenue</div>
-          <div className="flex h-[150px] items-end gap-2">
+          <div className="flex h-[150px] items-end gap-1 sm:gap-2">
             {monthlyBars.map((b, i) => (
               <div key={i} className="flex h-full flex-1 flex-col justify-end gap-0.5">
                 <div className="rounded-t-[3px]" style={{ background: i === 11 ? "#3fe87a" : "rgba(63,232,122,.35)", height: `${Math.round((b.performance / maxMonthly) * 100)}%` }} />

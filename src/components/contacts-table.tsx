@@ -39,9 +39,9 @@ export function ContactsTable({ contacts }: { contacts: ContactDTO[] }) {
   }, [contacts, query, cat]);
 
   return (
-    <div className="max-w-[1100px] px-8 py-7">
-      <div className="mb-4 flex items-baseline justify-between">
-        <h1 className="text-[26px] tracking-[-.02em]">Contacts</h1>
+    <div className="max-w-[1100px] px-4 py-5 sm:px-8 sm:py-7">
+      <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
+        <h1 className="text-[22px] tracking-[-.02em] sm:text-[26px]">Contacts</h1>
         <button onClick={() => setShowNew(true)} className="cursor-pointer rounded-lg bg-accent px-3.5 py-1.5 text-[12.5px] font-semibold text-canvas">
           + New contact
         </button>
@@ -69,45 +69,47 @@ export function ContactsTable({ contacts }: { contacts: ContactDTO[] }) {
         ))}
       </div>
 
-      <div className="overflow-hidden rounded-card border border-border bg-surface">
-        <div className="grid grid-cols-[2fr_1.2fr_1.2fr_1fr_.8fr] gap-3 border-b border-border px-[18px] py-[11px] font-mono text-[10.5px] tracking-[.1em] text-white/40">
-          <div>NAME</div>
-          <div>ROLE</div>
-          <div>CITY</div>
-          <div>LAST CONTACT</div>
-          <div>STRENGTH</div>
+      <div className="overflow-x-auto rounded-card border border-border bg-surface">
+        <div className="min-w-[620px]">
+          <div className="grid grid-cols-[2fr_1.2fr_1.2fr_1fr_.8fr] gap-3 border-b border-border px-[18px] py-[11px] font-mono text-[10.5px] tracking-[.1em] text-white/40">
+            <div>NAME</div>
+            <div>ROLE</div>
+            <div>CITY</div>
+            <div>LAST CONTACT</div>
+            <div>STRENGTH</div>
+          </div>
+          {filtered.map((c, i) => {
+            const initials = c.name.split(" ").map((w) => w[0]).join("");
+            const last = daysAgoLabel(c.lastContactedAt);
+            return (
+              <div key={c.id} className="grid grid-cols-[2fr_1.2fr_1.2fr_1fr_.8fr] items-center gap-3 border-b border-white/[.05] px-[18px] py-3 hover:bg-white/[.03]">
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className="grid h-7 w-7 flex-none place-items-center rounded-full text-[11px] font-bold text-canvas"
+                    style={{ background: AVATAR_COLORS[i % AVATAR_COLORS.length] }}
+                  >
+                    {initials}
+                  </div>
+                  <div>
+                    <div className="text-[13px] font-semibold">{c.name}</div>
+                    <div className="text-[11px] text-white/40">{c.org}</div>
+                  </div>
+                </div>
+                <div className="text-[12.5px] text-white/70">{c.role}</div>
+                <div className="text-[12.5px] text-white/70">{c.city}</div>
+                <div className="font-mono text-[11.5px]" style={{ color: last.stale ? "#e8983f" : "rgba(233,236,232,.5)" }}>
+                  {last.label}
+                </div>
+                <div className="flex gap-[3px]">
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <span key={n} className="h-2 w-2 rounded-full" style={{ background: n <= c.strength ? "#3fe87a" : "rgba(255,255,255,.1)" }} />
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+          {filtered.length === 0 && <div className="px-[18px] py-7 text-center text-[13px] text-white/40">No contacts match your search.</div>}
         </div>
-        {filtered.map((c, i) => {
-          const initials = c.name.split(" ").map((w) => w[0]).join("");
-          const last = daysAgoLabel(c.lastContactedAt);
-          return (
-            <div key={c.id} className="grid grid-cols-[2fr_1.2fr_1.2fr_1fr_.8fr] items-center gap-3 border-b border-white/[.05] px-[18px] py-3 hover:bg-white/[.03]">
-              <div className="flex items-center gap-2.5">
-                <div
-                  className="grid h-7 w-7 flex-none place-items-center rounded-full text-[11px] font-bold text-canvas"
-                  style={{ background: AVATAR_COLORS[i % AVATAR_COLORS.length] }}
-                >
-                  {initials}
-                </div>
-                <div>
-                  <div className="text-[13px] font-semibold">{c.name}</div>
-                  <div className="text-[11px] text-white/40">{c.org}</div>
-                </div>
-              </div>
-              <div className="text-[12.5px] text-white/70">{c.role}</div>
-              <div className="text-[12.5px] text-white/70">{c.city}</div>
-              <div className="font-mono text-[11.5px]" style={{ color: last.stale ? "#e8983f" : "rgba(233,236,232,.5)" }}>
-                {last.label}
-              </div>
-              <div className="flex gap-[3px]">
-                {[1, 2, 3, 4, 5].map((n) => (
-                  <span key={n} className="h-2 w-2 rounded-full" style={{ background: n <= c.strength ? "#3fe87a" : "rgba(255,255,255,.1)" }} />
-                ))}
-              </div>
-            </div>
-          );
-        })}
-        {filtered.length === 0 && <div className="px-[18px] py-7 text-center text-[13px] text-white/40">No contacts match your search.</div>}
       </div>
 
       {showNew && (

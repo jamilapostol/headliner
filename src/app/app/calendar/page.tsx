@@ -51,9 +51,9 @@ export default async function CalendarPage({
   const next = addMonths(anchor, 1);
 
   return (
-    <div className="max-w-[1150px] px-8 py-7">
-      <div className="mb-1 flex items-baseline justify-between">
-        <h1 className="text-[26px] tracking-[-.02em]">Calendar</h1>
+    <div className="max-w-[1150px] px-4 py-5 sm:px-8 sm:py-7">
+      <div className="mb-1 flex flex-wrap items-baseline justify-between gap-2">
+        <h1 className="text-[22px] tracking-[-.02em] sm:text-[26px]">Calendar</h1>
         <div className="flex items-center gap-3">
           <Link href={`/app/calendar?y=${prev.getFullYear()}&m=${prev.getMonth() + 1}`} className="rounded-lg border border-border px-2.5 py-1 text-[13px] text-white/70 hover:border-white/25">
             ←
@@ -66,7 +66,8 @@ export default async function CalendarPage({
       </div>
       <div className="mb-5 text-[13px] text-white/50">Every booking on your calendar, in one grid.</div>
 
-      <div className="overflow-hidden rounded-card border border-border bg-surface">
+      <div className="overflow-x-auto rounded-card border border-border bg-surface">
+        <div className="min-w-[560px]">
         <div className="grid grid-cols-7 border-b border-border">
           {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((d) => (
             <div key={d} className="px-3 py-2 font-mono text-[10.5px] tracking-[.1em] text-white/40">
@@ -103,6 +104,7 @@ export default async function CalendarPage({
               </div>
             );
           })}
+        </div>
         </div>
       </div>
     </div>

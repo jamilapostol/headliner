@@ -32,8 +32,8 @@ export function TourView({ tour }: { tour: TourDTO }) {
   const totalMiles = tour.stops.reduce((a, s) => a + (s.driveMiles ?? 0), 0);
 
   return (
-    <div className="max-w-[1200px] px-8 py-7">
-      <h1 className="mb-1 text-[26px] tracking-[-.02em]">{tour.name}</h1>
+    <div className="max-w-[1200px] px-4 py-5 sm:px-8 sm:py-7">
+      <h1 className="mb-1 text-[22px] tracking-[-.02em] sm:text-[26px]">{tour.name}</h1>
       <div className="mb-[18px] text-[13px] text-white/50">
         {new Date(tour.startDate).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" })} –{" "}
         {new Date(tour.endDate).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" })} · {tour.stops.length} shows ·{" "}
@@ -48,7 +48,7 @@ export function TourView({ tour }: { tour: TourDTO }) {
         <div className="ml-auto cursor-pointer whitespace-nowrap text-[12px] text-yellow">Apply →</div>
       </div>
 
-      <div className="grid grid-cols-[340px_1fr] items-start gap-3.5">
+      <div className="grid grid-cols-1 items-start gap-3.5 lg:grid-cols-[340px_1fr]">
         <div className="flex flex-col gap-0.5 rounded-card border border-border bg-surface p-2.5">
           {tour.stops.map((s, i) => (
             <div
@@ -87,7 +87,7 @@ export function TourView({ tour }: { tour: TourDTO }) {
               ))}
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-3.5">
+          <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-3">
             <div className="rounded-card border border-border bg-surface px-4 py-3.5">
               <div className="mb-1.5 font-mono text-[10px] tracking-[.1em] text-white/45">GUARANTEE</div>
               <div className="text-[19px] font-bold text-accent">{money(stop.fee)}</div>

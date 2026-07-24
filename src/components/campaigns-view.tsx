@@ -41,20 +41,21 @@ export function CampaignsView({
   const avgOpen = campaigns.length ? Math.round((campaigns.reduce((a, c) => a + c.openRate, 0) / campaigns.length) * 100) : 0;
 
   return (
-    <div className="max-w-[1100px] px-8 py-7">
-      <div className="mb-1 flex items-baseline justify-between">
-        <h1 className="text-[26px] tracking-[-.02em]">Campaigns</h1>
+    <div className="max-w-[1100px] px-4 py-5 sm:px-8 sm:py-7">
+      <div className="mb-1 flex flex-wrap items-baseline justify-between gap-2">
+        <h1 className="text-[22px] tracking-[-.02em] sm:text-[26px]">Campaigns</h1>
         <button onClick={() => setShowNew(true)} className="cursor-pointer rounded-lg bg-accent px-4 py-2 text-[12.5px] font-semibold text-canvas">
-          New campaign
+          + New campaign
         </button>
       </div>
       <div className="mb-[18px] text-[13px] text-white/50">
         {subscriberCount.toLocaleString()} subscribers · avg open rate {avgOpen}%
       </div>
 
-      <div className="grid grid-cols-[1.5fr_1fr] items-start gap-3.5">
+      <div className="grid grid-cols-1 items-start gap-3.5 lg:grid-cols-[1.5fr_1fr]">
         <div className="flex flex-col gap-3.5">
-          <div className="overflow-hidden rounded-card border border-border bg-surface">
+          <div className="overflow-x-auto rounded-card border border-border bg-surface">
+            <div className="min-w-[480px]">
             <div className="border-b border-border px-[18px] py-3.5 text-[14.5px] font-semibold">Recent sends</div>
             {campaigns.map((c) => (
               <div key={c.id} className="grid grid-cols-[2fr_1fr_1fr_1fr] items-center gap-2.5 border-b border-white/[.05] px-[18px] py-3 hover:bg-white/[.03]">
@@ -79,6 +80,7 @@ export function CampaignsView({
               </div>
             ))}
             {campaigns.length === 0 && <div className="px-[18px] py-7 text-center text-[13px] text-white/40">No campaigns sent yet.</div>}
+            </div>
           </div>
 
           {aiUnlocked ? (

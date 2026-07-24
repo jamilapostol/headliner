@@ -27,10 +27,10 @@ export default async function MerchPage() {
   }));
 
   return (
-    <div className="max-w-[1150px] px-8 py-7">
+    <div className="max-w-[1150px] px-4 py-5 sm:px-8 sm:py-7">
       <MerchTable items={dtos} />
 
-      <div className="mt-3.5 grid grid-cols-2 gap-3.5">
+      <div className="mt-3.5 grid grid-cols-1 gap-3.5 sm:grid-cols-2">
         <div className="rounded-card border border-border bg-surface px-5 py-[18px]">
           <div className="mb-3.5 text-[14.5px] font-semibold">Merch in van, by upcoming show</div>
           <div className="flex flex-col gap-2.5">

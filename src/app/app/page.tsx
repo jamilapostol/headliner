@@ -53,9 +53,9 @@ export default async function DashboardPage() {
   ];
 
   return (
-    <div className="max-w-[1200px] px-8 py-7">
-      <div className="mb-1.5 flex items-baseline justify-between">
-        <h1 className="text-[26px] tracking-[-.02em]">Good morning, {user.name.split(" ")[0]}</h1>
+    <div className="max-w-[1200px] px-4 py-5 sm:px-8 sm:py-7">
+      <div className="mb-1.5 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+        <h1 className="text-[22px] tracking-[-.02em] sm:text-[26px]">Good morning, {user.name.split(" ")[0]}</h1>
         <div className="font-mono text-[12px] text-white/45">
           {now.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" })}
         </div>
@@ -73,7 +73,7 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      <div className="mb-[22px] grid grid-cols-4 gap-3.5">
+      <div className="mb-[22px] grid grid-cols-2 gap-3.5 lg:grid-cols-4">
         {stats.map((s) => (
           <div key={s.label} className="rounded-card border border-border bg-surface px-[18px] py-4">
             <div className="mb-2 font-mono text-[10.5px] tracking-[.1em] text-white/45">{s.label}</div>
@@ -83,7 +83,7 @@ export default async function DashboardPage() {
         ))}
       </div>
 
-      <div className="grid grid-cols-[1.5fr_1fr] gap-3.5">
+      <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-[1.5fr_1fr]">
         <div className="rounded-card border border-border bg-surface px-5 py-[18px]">
           <div className="mb-3.5 flex items-center justify-between">
             <div className="text-[14.5px] font-semibold">Upcoming shows</div>

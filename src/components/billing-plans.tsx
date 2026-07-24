@@ -49,7 +49,7 @@ export function BillingPlans({ currentPlan, stripeEnabled }: { currentPlan: stri
         </div>
       </div>
 
-      <div className="grid grid-cols-4 items-stretch gap-3.5">
+      <div className="grid grid-cols-1 items-stretch gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
         {TIERS.map((t) => {
           const isCurrent = t.key === currentPlan;
           return (

@@ -25,9 +25,9 @@ export function MerchTable({ items }: { items: MerchItemDTO[] }) {
 
   return (
     <div>
-      <div className="mb-1 flex items-baseline justify-between">
-        <h1 className="text-[26px] tracking-[-.02em]">Merchandise</h1>
-        <div className="flex items-center gap-3">
+      <div className="mb-1 flex flex-wrap items-baseline justify-between gap-2">
+        <h1 className="text-[22px] tracking-[-.02em] sm:text-[26px]">Merchandise</h1>
+        <div className="flex flex-wrap items-center gap-3">
           <div className="font-mono text-[12px] text-white/45">
             {totalUnits} units in van · {money(retailValue)} retail
           </div>
@@ -38,7 +38,8 @@ export function MerchTable({ items }: { items: MerchItemDTO[] }) {
       </div>
       <div className="mb-[18px] text-[13px] text-white/50">Inventory travels with the tour — adjust counts after each settle-up.</div>
 
-      <div className="overflow-hidden rounded-card border border-border bg-surface">
+      <div className="overflow-x-auto rounded-card border border-border bg-surface">
+        <div className="min-w-[560px]">
         <div className="grid grid-cols-[1.8fr_.8fr_.8fr_1.1fr_1fr] gap-2.5 border-b border-border px-[18px] py-[11px] font-mono text-[10.5px] tracking-[.1em] text-white/40">
           <div>ITEM</div>
           <div>PRICE</div>
@@ -89,6 +90,7 @@ export function MerchTable({ items }: { items: MerchItemDTO[] }) {
           );
         })}
         {items.length === 0 && <div className="px-[18px] py-7 text-center text-[13px] text-white/40">No merch items yet.</div>}
+        </div>
       </div>
 
       {showNew && (

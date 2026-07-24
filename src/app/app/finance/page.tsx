@@ -35,14 +35,14 @@ export default async function FinancePage() {
   ];
 
   return (
-    <div className="max-w-[1100px] px-8 py-7">
-      <div className="mb-1 flex items-baseline justify-between">
-        <h1 className="text-[26px] tracking-[-.02em]">Finance</h1>
+    <div className="max-w-[1100px] px-4 py-5 sm:px-8 sm:py-7">
+      <div className="mb-1 flex flex-wrap items-baseline justify-between gap-2">
+        <h1 className="text-[22px] tracking-[-.02em] sm:text-[26px]">Finance</h1>
         <NewTransactionForm />
       </div>
       <div className="mb-5 text-[13px] text-white/50">{year} year to date</div>
 
-      <div className="grid grid-cols-[1.4fr_1fr] items-start gap-3.5">
+      <div className="grid grid-cols-1 items-start gap-3.5 lg:grid-cols-[1.4fr_1fr]">
         <div className="rounded-card border border-border bg-surface px-5 py-[18px]">
           <div className="mb-4 text-[14.5px] font-semibold">Revenue by source</div>
           <div className="flex flex-col gap-3.5">

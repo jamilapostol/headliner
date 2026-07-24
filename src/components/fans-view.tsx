@@ -31,10 +31,10 @@ export function FansView({ fans, plan }: { fans: FanDTO[]; plan: string }) {
   const patronCount = fans.filter((f) => f.tier === "Patron").length;
 
   return (
-    <div className="max-w-[1100px] px-8 py-7">
-      <div className="mb-1 flex items-baseline justify-between">
-        <h1 className="text-[26px] tracking-[-.02em]">Fans</h1>
-        <div className="flex items-center gap-3">
+    <div className="max-w-[1100px] px-4 py-5 sm:px-8 sm:py-7">
+      <div className="mb-1 flex flex-wrap items-baseline justify-between gap-2">
+        <h1 className="text-[22px] tracking-[-.02em] sm:text-[26px]">Fans</h1>
+        <div className="flex flex-wrap items-center gap-3">
           <div className="font-mono text-[12px] text-white/45">
             {fans.length} supporters tracked · {vipCount} VIP · {patronCount} patrons
           </div>
@@ -62,38 +62,40 @@ export function FansView({ fans, plan }: { fans: FanDTO[]; plan: string }) {
         ))}
       </div>
 
-      <div className="overflow-hidden rounded-card border border-border bg-surface">
-        <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1.1fr] gap-3 border-b border-border px-[18px] py-[11px] font-mono text-[10.5px] tracking-[.1em] text-white/40">
-          <div>FAN</div>
-          <div>LIFETIME SPEND</div>
-          <div>SHOWS</div>
-          <div>LAST SEEN</div>
-          <div>NOTES</div>
-        </div>
-        {filtered.map((f, i) => {
-          const initials = f.name.split(" ").map((w) => w[0]).join("");
-          return (
-            <div key={f.id} className="grid grid-cols-[2fr_1fr_1fr_1fr_1.1fr] items-center gap-3 border-b border-white/[.05] px-[18px] py-3 hover:bg-white/[.03]">
-              <div className="flex items-center gap-2.5">
-                <div className="grid h-7 w-7 flex-none place-items-center rounded-full text-[11px] font-bold text-canvas" style={{ background: AVATAR_COLORS[i % AVATAR_COLORS.length] }}>
-                  {initials}
-                </div>
-                <div>
-                  <div className="text-[13px] font-semibold">{f.name}</div>
-                  <div className="text-[11px]" style={{ color: f.tier === "VIP" ? "#e8e43f" : "rgba(233,236,232,.45)" }}>
-                    {f.tier}
-                    {f.tierNote ? ` · ${f.tierNote}` : ""}
+      <div className="overflow-x-auto rounded-card border border-border bg-surface">
+        <div className="min-w-[640px]">
+          <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1.1fr] gap-3 border-b border-border px-[18px] py-[11px] font-mono text-[10.5px] tracking-[.1em] text-white/40">
+            <div>FAN</div>
+            <div>LIFETIME SPEND</div>
+            <div>SHOWS</div>
+            <div>LAST SEEN</div>
+            <div>NOTES</div>
+          </div>
+          {filtered.map((f, i) => {
+            const initials = f.name.split(" ").map((w) => w[0]).join("");
+            return (
+              <div key={f.id} className="grid grid-cols-[2fr_1fr_1fr_1fr_1.1fr] items-center gap-3 border-b border-white/[.05] px-[18px] py-3 hover:bg-white/[.03]">
+                <div className="flex items-center gap-2.5">
+                  <div className="grid h-7 w-7 flex-none place-items-center rounded-full text-[11px] font-bold text-canvas" style={{ background: AVATAR_COLORS[i % AVATAR_COLORS.length] }}>
+                    {initials}
+                  </div>
+                  <div>
+                    <div className="text-[13px] font-semibold">{f.name}</div>
+                    <div className="text-[11px]" style={{ color: f.tier === "VIP" ? "#e8e43f" : "rgba(233,236,232,.45)" }}>
+                      {f.tier}
+                      {f.tierNote ? ` · ${f.tierNote}` : ""}
+                    </div>
                   </div>
                 </div>
+                <div className="font-mono text-[12.5px] text-accent">{money(f.lifetimeSpend)}</div>
+                <div className="font-mono text-[12.5px]">{f.showsAttended}</div>
+                <div className="text-[12px] text-white/60">{f.lastSeenLabel ?? "—"}</div>
+                <div className="text-[11.5px] text-white/45">{f.notes}</div>
               </div>
-              <div className="font-mono text-[12.5px] text-accent">{money(f.lifetimeSpend)}</div>
-              <div className="font-mono text-[12.5px]">{f.showsAttended}</div>
-              <div className="text-[12px] text-white/60">{f.lastSeenLabel ?? "—"}</div>
-              <div className="text-[11.5px] text-white/45">{f.notes}</div>
-            </div>
-          );
-        })}
-        {filtered.length === 0 && <div className="px-[18px] py-7 text-center text-[13px] text-white/40">No fans in this tier yet.</div>}
+            );
+          })}
+          {filtered.length === 0 && <div className="px-[18px] py-7 text-center text-[13px] text-white/40">No fans in this tier yet.</div>}
+        </div>
       </div>
 
       {aiUnlocked ? (

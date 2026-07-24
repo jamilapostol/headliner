@@ -36,12 +36,13 @@ export function ContractsView({ contracts, plan }: { contracts: ContractDTO[]; p
   const renewals = contracts.filter((c) => c.renewsAt).sort((a, b) => new Date(a.renewsAt!).getTime() - new Date(b.renewsAt!).getTime());
 
   return (
-    <div className="max-w-[1100px] px-8 py-7">
-      <h1 className="mb-1 text-[26px] tracking-[-.02em]">Contracts</h1>
+    <div className="max-w-[1100px] px-4 py-5 sm:px-8 sm:py-7">
+      <h1 className="mb-1 text-[22px] tracking-[-.02em] sm:text-[26px]">Contracts</h1>
       <div className="mb-[18px] text-[13px] text-white/50">Agreements, riders and renewals.</div>
 
-      <div className="grid grid-cols-[1.6fr_1fr] items-start gap-3.5">
-        <div className="overflow-hidden rounded-card border border-border bg-surface">
+      <div className="grid grid-cols-1 items-start gap-3.5 lg:grid-cols-[1.6fr_1fr]">
+        <div className="overflow-x-auto rounded-card border border-border bg-surface">
+          <div className="min-w-[520px]">
           <div className="grid grid-cols-[2fr_1fr_1fr_1fr] gap-3 border-b border-border px-[18px] py-[11px] font-mono text-[10.5px] tracking-[.1em] text-white/40">
             <div>AGREEMENT</div>
             <div>COUNTERPARTY</div>
@@ -73,6 +74,7 @@ export function ContractsView({ contracts, plan }: { contracts: ContractDTO[]; p
             );
           })}
           {contracts.length === 0 && <div className="px-[18px] py-7 text-center text-[13px] text-white/40">No contracts yet.</div>}
+          </div>
         </div>
 
         <div className="flex flex-col gap-3.5">
