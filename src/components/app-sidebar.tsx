@@ -45,7 +45,14 @@ export function AppSidebar({ userName, plan }: { userName: string; plan: string 
           );
         })}
       </div>
-      <div className="mt-auto flex items-center gap-2.5 border-t border-border p-3.5">
+      <Link
+        href="/mobile"
+        className="mx-3 mt-auto flex items-center gap-2.5 rounded-lg px-3 py-[9px] text-[12.5px] font-medium text-white/60 hover:bg-white/5"
+      >
+        <span className="w-4 font-mono text-[11px] opacity-70">▤</span>
+        Show-day view
+      </Link>
+      <div className="flex items-center gap-2.5 border-t border-border p-3.5">
         <div className="grid h-8 w-8 place-items-center rounded-full bg-yellow text-[13px] font-bold text-canvas">{initials}</div>
         <div className="min-w-0 flex-1">
           <div className="truncate text-[13px] font-semibold">{userName}</div>

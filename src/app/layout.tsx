@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Spline_Sans_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -17,6 +17,21 @@ const splineMono = Spline_Sans_Mono({
 export const metadata: Metadata = {
   title: "HEADLINER",
   description: "Your whole career. One cockpit.",
+  manifest: "/manifest.json",
+  icons: {
+    icon: "/icon-512.png",
+    apple: "/apple-touch-icon.png",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "HEADLINER",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0d110e",
+  viewportFit: "cover",
 };
 
 export default function RootLayout({

@@ -147,7 +147,9 @@ model TourStop {
   seq        Int
   driveMiles Int?
   hotel      String?
+  hotelConfNo String?
   merchNote  String?
+  perDiemCents Int? // daily per diem budget, in cents
   schedule   String // JSON-encoded array of { time, what, who }
 
   tour    Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)

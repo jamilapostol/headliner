@@ -111,14 +111,14 @@ async function main() {
 
   const tourStopsData: Array<{
     date: Date; venue: string; city: string; fee: number; driveMiles: number | null;
-    hotel: string; merchNote: string;
+    hotel: string; hotelConfNo: string; merchNote: string; perDiemCents: number;
   }> = [
-    { date: new Date("2026-07-24T12:00:00Z"), venue: "Fox Cabaret", city: "Vancouver, BC", fee: 160000, driveMiles: null, hotel: "The Burrard, 2 nights", merchNote: "84 units · $1.9k retail" },
-    { date: new Date("2026-07-26T12:00:00Z"), venue: "Tractor Tavern", city: "Seattle, WA", fee: 180000, driveMiles: 141, hotel: "Ace Hotel Seattle", merchNote: "78 units · $1.7k retail" },
-    { date: new Date("2026-07-28T12:00:00Z"), venue: "Neurolux", city: "Boise, ID", fee: 120000, driveMiles: 496, hotel: "Modern Hotel", merchNote: "71 units · $1.6k retail" },
-    { date: new Date("2026-07-30T12:00:00Z"), venue: "Kilby Court", city: "Salt Lake City, UT", fee: 140000, driveMiles: 340, hotel: "Peery Hotel", merchNote: "65 units · $1.4k retail" },
-    { date: new Date("2026-08-01T12:00:00Z"), venue: "Lost Lake", city: "Denver, CO", fee: 170000, driveMiles: 520, hotel: "Airbnb — Capitol Hill", merchNote: "58 units · $1.3k retail" },
-    { date: new Date("2026-08-04T12:00:00Z"), venue: "recordBar", city: "Kansas City, MO", fee: 150000, driveMiles: 600, hotel: "Hotel Kansas City", merchNote: "52 units · $1.1k retail" },
+    { date: new Date("2026-07-24T12:00:00Z"), venue: "Fox Cabaret", city: "Vancouver, BC", fee: 160000, driveMiles: null, hotel: "The Burrard, 2 nights", hotelConfNo: "88213", merchNote: "84 units · $1.9k retail", perDiemCents: 4500 },
+    { date: new Date("2026-07-26T12:00:00Z"), venue: "Tractor Tavern", city: "Seattle, WA", fee: 180000, driveMiles: 141, hotel: "Ace Hotel Seattle", hotelConfNo: "40217", merchNote: "78 units · $1.7k retail", perDiemCents: 4500 },
+    { date: new Date("2026-07-28T12:00:00Z"), venue: "Neurolux", city: "Boise, ID", fee: 120000, driveMiles: 496, hotel: "Modern Hotel", hotelConfNo: "91847", merchNote: "71 units · $1.6k retail", perDiemCents: 4000 },
+    { date: new Date("2026-07-30T12:00:00Z"), venue: "Kilby Court", city: "Salt Lake City, UT", fee: 140000, driveMiles: 340, hotel: "Peery Hotel", hotelConfNo: "55692", merchNote: "65 units · $1.4k retail", perDiemCents: 4000 },
+    { date: new Date("2026-08-01T12:00:00Z"), venue: "Lost Lake", city: "Denver, CO", fee: 170000, driveMiles: 520, hotel: "Airbnb — Capitol Hill", hotelConfNo: "AB-3391", merchNote: "58 units · $1.3k retail", perDiemCents: 4500 },
+    { date: new Date("2026-08-04T12:00:00Z"), venue: "recordBar", city: "Kansas City, MO", fee: 150000, driveMiles: 600, hotel: "Hotel Kansas City", hotelConfNo: "20558", merchNote: "52 units · $1.1k retail", perDiemCents: 4000 },
   ];
   const daySchedule = [
     { time: "14:00", what: "Load-in", who: "Mara + venue crew" },
@@ -157,7 +157,9 @@ async function main() {
         seq: i,
         driveMiles: s.driveMiles,
         hotel: s.hotel,
+        hotelConfNo: s.hotelConfNo,
         merchNote: s.merchNote,
+        perDiemCents: s.perDiemCents,
         schedule: JSON.stringify(daySchedule),
       },
     });
