@@ -82,14 +82,14 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen">
       {/* Nav */}
-      <div className="mx-auto flex max-w-[1100px] items-center gap-7 px-10 py-[18px]">
+      <div className="mx-auto flex max-w-[1100px] items-center gap-4 px-4 py-[18px] sm:gap-7 sm:px-10">
         <div className="flex items-center gap-2.5">
           <Image src="/logo.svg" alt="HEADLINER" width={28} height={28} />
           <div className="text-[15px] font-bold">HEADLINER</div>
         </div>
-        <div className="ml-auto flex items-center gap-5 text-[13px] text-white/60">
-          <span className="cursor-pointer hover:text-text">Features</span>
-          <span className="cursor-pointer hover:text-text">Pricing</span>
+        <div className="ml-auto flex items-center gap-3 text-[13px] text-white/60 sm:gap-5">
+          <span className="hidden cursor-pointer hover:text-text sm:inline">Features</span>
+          <span className="hidden cursor-pointer hover:text-text sm:inline">Pricing</span>
           <Link href="/app" className="rounded-lg bg-accent px-4 py-2 font-semibold text-canvas">
             Open the app
           </Link>
@@ -97,20 +97,20 @@ export default function LandingPage() {
       </div>
 
       {/* Hero */}
-      <div className="mx-auto max-w-[820px] px-10 pt-[72px] pb-14 text-center">
+      <div className="mx-auto max-w-[820px] px-4 pt-12 pb-14 text-center sm:px-10 sm:pt-[72px]">
         <div className="mb-[22px] inline-block rounded-[20px] border border-yellow/30 px-3.5 py-[5px] font-mono text-[11px] tracking-[.14em] text-yellow">
           FOR INDEPENDENT TOURING MUSICIANS
         </div>
-        <h1 className="mb-[18px] text-[52px] leading-[1.08] tracking-[-.03em] text-balance">
+        <h1 className="mb-[18px] text-[34px] leading-[1.1] tracking-[-.03em] text-balance sm:text-[52px] sm:leading-[1.08]">
           Your whole career.
           <br />
           One <span className="text-accent">cockpit</span>.
         </h1>
-        <p className="mx-auto mb-[30px] max-w-[560px] text-[17px] leading-[1.55] text-white/60 text-pretty">
+        <p className="mx-auto mb-[30px] max-w-[560px] text-[15px] leading-[1.55] text-white/60 text-pretty sm:text-[17px]">
           Bookings, tours, merch, fans and money — the operating system for artists who run their career without a
           label. Retire the spreadsheets.
         </p>
-        <div className="flex justify-center gap-3">
+        <div className="flex flex-col justify-center gap-3 sm:flex-row">
           <Link href="/signup" className="rounded-[10px] bg-accent px-[26px] py-[13px] text-[15px] font-semibold text-canvas">
             Start free
           </Link>
@@ -122,7 +122,7 @@ export default function LandingPage() {
       </div>
 
       {/* Retires strip */}
-      <div className="mx-auto max-w-[900px] px-10 pb-16 text-center">
+      <div className="mx-auto max-w-[900px] px-4 pb-16 text-center sm:px-10">
         <div className="mb-3.5 font-mono text-[11px] tracking-[.14em] text-white/35">RETIRES</div>
         <div className="flex flex-wrap justify-center gap-2.5">
           {REPLACES.map((r) => (
@@ -137,8 +137,8 @@ export default function LandingPage() {
       </div>
 
       {/* Features */}
-      <div className="mx-auto max-w-[1100px] px-10 pb-[72px]">
-        <div className="grid grid-cols-3 gap-3.5">
+      <div className="mx-auto max-w-[1100px] px-4 pb-[72px] sm:px-10">
+        <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map((f) => (
             <div key={f.title} className="rounded-tile border border-border bg-surface px-6 py-[22px]">
               <div className={`mb-3 font-mono text-[15px] ${f.color}`}>{f.glyph}</div>
@@ -150,8 +150,8 @@ export default function LandingPage() {
       </div>
 
       {/* Pricing */}
-      <div className="mx-auto max-w-[1100px] px-10 pb-10">
-        <h2 className="mb-1.5 text-center text-[32px] tracking-[-.02em]">Priced for how you tour</h2>
+      <div className="mx-auto max-w-[1100px] px-4 pb-10 sm:px-10">
+        <h2 className="mb-1.5 text-center text-[24px] tracking-[-.02em] sm:text-[32px]">Priced for how you tour</h2>
         <div className="mb-3 text-center text-[14px] text-white/55">Monthly, cancel anytime. Two months free on annual.</div>
         <div className="mb-[30px] flex justify-center">
           <div className="flex gap-1 rounded-[10px] border border-white/10 bg-surface p-1">
@@ -171,7 +171,7 @@ export default function LandingPage() {
             </button>
           </div>
         </div>
-        <div className="grid grid-cols-4 items-stretch gap-3.5">
+        <div className="grid grid-cols-1 items-stretch gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
           {tiers(annual).map((t) => (
             <div
               key={t.name}
@@ -217,33 +217,35 @@ export default function LandingPage() {
       </div>
 
       {/* Feature matrix */}
-      <div className="mx-auto max-w-[900px] px-10 pt-6 pb-[72px]">
-        <div className="overflow-hidden rounded-tile border border-border bg-surface">
-          <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr] border-b border-white/[.08] px-5 py-3 font-mono text-[10.5px] tracking-[.1em] text-white/45">
-            <div>FEATURE</div>
-            <div className="text-center">FREE</div>
-            <div className="text-center">PRO</div>
-            <div className="text-center text-yellow">TOURING</div>
-            <div className="text-center">TEAM</div>
-          </div>
-          {MATRIX.map(([name, v1, v2, v3, v4]) => (
-            <div
-              key={name}
-              className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr] items-center border-b border-white/[.04] px-5 py-[10px] text-[12.5px]"
-            >
-              <div className="text-white/80">{name}</div>
-              <div className={`text-center font-mono text-[11.5px] ${matrixColor(v1, false)}`}>{v1}</div>
-              <div className={`text-center font-mono text-[11.5px] ${matrixColor(v2, false)}`}>{v2}</div>
-              <div className={`text-center font-mono text-[11.5px] ${matrixColor(v3, true)}`}>{v3}</div>
-              <div className={`text-center font-mono text-[11.5px] ${matrixColor(v4, false)}`}>{v4}</div>
+      <div className="mx-auto max-w-[900px] px-4 pt-6 pb-[72px] sm:px-10">
+        <div className="overflow-x-auto rounded-tile border border-border bg-surface">
+          <div className="min-w-[560px]">
+            <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr] border-b border-white/[.08] px-5 py-3 font-mono text-[10.5px] tracking-[.1em] text-white/45">
+              <div>FEATURE</div>
+              <div className="text-center">FREE</div>
+              <div className="text-center">PRO</div>
+              <div className="text-center text-yellow">TOURING</div>
+              <div className="text-center">TEAM</div>
             </div>
-          ))}
+            {MATRIX.map(([name, v1, v2, v3, v4]) => (
+              <div
+                key={name}
+                className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr] items-center border-b border-white/[.04] px-5 py-[10px] text-[12.5px]"
+              >
+                <div className="text-white/80">{name}</div>
+                <div className={`text-center font-mono text-[11.5px] ${matrixColor(v1, false)}`}>{v1}</div>
+                <div className={`text-center font-mono text-[11.5px] ${matrixColor(v2, false)}`}>{v2}</div>
+                <div className={`text-center font-mono text-[11.5px] ${matrixColor(v3, true)}`}>{v3}</div>
+                <div className={`text-center font-mono text-[11.5px] ${matrixColor(v4, false)}`}>{v4}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Footer CTA */}
-      <div className="border-t border-border px-10 py-14 text-center">
-        <h2 className="mb-2.5 text-[28px] tracking-[-.02em]">The van is packed. Is your business?</h2>
+      <div className="border-t border-border px-4 py-14 text-center sm:px-10">
+        <h2 className="mb-2.5 text-[22px] tracking-[-.02em] sm:text-[28px]">The van is packed. Is your business?</h2>
         <div className="mb-6 text-[14px] text-white/55">Set up your first tour in under ten minutes.</div>
         <Link href="/signup" className="inline-block rounded-[10px] bg-accent px-7 py-[13px] text-[15px] font-semibold text-canvas">
           Start free
