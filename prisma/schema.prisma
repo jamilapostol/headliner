@@ -122,10 +122,12 @@ model Booking {
   venue       String
   city        String
   date        DateTime
+  endDate     DateTime? // null for a single-day booking
   stage       BookingStage @default(Lead)
   fee         Int          @default(0) // cents
   deposit     Int          @default(0) // cents
-  promoter    String?
+  contactName String?
+  contactPhone String?
   notes       String?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt

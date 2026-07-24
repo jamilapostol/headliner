@@ -33,18 +33,25 @@ export default async function CalendarPage({
   // Pad by a day on each side: booking dates are stored at UTC midnight, so
   // in negative-offset timezones a local grid boundary can fall a few hours
   // after that UTC instant and miss the row without this padding.
+  const gridStartPadded = new Date(gridStart.getTime() - 86400000);
+  const gridEndPadded = new Date(gridEnd.getTime() + 86400000);
   const bookings = await db.booking.findMany({
     where: {
       workspaceId: workspace.id,
-      date: { gte: new Date(gridStart.getTime() - 86400000), lte: new Date(gridEnd.getTime() + 86400000) },
+      date: { lte: gridEndPadded },
+      OR: [{ endDate: null, date: { gte: gridStartPadded } }, { endDate: { gte: gridStartPadded } }],
     },
     orderBy: { date: "asc" },
   });
 
   const byDay = new Map<string, typeof bookings>();
   for (const b of bookings) {
-    const key = format(calendarDay(b.date), "yyyy-MM-dd");
-    byDay.set(key, [...(byDay.get(key) ?? []), b]);
+    const start = calendarDay(b.date);
+    const end = b.endDate ? calendarDay(b.endDate) : start;
+    for (const d of eachDayOfInterval({ start, end })) {
+      const key = format(d, "yyyy-MM-dd");
+      byDay.set(key, [...(byDay.get(key) ?? []), b]);
+    }
   }
 
   const prev = subMonths(anchor, 1);

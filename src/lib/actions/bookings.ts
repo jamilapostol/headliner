@@ -28,10 +28,14 @@ export async function createBooking(formData: FormData) {
   const venue = String(formData.get("venue") ?? "").trim();
   const city = String(formData.get("city") ?? "").trim();
   const date = String(formData.get("date") ?? "");
+  const endDateRaw = String(formData.get("endDate") ?? "").trim();
   const fee = Number(formData.get("fee") ?? 0);
-  const promoter = String(formData.get("promoter") ?? "").trim();
+  const contactName = String(formData.get("contactName") ?? "").trim();
+  const contactPhone = String(formData.get("contactPhone") ?? "").trim();
 
   if (!venue || !city || !date) return;
+
+  const endDate = endDateRaw && endDateRaw >= date ? new Date(endDateRaw) : null;
 
   await db.booking.create({
     data: {
@@ -39,8 +43,10 @@ export async function createBooking(formData: FormData) {
       venue,
       city,
       date: new Date(date),
+      endDate,
       fee: Math.round(fee * 100),
-      promoter,
+      contactName,
+      contactPhone,
       stage: "Lead",
     },
   });

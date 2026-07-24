@@ -14,8 +14,10 @@ export default async function BookingsPage() {
     venue: b.venue,
     city: b.city,
     date: b.date.toISOString(),
+    endDate: b.endDate ? b.endDate.toISOString() : null,
     fee: b.fee,
-    promoter: b.promoter,
+    contactName: b.contactName,
+    contactPhone: b.contactPhone,
     stage: b.stage,
   }));
 

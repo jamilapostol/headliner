@@ -58,18 +58,18 @@ async function main() {
   console.log(`Seeded ${contacts.count} contacts`);
 
   const bookings: Array<{
-    venue: string; city: string; date: Date; fee: number; promoter: string;
+    venue: string; city: string; date: Date; fee: number; contactName: string; contactPhone?: string;
     stage: "Lead" | "Contacted" | "Negotiating" | "Offer_Sent" | "Confirmed" | "Paid";
   }> = [
-    { venue: "The Bluebird", city: "Denver, CO", date: new Date("2026-09-12"), fee: 180000, promoter: "J. Reyes", stage: "Contacted" },
-    { venue: "Mississippi Studios", city: "Portland, OR", date: new Date("2026-09-19"), fee: 220000, promoter: "K. Tran", stage: "Lead" },
-    { venue: "The Chapel", city: "San Francisco, CA", date: new Date("2026-09-22"), fee: 260000, promoter: "A. Whitfield", stage: "Negotiating" },
-    { venue: "Pappy & Harriet's", city: "Pioneertown, CA", date: new Date("2026-09-25"), fee: 200000, promoter: "D. Marsh", stage: "Offer_Sent" },
-    { venue: "Valley Bar", city: "Phoenix, AZ", date: new Date("2026-09-27"), fee: 150000, promoter: "S. Ortega", stage: "Lead" },
-    { venue: "The Mothlight", city: "Asheville, NC", date: new Date("2026-10-08"), fee: 170000, promoter: "R. Boone", stage: "Confirmed" },
-    { venue: "Eddie's Attic", city: "Decatur, GA", date: new Date("2026-10-10"), fee: 190000, promoter: "M. Klein", stage: "Confirmed" },
-    { venue: "Cactus Cafe", city: "Austin, TX", date: new Date("2026-10-14"), fee: 160000, promoter: "P. Nguyen", stage: "Paid" },
-    { venue: "Off Broadway", city: "St. Louis, MO", date: new Date("2026-10-17"), fee: 140000, promoter: "T. Abara", stage: "Negotiating" },
+    { venue: "The Bluebird", city: "Denver, CO", date: new Date("2026-09-12"), fee: 180000, contactName: "J. Reyes", contactPhone: "(303) 555-0142", stage: "Contacted" },
+    { venue: "Mississippi Studios", city: "Portland, OR", date: new Date("2026-09-19"), fee: 220000, contactName: "K. Tran", stage: "Lead" },
+    { venue: "The Chapel", city: "San Francisco, CA", date: new Date("2026-09-22"), fee: 260000, contactName: "A. Whitfield", stage: "Negotiating" },
+    { venue: "Pappy & Harriet's", city: "Pioneertown, CA", date: new Date("2026-09-25"), fee: 200000, contactName: "D. Marsh", stage: "Offer_Sent" },
+    { venue: "Valley Bar", city: "Phoenix, AZ", date: new Date("2026-09-27"), fee: 150000, contactName: "S. Ortega", stage: "Lead" },
+    { venue: "The Mothlight", city: "Asheville, NC", date: new Date("2026-10-08"), fee: 170000, contactName: "R. Boone", contactPhone: "(828) 555-0187", stage: "Confirmed" },
+    { venue: "Eddie's Attic", city: "Decatur, GA", date: new Date("2026-10-10"), fee: 190000, contactName: "M. Klein", stage: "Confirmed" },
+    { venue: "Cactus Cafe", city: "Austin, TX", date: new Date("2026-10-14"), fee: 160000, contactName: "P. Nguyen", stage: "Paid" },
+    { venue: "Off Broadway", city: "St. Louis, MO", date: new Date("2026-10-17"), fee: 140000, contactName: "T. Abara", stage: "Negotiating" },
   ];
   for (const b of bookings) {
     await db.booking.create({ data: { ...b, workspaceId: workspace.id } });

@@ -11,8 +11,10 @@ export type BookingDTO = {
   venue: string;
   city: string;
   date: string;
+  endDate: string | null;
   fee: number;
-  promoter: string | null;
+  contactName: string | null;
+  contactPhone: string | null;
   stage: Stage;
 };
 
@@ -29,8 +31,14 @@ function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "2-digit", timeZone: "UTC" });
 }
 
+function fmtDateRange(date: string, endDate: string | null) {
+  if (!endDate) return fmtDate(date);
+  return `${fmtDate(date)}–${fmtDate(endDate)}`;
+}
+
 export function BookingsBoard({ bookings, plan, artistName }: { bookings: BookingDTO[]; plan: string; artistName: string }) {
   const [dragId, setDragId] = useState<string | null>(null);
+  const [dragOverStage, setDragOverStage] = useState<Stage | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
   const [showNew, setShowNew] = useState(false);
   const [draft, setDraft] = useState<{ bookingId: string; text: string } | null>(null);
@@ -45,6 +53,11 @@ export function BookingsBoard({ bookings, plan, artistName }: { bookings: Bookin
       startTransition(() => updateBookingStage(dragId, stage));
       setDragId(null);
     }
+    setDragOverStage(null);
+  }
+
+  function moveStage(bookingId: string, stage: Stage) {
+    startTransition(() => updateBookingStage(bookingId, stage));
   }
 
   const checklist = open
@@ -68,18 +81,26 @@ export function BookingsBoard({ bookings, plan, artistName }: { bookings: Bookin
           + New booking
         </button>
       </div>
-      <div className="mb-[18px] text-[13px] text-white/50">Drag cards between stages, or click one to open details.</div>
+      <div className="mb-[18px] text-[13px] text-white/50">Drag cards between stages, or click one to open details and move it from there.</div>
 
       <div className="flex flex-1 items-start gap-3 overflow-x-auto pb-3">
         {STAGES.map((stage) => {
           const cards = bookings.filter((b) => b.stage === stage.key);
+          const isDragTarget = dragOverStage === stage.key && dragId;
           return (
             <div
               key={stage.key}
-              onDragOver={(e) => e.preventDefault()}
+              onDragOver={(e) => {
+                e.preventDefault();
+                if (dragOverStage !== stage.key) setDragOverStage(stage.key);
+              }}
+              onDragLeave={() => setDragOverStage((cur) => (cur === stage.key ? null : cur))}
               onDrop={() => drop(stage.key)}
-              className="min-h-[300px] w-[236px] flex-none rounded-card border border-white/[.06] p-3"
-              style={{ background: "#12181366" }}
+              className="min-h-[300px] w-[236px] flex-none rounded-card border p-3 transition-colors"
+              style={{
+                background: isDragTarget ? "rgba(63,232,122,.06)" : "#12181366",
+                borderColor: isDragTarget ? "rgba(63,232,122,.5)" : "rgba(255,255,255,.06)",
+              }}
             >
               <div className="mb-3 flex items-center gap-2 px-1">
                 <span className="h-[7px] w-[7px] rounded-full" style={{ background: stage.dot }} />
@@ -92,19 +113,24 @@ export function BookingsBoard({ bookings, plan, artistName }: { bookings: Bookin
                     key={c.id}
                     draggable
                     onDragStart={() => setDragId(c.id)}
+                    onDragEnd={() => {
+                      setDragId(null);
+                      setDragOverStage(null);
+                    }}
                     onClick={() => {
                       setOpenId(c.id);
                       setDraft(null);
                     }}
-                    className="cursor-grab rounded-[10px] border border-white/[.08] bg-surface-nested px-[13px] py-3 hover:border-accent/40"
+                    className="cursor-grab rounded-[10px] border border-white/[.08] bg-surface-nested px-[13px] py-3 transition-opacity hover:border-accent/40 active:cursor-grabbing"
+                    style={{ opacity: dragId === c.id ? 0.4 : 1 }}
                   >
                     <div className="mb-0.5 text-[13.5px] font-semibold">{c.venue}</div>
                     <div className="mb-2 text-[11.5px] text-white/50">
-                      {c.city} · {fmtDate(c.date)}
+                      {c.city} · {fmtDateRange(c.date, c.endDate)}
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="font-mono text-[12px] text-accent">{money(c.fee)}</span>
-                      <span className="text-[10.5px] text-white/40">{c.promoter}</span>
+                      <span className="text-[10.5px] text-white/40">{c.contactName}</span>
                     </div>
                   </div>
                 ))}
@@ -129,7 +155,7 @@ export function BookingsBoard({ bookings, plan, artistName }: { bookings: Bookin
             </button>
           </div>
           <div className="mb-4 text-[12.5px] text-white/50">
-            {open.city} · {fmtDate(open.date)} · {open.stage.replace("_", " ")}
+            {open.city} · {fmtDateRange(open.date, open.endDate)}
           </div>
           <div className="mb-[18px] grid grid-cols-2 gap-2.5">
             <div className="rounded-[10px] border border-white/[.08] bg-surface-nested p-3">
@@ -138,8 +164,23 @@ export function BookingsBoard({ bookings, plan, artistName }: { bookings: Bookin
             </div>
             <div className="rounded-[10px] border border-white/[.08] bg-surface-nested p-3">
               <div className="mb-1 font-mono text-[10px] text-white/45">CONTACT</div>
-              <div className="text-[13px] font-semibold leading-tight">{open.promoter || "—"}</div>
+              <div className="text-[13px] font-semibold leading-tight">{open.contactName || "—"}</div>
+              {open.contactPhone && <div className="mt-0.5 text-[11px] text-white/45">{open.contactPhone}</div>}
             </div>
+          </div>
+          <div className="mb-5">
+            <div className="mb-2 font-mono text-[10.5px] tracking-[.1em] text-white/40">STAGE</div>
+            <select
+              value={open.stage}
+              onChange={(e) => moveStage(open.id, e.target.value as Stage)}
+              className="w-full cursor-pointer rounded-[10px] border border-white/[.08] bg-surface-nested px-3 py-2.5 text-[13px] text-text outline-none focus:border-accent/50"
+            >
+              {STAGES.map((s) => (
+                <option key={s.key} value={s.key}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
           </div>
           <div className="mb-2 font-mono text-[10.5px] tracking-[.1em] text-white/40">CHECKLIST</div>
           <div className="mb-5 flex flex-col gap-[7px]">
@@ -169,7 +210,7 @@ export function BookingsBoard({ bookings, plan, artistName }: { bookings: Bookin
                       onClick={() =>
                         setDraft({
                           bookingId: open.id,
-                          text: draftFollowupEmail({ promoter: open.promoter, venue: open.venue, city: open.city, date: open.date, artistName }),
+                          text: draftFollowupEmail({ contactName: open.contactName, venue: open.venue, city: open.city, date: open.date, artistName }),
                         })
                       }
                       className="cursor-pointer rounded-lg border border-white/15 px-3 py-2 text-[12.5px] text-white/70"
@@ -183,7 +224,7 @@ export function BookingsBoard({ bookings, plan, artistName }: { bookings: Bookin
                   onClick={() =>
                     setDraft({
                       bookingId: open.id,
-                      text: draftFollowupEmail({ promoter: open.promoter, venue: open.venue, city: open.city, date: open.date, artistName }),
+                      text: draftFollowupEmail({ contactName: open.contactName, venue: open.venue, city: open.city, date: open.date, artistName }),
                     })
                   }
                   className="w-full cursor-pointer rounded-lg border border-accent/40 py-2.5 text-center text-[12.5px] font-semibold text-accent hover:bg-accent/10"

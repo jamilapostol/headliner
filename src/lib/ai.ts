@@ -7,12 +7,12 @@ export function planUnlocksAI(plan: string) {
   return plan === "touring" || plan === "team";
 }
 
-export function draftFollowupEmail(opts: { promoter: string | null; venue: string; city: string; date: string; artistName: string }) {
-  const promoter = opts.promoter || "there";
+export function draftFollowupEmail(opts: { contactName: string | null; venue: string; city: string; date: string; artistName: string }) {
+  const contactName = opts.contactName || "there";
   const cityShort = opts.city.split(",")[0];
   const dateLabel = new Date(opts.date).toLocaleDateString("en-US", { month: "long", day: "numeric", timeZone: "UTC" });
 
-  return `Hi ${promoter},
+  return `Hi ${contactName},
 
 Just circling back on the ${dateLabel} hold at ${opts.venue}. We're routing through ${cityShort} that week and would love to lock it in — happy to share updated numbers from this spring's run (avg 240 tickets in comparable rooms).
 
