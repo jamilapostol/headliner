@@ -12,7 +12,7 @@ const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
 
-const DEMO_EMAIL = "mara@headliner.demo";
+const DEMO_EMAIL = "jamil@headliner.demo";
 const DEMO_PASSWORD = "password123";
 
 async function main() {
@@ -246,7 +246,7 @@ async function main() {
   });
   console.log("Seeded 5 tasks");
 
-  console.log("\nDemo login: mara@headliner.demo / password123");
+  console.log("\nDemo login: jamil@headliner.demo / password123");
 }
 
 function daysAgo(n: number) {
