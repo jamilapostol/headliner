@@ -3,6 +3,8 @@
 import { useMemo, useState, useTransition } from "react";
 import { createContact, updateContact, importContacts } from "@/lib/actions/contacts";
 import { CsvImportModal, type CsvColumn } from "@/components/csv-import-modal";
+import { ExportCsvButton } from "@/components/export-csv-button";
+import { toCsv, downloadCsv } from "@/lib/csv-export";
 
 const CONTACT_CSV_COLUMNS: CsvColumn[] = [
   { key: "name", label: "Name", required: true },
@@ -55,6 +57,36 @@ export function ContactsTable({ contacts }: { contacts: ContactDTO[] }) {
   }, [contacts, query, cat]);
 
   const open = contacts.find((c) => c.id === openId) ?? null;
+
+  function exportCsv() {
+    const csv = toCsv(
+      filtered.map((c) => ({
+        name: c.name,
+        org: c.org ?? "",
+        role: c.role ?? "",
+        category: c.category,
+        city: c.city ?? "",
+        email: c.email ?? "",
+        phone: c.phone ?? "",
+        lastContactedAt: c.lastContactedAt ? new Date(c.lastContactedAt).toLocaleDateString("en-US") : "",
+        strength: c.strength,
+        notes: c.notes ?? "",
+      })),
+      [
+        { key: "name", label: "Name" },
+        { key: "org", label: "Organization" },
+        { key: "role", label: "Role" },
+        { key: "category", label: "Category" },
+        { key: "city", label: "City" },
+        { key: "email", label: "Email" },
+        { key: "phone", label: "Phone" },
+        { key: "lastContactedAt", label: "Last Contacted" },
+        { key: "strength", label: "Strength" },
+        { key: "notes", label: "Notes" },
+      ]
+    );
+    downloadCsv("contacts.csv", csv);
+  }
 
   return (
     <div className="mx-auto max-w-[1100px] px-4 py-5 sm:px-8 sm:py-7">
@@ -186,6 +218,7 @@ export function ContactsTable({ contacts }: { contacts: ContactDTO[] }) {
       )}
 
       {open && <ContactDrawer key={open.id} contact={open} onClose={() => setOpenId(null)} />}
+      <ExportCsvButton onClick={exportCsv} />
     </div>
   );
 }

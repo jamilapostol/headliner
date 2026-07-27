@@ -9,6 +9,7 @@ export default async function FansPage() {
   const dtos: FanDTO[] = fans.map((f) => ({
     id: f.id,
     name: f.name,
+    email: f.email,
     tier: f.tier,
     tierNote: f.tierNote,
     lifetimeSpend: f.lifetimeSpend,

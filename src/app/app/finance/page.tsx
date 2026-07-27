@@ -4,6 +4,7 @@ import { money, fmtDateUTC } from "@/lib/format";
 import { NewTransactionForm } from "@/components/new-transaction-form";
 import { CsvImportModal, type CsvColumn } from "@/components/csv-import-modal";
 import { importTransactions } from "@/lib/actions/transactions";
+import { FinanceCsvExport } from "@/components/finance-csv-export";
 
 const TRANSACTION_CSV_COLUMNS: CsvColumn[] = [
   { key: "kind", label: "Type (income/expense)", aliases: ["type"] },
@@ -105,6 +106,16 @@ export default async function FinancePage() {
           </div>
         </div>
       </div>
+
+      <FinanceCsvExport
+        transactions={transactions.map((t) => ({
+          occurredAt: fmtDateUTC(t.occurredAt, { month: "short", day: "numeric", year: "numeric" }),
+          kind: t.kind,
+          category: t.category,
+          amount: t.amount,
+          source: t.source,
+        }))}
+      />
     </div>
   );
 }

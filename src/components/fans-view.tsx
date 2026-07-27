@@ -6,6 +6,8 @@ import { money } from "@/lib/format";
 import { planUnlocksAI } from "@/lib/ai";
 import { createFan, importFans } from "@/lib/actions/fans";
 import { CsvImportModal, type CsvColumn } from "@/components/csv-import-modal";
+import { ExportCsvButton } from "@/components/export-csv-button";
+import { toCsv, downloadCsv } from "@/lib/csv-export";
 
 const FAN_CSV_COLUMNS: CsvColumn[] = [
   { key: "name", label: "Name", required: true },
@@ -19,6 +21,7 @@ const FAN_CSV_COLUMNS: CsvColumn[] = [
 export type FanDTO = {
   id: string;
   name: string;
+  email: string | null;
   tier: "VIP" | "Patron" | "Donor" | "Fan";
   tierNote: string | null;
   lifetimeSpend: number;
@@ -39,6 +42,32 @@ export function FansView({ fans, plan }: { fans: FanDTO[]; plan: string }) {
   const filtered = useMemo(() => fans.filter((f) => cat === "All" || f.tier === cat), [fans, cat]);
   const vipCount = fans.filter((f) => f.tier === "VIP").length;
   const patronCount = fans.filter((f) => f.tier === "Patron").length;
+
+  function exportCsv() {
+    const csv = toCsv(
+      filtered.map((f) => ({
+        name: f.name,
+        email: f.email ?? "",
+        tier: f.tier,
+        tierNote: f.tierNote ?? "",
+        lifetimeSpend: (f.lifetimeSpend / 100).toFixed(2),
+        showsAttended: f.showsAttended,
+        lastSeenLabel: f.lastSeenLabel ?? "",
+        notes: f.notes ?? "",
+      })),
+      [
+        { key: "name", label: "Name" },
+        { key: "email", label: "Email" },
+        { key: "tier", label: "Tier" },
+        { key: "tierNote", label: "Tier Note" },
+        { key: "lifetimeSpend", label: "Lifetime Spend ($)" },
+        { key: "showsAttended", label: "Shows Attended" },
+        { key: "lastSeenLabel", label: "Last Seen" },
+        { key: "notes", label: "Notes" },
+      ]
+    );
+    downloadCsv("fans.csv", csv);
+  }
 
   return (
     <div className="mx-auto max-w-[1100px] px-4 py-5 sm:px-8 sm:py-7">
@@ -167,6 +196,8 @@ export function FansView({ fans, plan }: { fans: FanDTO[]; plan: string }) {
           </div>
         </div>
       )}
+
+      <ExportCsvButton onClick={exportCsv} />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { endOfMonth, format, startOfMonth, subMonths } from "date-fns";
 import { requireWorkspace } from "@/lib/workspace";
 import { db } from "@/lib/db";
 import { money } from "@/lib/format";
+import { AnalyticsCsvExport } from "@/components/analytics-csv-export";
 
 const CONFIRMED_STAGES = ["Confirmed", "Paid"] as const;
 const OFFER_STAGES = ["Negotiating", "Offer_Sent", "Confirmed", "Paid"] as const;
@@ -127,6 +128,8 @@ export default async function AnalyticsPage() {
           </div>
         </div>
       </div>
+
+      <AnalyticsCsvExport stats={stats.map((s) => ({ label: s.label, value: s.value }))} monthlyBars={monthlyBars} bestCities={bestCities} funnel={funnel} />
     </div>
   );
 }
