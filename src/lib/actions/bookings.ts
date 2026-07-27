@@ -21,6 +21,39 @@ export async function updateBookingStage(bookingId: string, stage: Stage) {
   revalidatePath("/app/calendar");
 }
 
+export async function updateBookingDetails(bookingId: string, fields: { fee?: number; contactName?: string; contactPhone?: string }) {
+  const session = await getSession();
+  if (!session) return;
+
+  const booking = await db.booking.findUnique({ where: { id: bookingId } });
+  if (!booking || booking.workspaceId !== session.workspaceId) return;
+
+  await db.booking.update({
+    where: { id: bookingId },
+    data: {
+      ...(fields.fee !== undefined ? { fee: Math.max(0, Math.round(fields.fee * 100)) } : {}),
+      ...(fields.contactName !== undefined ? { contactName: fields.contactName || null } : {}),
+      ...(fields.contactPhone !== undefined ? { contactPhone: fields.contactPhone || null } : {}),
+    },
+  });
+  revalidatePath("/app/bookings");
+}
+
+const CHECKLIST_FIELDS = ["offerConfirmed", "contractSigned", "depositReceived", "riderSent"] as const;
+export type ChecklistField = (typeof CHECKLIST_FIELDS)[number];
+
+export async function toggleBookingChecklist(bookingId: string, field: ChecklistField) {
+  const session = await getSession();
+  if (!session) return;
+  if (!CHECKLIST_FIELDS.includes(field)) return;
+
+  const booking = await db.booking.findUnique({ where: { id: bookingId } });
+  if (!booking || booking.workspaceId !== session.workspaceId) return;
+
+  await db.booking.update({ where: { id: bookingId }, data: { [field]: !booking[field] } });
+  revalidatePath("/app/bookings");
+}
+
 export async function createBooking(formData: FormData) {
   const session = await getSession();
   if (!session) return;

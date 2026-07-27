@@ -19,6 +19,10 @@ export default async function BookingsPage() {
     contactName: b.contactName,
     contactPhone: b.contactPhone,
     stage: b.stage,
+    offerConfirmed: b.offerConfirmed,
+    contractSigned: b.contractSigned,
+    depositReceived: b.depositReceived,
+    riderSent: b.riderSent,
   }));
 
   return <BookingsBoard bookings={dtos} plan={workspace.plan} artistName={user.name} />;

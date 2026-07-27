@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { updateBookingStage, type Stage } from "@/lib/actions/bookings";
+import { updateBookingStage, updateBookingDetails, toggleBookingChecklist, type Stage, type ChecklistField } from "@/lib/actions/bookings";
 import { money } from "@/lib/format";
 import { NewBookingForm } from "@/components/new-booking-form";
 import { draftFollowupEmail, planUnlocksAI } from "@/lib/ai";
@@ -16,6 +16,10 @@ export type BookingDTO = {
   contactName: string | null;
   contactPhone: string | null;
   stage: Stage;
+  offerConfirmed: boolean;
+  contractSigned: boolean;
+  depositReceived: boolean;
+  riderSent: boolean;
 };
 
 const STAGES: Array<{ key: Stage; label: string; dot: string }> = [
@@ -60,12 +64,12 @@ export function BookingsBoard({ bookings, plan, artistName }: { bookings: Bookin
     startTransition(() => updateBookingStage(bookingId, stage));
   }
 
-  const checklist = open
+  const checklist: Array<{ label: string; field: ChecklistField; on: boolean }> = open
     ? [
-        { label: "Offer confirmed in writing", on: (["Offer_Sent", "Confirmed", "Paid"] as Stage[]).includes(open.stage) },
-        { label: "Contract signed", on: (["Confirmed", "Paid"] as Stage[]).includes(open.stage) },
-        { label: "Deposit received", on: open.stage === "Paid" },
-        { label: "Tech + hospitality rider sent", on: (["Negotiating", "Offer_Sent", "Confirmed", "Paid"] as Stage[]).includes(open.stage) },
+        { label: "Offer confirmed in writing", field: "offerConfirmed", on: open.offerConfirmed },
+        { label: "Contract signed", field: "contractSigned", on: open.contractSigned },
+        { label: "Deposit received", field: "depositReceived", on: open.depositReceived },
+        { label: "Tech + hospitality rider sent", field: "riderSent", on: open.riderSent },
       ]
     : [];
 
@@ -158,14 +162,28 @@ export function BookingsBoard({ bookings, plan, artistName }: { bookings: Bookin
             {open.city} · {fmtDateRange(open.date, open.endDate)}
           </div>
           <div className="mb-[18px] grid grid-cols-2 gap-2.5">
-            <div className="rounded-[10px] border border-white/[.08] bg-surface-nested p-3">
-              <div className="mb-1 font-mono text-[10px] text-white/45">GUARANTEE</div>
-              <div className="text-[17px] font-bold text-accent">{money(open.fee)}</div>
-            </div>
+            <EditableStat
+              label="GUARANTEE"
+              value={open.fee ? String(open.fee / 100) : ""}
+              placeholder="—"
+              type="number"
+              display={money(open.fee)}
+              onSave={(v) => updateBookingDetails(open.id, { fee: v ? Number(v) : 0 })}
+            />
             <div className="rounded-[10px] border border-white/[.08] bg-surface-nested p-3">
               <div className="mb-1 font-mono text-[10px] text-white/45">CONTACT</div>
-              <div className="text-[13px] font-semibold leading-tight">{open.contactName || "—"}</div>
-              {open.contactPhone && <div className="mt-0.5 text-[11px] text-white/45">{open.contactPhone}</div>}
+              <InlineEdit
+                value={open.contactName ?? ""}
+                placeholder="Add a name"
+                className="text-[13px] font-semibold leading-tight"
+                onSave={(v) => updateBookingDetails(open.id, { contactName: v })}
+              />
+              <InlineEdit
+                value={open.contactPhone ?? ""}
+                placeholder="Add a phone"
+                className="mt-0.5 text-[11px] text-white/45"
+                onSave={(v) => updateBookingDetails(open.id, { contactPhone: v })}
+              />
             </div>
           </div>
           <div className="mb-5">
@@ -185,7 +203,11 @@ export function BookingsBoard({ bookings, plan, artistName }: { bookings: Bookin
           <div className="mb-2 font-mono text-[10.5px] tracking-[.1em] text-white/40">CHECKLIST</div>
           <div className="mb-5 flex flex-col gap-[7px]">
             {checklist.map((c) => (
-              <div key={c.label} className="flex items-center gap-2.5 text-[13px]">
+              <div
+                key={c.label}
+                onClick={() => startTransition(() => toggleBookingChecklist(open.id, c.field))}
+                className="flex cursor-pointer items-center gap-2.5 text-[13px] hover:opacity-80"
+              >
                 <span className="font-mono text-[12px]" style={{ color: c.on ? "#3fe87a" : "rgba(233,236,232,.3)" }}>
                   {c.on ? "✓" : "○"}
                 </span>
@@ -248,6 +270,117 @@ export function BookingsBoard({ bookings, plan, artistName }: { bookings: Bookin
       )}
 
       {showNew && <NewBookingForm onClose={() => setShowNew(false)} />}
+    </div>
+  );
+}
+
+function EditableStat({
+  label,
+  value,
+  display,
+  placeholder,
+  type = "text",
+  onSave,
+}: {
+  label: string;
+  value: string;
+  display: string;
+  placeholder: string;
+  type?: string;
+  onSave: (value: string) => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(value);
+  const [, startTransition] = useTransition();
+
+  function save() {
+    setEditing(false);
+    if (draft !== value) startTransition(() => onSave(draft));
+  }
+
+  return (
+    <div className="rounded-[10px] border border-white/[.08] bg-surface-nested p-3">
+      <div className="mb-1 font-mono text-[10px] text-white/45">{label}</div>
+      {editing ? (
+        <input
+          autoFocus
+          type={type}
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={save}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") save();
+            if (e.key === "Escape") {
+              setDraft(value);
+              setEditing(false);
+            }
+          }}
+          className="w-full rounded-md border border-accent/40 bg-[#0f1410] px-2 py-1 text-[15px] font-bold text-accent outline-none"
+        />
+      ) : (
+        <div
+          onClick={() => {
+            setDraft(value);
+            setEditing(true);
+          }}
+          className="cursor-pointer text-[17px] font-bold text-accent hover:opacity-80"
+        >
+          {value ? display : placeholder}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function InlineEdit({
+  value,
+  placeholder,
+  className,
+  onSave,
+}: {
+  value: string;
+  placeholder: string;
+  className: string;
+  onSave: (value: string) => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(value);
+  const [, startTransition] = useTransition();
+
+  function save() {
+    setEditing(false);
+    if (draft !== value) startTransition(() => onSave(draft));
+  }
+
+  if (editing) {
+    return (
+      <input
+        autoFocus
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={save}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") save();
+          if (e.key === "Escape") {
+            setDraft(value);
+            setEditing(false);
+          }
+        }}
+        className={`w-full rounded-md border border-accent/40 bg-[#0f1410] px-1.5 py-0.5 outline-none ${className}`}
+      />
+    );
+  }
+
+  return (
+    <div
+      onClick={() => {
+        setDraft(value);
+        setEditing(true);
+      }}
+      className={`cursor-pointer hover:opacity-80 ${className}`}
+      style={{ color: value ? undefined : "rgba(233,236,232,.35)" }}
+    >
+      {value || placeholder}
     </div>
   );
 }

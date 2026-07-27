@@ -132,6 +132,10 @@ model Booking {
   contactName String?
   contactPhone String?
   notes       String?
+  offerConfirmed   Boolean @default(false)
+  contractSigned   Boolean @default(false)
+  depositReceived  Boolean @default(false)
+  riderSent        Boolean @default(false)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
