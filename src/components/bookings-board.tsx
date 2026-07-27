@@ -145,7 +145,10 @@ export function BookingsBoard({ bookings, plan, artistName }: { bookings: Bookin
       </div>
 
       {open && (
-        <div className="animate-tp-fade fixed inset-0 z-20 box-border h-screen w-full overflow-y-auto border-l border-white/[.09] bg-[#121813] px-5 py-[18px] sm:inset-auto sm:top-0 sm:right-0 sm:w-[380px] sm:px-6 sm:py-[22px]">
+        <div
+          key={open.id}
+          className="animate-tp-fade fixed inset-0 z-20 box-border h-screen w-full overflow-y-auto border-l border-white/[.09] bg-[#121813] px-5 py-[18px] sm:inset-auto sm:top-0 sm:right-0 sm:w-[380px] sm:px-6 sm:py-[22px]"
+        >
           <div className="mb-1 flex items-center justify-between">
             <div className="text-[18px] font-bold">{open.venue}</div>
             <button
@@ -167,7 +170,7 @@ export function BookingsBoard({ bookings, plan, artistName }: { bookings: Bookin
               value={open.fee ? String(open.fee / 100) : ""}
               placeholder="—"
               type="number"
-              display={money(open.fee)}
+              format={(v) => money(Math.round(Number(v) * 100))}
               onSave={(v) => updateBookingDetails(open.id, { fee: v ? Number(v) : 0 })}
             />
             <div className="rounded-[10px] border border-white/[.08] bg-surface-nested p-3">
@@ -203,16 +206,7 @@ export function BookingsBoard({ bookings, plan, artistName }: { bookings: Bookin
           <div className="mb-2 font-mono text-[10.5px] tracking-[.1em] text-white/40">CHECKLIST</div>
           <div className="mb-5 flex flex-col gap-[7px]">
             {checklist.map((c) => (
-              <div
-                key={c.label}
-                onClick={() => startTransition(() => toggleBookingChecklist(open.id, c.field))}
-                className="flex cursor-pointer items-center gap-2.5 text-[13px] hover:opacity-80"
-              >
-                <span className="font-mono text-[12px]" style={{ color: c.on ? "#3fe87a" : "rgba(233,236,232,.3)" }}>
-                  {c.on ? "✓" : "○"}
-                </span>
-                <span style={{ color: c.on ? "#e9ece8" : "rgba(233,236,232,.5)" }}>{c.label}</span>
-              </div>
+              <ChecklistItem key={c.label} label={c.label} field={c.field} initialOn={c.on} bookingId={open.id} />
             ))}
           </div>
           {aiUnlocked ? (
@@ -277,25 +271,28 @@ export function BookingsBoard({ bookings, plan, artistName }: { bookings: Bookin
 function EditableStat({
   label,
   value,
-  display,
   placeholder,
   type = "text",
+  format,
   onSave,
 }: {
   label: string;
   value: string;
-  display: string;
   placeholder: string;
   type?: string;
+  format: (value: string) => string;
   onSave: (value: string) => void;
 }) {
+  const [committed, setCommitted] = useState(value);
   const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState(value);
+  const [draft, setDraft] = useState(committed);
   const [, startTransition] = useTransition();
 
   function save() {
     setEditing(false);
-    if (draft !== value) startTransition(() => onSave(draft));
+    if (draft === committed) return;
+    setCommitted(draft); // optimistic — shows instantly, doesn't wait on the round trip
+    startTransition(() => onSave(draft));
   }
 
   return (
@@ -311,7 +308,7 @@ function EditableStat({
           onKeyDown={(e) => {
             if (e.key === "Enter") save();
             if (e.key === "Escape") {
-              setDraft(value);
+              setDraft(committed);
               setEditing(false);
             }
           }}
@@ -320,12 +317,12 @@ function EditableStat({
       ) : (
         <div
           onClick={() => {
-            setDraft(value);
+            setDraft(committed);
             setEditing(true);
           }}
           className="cursor-pointer text-[17px] font-bold text-accent hover:opacity-80"
         >
-          {value ? display : placeholder}
+          {committed ? format(committed) : placeholder}
         </div>
       )}
     </div>
@@ -343,13 +340,16 @@ function InlineEdit({
   className: string;
   onSave: (value: string) => void;
 }) {
+  const [committed, setCommitted] = useState(value);
   const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState(value);
+  const [draft, setDraft] = useState(committed);
   const [, startTransition] = useTransition();
 
   function save() {
     setEditing(false);
-    if (draft !== value) startTransition(() => onSave(draft));
+    if (draft === committed) return;
+    setCommitted(draft); // optimistic — shows instantly, doesn't wait on the round trip
+    startTransition(() => onSave(draft));
   }
 
   if (editing) {
@@ -362,7 +362,7 @@ function InlineEdit({
         onKeyDown={(e) => {
           if (e.key === "Enter") save();
           if (e.key === "Escape") {
-            setDraft(value);
+            setDraft(committed);
             setEditing(false);
           }
         }}
@@ -374,13 +374,42 @@ function InlineEdit({
   return (
     <div
       onClick={() => {
-        setDraft(value);
+        setDraft(committed);
         setEditing(true);
       }}
       className={`cursor-pointer hover:opacity-80 ${className}`}
-      style={{ color: value ? undefined : "rgba(233,236,232,.35)" }}
+      style={{ color: committed ? undefined : "rgba(233,236,232,.35)" }}
     >
-      {value || placeholder}
+      {committed || placeholder}
+    </div>
+  );
+}
+
+function ChecklistItem({
+  label,
+  field,
+  initialOn,
+  bookingId,
+}: {
+  label: string;
+  field: ChecklistField;
+  initialOn: boolean;
+  bookingId: string;
+}) {
+  const [on, setOn] = useState(initialOn);
+  const [, startTransition] = useTransition();
+
+  function toggle() {
+    setOn((v) => !v); // optimistic
+    startTransition(() => toggleBookingChecklist(bookingId, field));
+  }
+
+  return (
+    <div onClick={toggle} className="flex cursor-pointer items-center gap-2.5 text-[13px] hover:opacity-80">
+      <span className="font-mono text-[12px]" style={{ color: on ? "#3fe87a" : "rgba(233,236,232,.3)" }}>
+        {on ? "✓" : "○"}
+      </span>
+      <span style={{ color: on ? "#e9ece8" : "rgba(233,236,232,.5)" }}>{label}</span>
     </div>
   );
 }
