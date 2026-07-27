@@ -81,44 +81,56 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen">
-      {/* Nav */}
-      <div className="mx-auto flex max-w-[1100px] items-center gap-4 px-4 py-[18px] sm:gap-7 sm:px-10">
-        <div className="flex items-center gap-2.5">
-          <Image src="/logo.svg" alt="HEADLINER" width={28} height={28} />
-          <div className="text-[15px] font-bold">HEADLINER</div>
-        </div>
-        <div className="ml-auto flex items-center gap-3 text-[13px] text-white/60 sm:gap-5">
-          <span className="hidden cursor-pointer hover:text-text sm:inline">Features</span>
-          <span className="hidden cursor-pointer hover:text-text sm:inline">Pricing</span>
-          <Link href="/app" className="rounded-lg bg-accent px-4 py-2 font-semibold text-canvas">
-            Open the app
-          </Link>
-        </div>
-      </div>
+      {/* Hero, with concert photo as cover */}
+      <div className="relative flex min-h-[620px] flex-col overflow-hidden sm:min-h-[720px]">
+        <Image
+          src="/hero.png"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-canvas/75 via-canvas/55 to-canvas" />
 
-      {/* Hero */}
-      <div className="mx-auto max-w-[820px] px-4 pt-12 pb-14 text-center sm:px-10 sm:pt-[72px]">
-        <div className="mb-[22px] inline-block rounded-[20px] border border-yellow/30 px-3.5 py-[5px] font-mono text-[11px] tracking-[.14em] text-yellow">
-          FOR INDEPENDENT TOURING MUSICIANS
-        </div>
-        <h1 className="mb-[18px] text-[34px] leading-[1.1] tracking-[-.03em] text-balance sm:text-[52px] sm:leading-[1.08]">
-          Your whole career.
-          <br />
-          One <span className="text-accent">soundboard</span>.
-        </h1>
-        <p className="mx-auto mb-[30px] max-w-[560px] text-[15px] leading-[1.55] text-white/60 text-pretty sm:text-[17px]">
-          Bookings, tours, merch, fans and money — the operating system for artists who run their career without a
-          label. Retire the spreadsheets.
-        </p>
-        <div className="flex flex-col justify-center gap-3 sm:flex-row">
-          <Link href="/signup" className="rounded-[10px] bg-accent px-[26px] py-[13px] text-[15px] font-semibold text-canvas">
-            Start free
-          </Link>
-          <div className="cursor-pointer rounded-[10px] border border-white/15 px-[26px] py-[13px] text-[15px] text-white/80 hover:border-white/35">
-            Watch demo — 2 min
+        {/* Nav */}
+        <div className="relative mx-auto flex w-full max-w-[1100px] items-center gap-4 px-4 py-[18px] sm:gap-7 sm:px-10">
+          <div className="flex items-center gap-2.5">
+            <Image src="/logo.svg" alt="HEADLINER" width={28} height={28} />
+            <div className="text-[15px] font-bold">HEADLINER</div>
+          </div>
+          <div className="ml-auto flex items-center gap-3 text-[13px] text-white/60 sm:gap-5">
+            <span className="hidden cursor-pointer hover:text-text sm:inline">Features</span>
+            <span className="hidden cursor-pointer hover:text-text sm:inline">Pricing</span>
+            <Link href="/app" className="rounded-lg bg-accent px-4 py-2 font-semibold text-canvas">
+              Open the app
+            </Link>
           </div>
         </div>
-        <div className="mt-4 text-[12px] text-white/40">Free forever for your first 10 bookings. No card required.</div>
+
+        <div className="relative mx-auto mt-auto max-w-[820px] px-4 pt-12 pb-14 text-center sm:px-10 sm:pt-[72px]">
+          <div className="mb-[22px] inline-block rounded-[20px] border border-yellow/30 px-3.5 py-[5px] font-mono text-[11px] tracking-[.14em] text-yellow">
+            FOR INDEPENDENT TOURING MUSICIANS
+          </div>
+          <h1 className="mb-[18px] text-[34px] leading-[1.1] tracking-[-.03em] text-balance sm:text-[52px] sm:leading-[1.08]">
+            Your whole career.
+            <br />
+            One <span className="text-accent">soundboard</span>.
+          </h1>
+          <p className="mx-auto mb-[30px] max-w-[560px] text-[15px] leading-[1.55] text-white/70 text-pretty sm:text-[17px]">
+            Bookings, tours, merch, fans and money — the operating system for artists who run their career without a
+            label. Retire the spreadsheets.
+          </p>
+          <div className="flex flex-col justify-center gap-3 sm:flex-row">
+            <Link href="/signup" className="rounded-[10px] bg-accent px-[26px] py-[13px] text-[15px] font-semibold text-canvas">
+              Start free
+            </Link>
+            <div className="cursor-pointer rounded-[10px] border border-white/25 bg-black/20 px-[26px] py-[13px] text-[15px] text-white/90 backdrop-blur-sm hover:border-white/45">
+              Watch demo — 2 min
+            </div>
+          </div>
+          <div className="mt-4 text-[12px] text-white/50">Free forever for your first 10 bookings. No card required.</div>
+        </div>
       </div>
 
       {/* Retires strip */}
