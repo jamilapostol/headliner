@@ -32,28 +32,42 @@ function fmtDateRange(date: string, endDate: string | null) {
   return `${fmtDate(date)}–${fmtDate(endDate)}`;
 }
 
-export function BookingsBoard({ bookings, plan, artistName }: { bookings: BookingDTO[]; plan: string; artistName: string }) {
+export function BookingsBoard({ bookings: bookingsProp, plan, artistName }: { bookings: BookingDTO[]; plan: string; artistName: string }) {
   const [dragId, setDragId] = useState<string | null>(null);
   const [dragOverStage, setDragOverStage] = useState<Stage | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
   const [showNew, setShowNew] = useState(false);
   const [draft, setDraft] = useState<{ bookingId: string; text: string } | null>(null);
+  const [stageOverride, setStageOverride] = useState<Record<string, Stage>>({});
   const [, startTransition] = useTransition();
   const aiUnlocked = planUnlocksAI(plan);
+
+  // Apply optimistic stage moves on top of the server data — a drag or a
+  // stage-dropdown change should move the card instantly, not after the
+  // round trip + revalidation.
+  const bookings = bookingsProp.map((b) => (b.id in stageOverride ? { ...b, stage: stageOverride[b.id] } : b));
 
   const pipelineTotal = bookings.filter((b) => b.stage !== "Paid").reduce((a, b) => a + b.fee, 0);
   const open = bookings.find((b) => b.id === openId) ?? null;
 
+  function moveBooking(bookingId: string, stage: Stage) {
+    setStageOverride((o) => ({ ...o, [bookingId]: stage }));
+    startTransition(async () => {
+      await updateBookingStage(bookingId, stage);
+      setStageOverride((o) => Object.fromEntries(Object.entries(o).filter(([id]) => id !== bookingId)));
+    });
+  }
+
   function drop(stage: Stage) {
     if (dragId) {
-      startTransition(() => updateBookingStage(dragId, stage));
+      moveBooking(dragId, stage);
       setDragId(null);
     }
     setDragOverStage(null);
   }
 
   function moveStage(bookingId: string, stage: Stage) {
-    startTransition(() => updateBookingStage(bookingId, stage));
+    moveBooking(bookingId, stage);
   }
 
   const checklist: Array<{ label: string; field: ChecklistField; on: boolean }> = open
