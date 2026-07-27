@@ -5,6 +5,7 @@ import { updateBookingStage, updateBookingDetails, toggleBookingChecklist, type 
 import { money } from "@/lib/format";
 import { NewBookingForm } from "@/components/new-booking-form";
 import { draftFollowupEmail, planUnlocksAI } from "@/lib/ai";
+import { STAGES } from "@/lib/stages";
 
 export type BookingDTO = {
   id: string;
@@ -21,15 +22,6 @@ export type BookingDTO = {
   depositReceived: boolean;
   riderSent: boolean;
 };
-
-const STAGES: Array<{ key: Stage; label: string; dot: string }> = [
-  { key: "Lead", label: "LEAD", dot: "rgba(233,236,232,.35)" },
-  { key: "Contacted", label: "CONTACTED", dot: "#7ab8e8" },
-  { key: "Negotiating", label: "NEGOTIATING", dot: "#e8e43f" },
-  { key: "Offer_Sent", label: "OFFER SENT", dot: "#e8983f" },
-  { key: "Confirmed", label: "CONFIRMED", dot: "#3fe87a" },
-  { key: "Paid", label: "PAID", dot: "#3fe87a" },
-];
 
 function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "2-digit", timeZone: "UTC" });

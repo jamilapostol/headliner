@@ -14,6 +14,7 @@ import {
 import { requireWorkspace } from "@/lib/workspace";
 import { db } from "@/lib/db";
 import { money, calendarDay } from "@/lib/format";
+import { STAGES, stageChipStyle } from "@/lib/stages";
 
 export default async function CalendarPage({
   searchParams,
@@ -71,7 +72,15 @@ export default async function CalendarPage({
           </Link>
         </div>
       </div>
-      <div className="mb-5 text-[13px] text-white/50">Every booking on your calendar, in one grid.</div>
+      <div className="mb-3 text-[13px] text-white/50">Every booking on your calendar, in one grid.</div>
+      <div className="mb-5 flex flex-wrap items-center gap-x-4 gap-y-1.5">
+        {STAGES.map((s) => (
+          <div key={s.key} className="flex items-center gap-1.5">
+            <span className="h-[7px] w-[7px] flex-none rounded-full" style={{ background: s.dot }} />
+            <span className="font-mono text-[10.5px] tracking-[.08em] text-white/45">{s.label}</span>
+          </div>
+        ))}
+      </div>
 
       <div className="overflow-x-auto rounded-card border border-border bg-surface">
         <div className="min-w-[560px]">
@@ -97,16 +106,20 @@ export default async function CalendarPage({
                   {format(day, "d")}
                 </div>
                 <div className="flex flex-col gap-1">
-                  {dayBookings.map((b) => (
-                    <Link
-                      key={b.id}
-                      href="/app/bookings"
-                      className="block truncate rounded-[6px] bg-accent-soft px-1.5 py-0.5 text-[10.5px] text-accent hover:bg-accent/20"
-                      title={`${b.venue} — ${money(b.fee)}`}
-                    >
-                      {b.venue}
-                    </Link>
-                  ))}
+                  {dayBookings.map((b) => {
+                    const style = stageChipStyle(b.stage);
+                    return (
+                      <Link
+                        key={b.id}
+                        href="/app/bookings"
+                        className="block truncate rounded-[6px] px-1.5 py-0.5 text-[10.5px] hover:brightness-125"
+                        style={{ background: style.bg, color: style.color }}
+                        title={`${b.venue} — ${money(b.fee)}`}
+                      >
+                        {b.venue}
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
             );
