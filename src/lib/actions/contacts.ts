@@ -48,3 +48,33 @@ export async function updateContact(
   });
   revalidatePath("/app/contacts");
 }
+
+export async function importContacts(rows: Record<string, string>[]) {
+  const session = await getSession();
+  if (!session) return { imported: 0, skipped: rows.length };
+
+  const data = [];
+  for (const r of rows) {
+    const name = (r.name ?? "").trim();
+    if (!name) continue;
+    const categoryRaw = (r.category ?? "").trim();
+    const category = CATEGORIES.find((c) => c.toLowerCase() === categoryRaw.toLowerCase()) ?? "Venues";
+    data.push({
+      workspaceId: session.workspaceId,
+      name,
+      org: (r.org ?? "").trim() || null,
+      role: (r.role ?? "").trim() || null,
+      category,
+      city: (r.city ?? "").trim() || null,
+      email: (r.email ?? "").trim() || null,
+      phone: (r.phone ?? "").trim() || null,
+      notes: (r.notes ?? "").trim() || null,
+      strength: 3,
+    });
+  }
+  if (data.length > 0) await db.contact.createMany({ data });
+
+  revalidatePath("/app/contacts");
+  revalidatePath("/app");
+  return { imported: data.length, skipped: rows.length - data.length };
+}

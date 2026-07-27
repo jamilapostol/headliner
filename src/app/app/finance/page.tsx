@@ -2,6 +2,16 @@ import { requireWorkspace } from "@/lib/workspace";
 import { db } from "@/lib/db";
 import { money, fmtDateUTC } from "@/lib/format";
 import { NewTransactionForm } from "@/components/new-transaction-form";
+import { CsvImportModal, type CsvColumn } from "@/components/csv-import-modal";
+import { importTransactions } from "@/lib/actions/transactions";
+
+const TRANSACTION_CSV_COLUMNS: CsvColumn[] = [
+  { key: "kind", label: "Type (income/expense)", aliases: ["type"] },
+  { key: "category", label: "Category", required: true },
+  { key: "amount", label: "Amount ($)", required: true },
+  { key: "source", label: "Source" },
+  { key: "occurredAt", label: "Date", required: true, aliases: ["date", "occurred at"] },
+];
 
 const SOURCE_COLORS = ["#3fe87a", "#e8e43f", "#7ab8e8", "#e8983f", "#c99df5", "#e87a9a"];
 
@@ -38,7 +48,10 @@ export default async function FinancePage() {
     <div className="mx-auto max-w-[1100px] px-4 py-5 sm:px-8 sm:py-7">
       <div className="mb-1 flex flex-wrap items-baseline justify-between gap-2">
         <h1 className="text-[22px] tracking-[-.02em] sm:text-[26px]">Finance</h1>
-        <NewTransactionForm />
+        <div className="flex items-center gap-2">
+          <CsvImportModal entityLabel="transactions" columns={TRANSACTION_CSV_COLUMNS} onImport={importTransactions} />
+          <NewTransactionForm />
+        </div>
       </div>
       <div className="mb-5 text-[13px] text-white/50">{year} year to date</div>
 

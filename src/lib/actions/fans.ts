@@ -31,3 +31,32 @@ export async function createFan(formData: FormData) {
   });
   revalidatePath("/app/fans");
 }
+
+export async function importFans(rows: Record<string, string>[]) {
+  const session = await getSession();
+  if (!session) return { imported: 0, skipped: rows.length };
+
+  const data = [];
+  for (const r of rows) {
+    const name = (r.name ?? "").trim();
+    if (!name) continue;
+    const tierRaw = (r.tier ?? "").trim();
+    const tier = TIERS.find((t) => t.toLowerCase() === tierRaw.toLowerCase()) ?? "Fan";
+    const lifetimeSpend = Number(r.lifetimeSpend ?? "") || 0;
+    const showsAttended = Math.max(0, Math.round(Number(r.showsAttended ?? "") || 0));
+    data.push({
+      workspaceId: session.workspaceId,
+      name,
+      email: (r.email ?? "").trim() || null,
+      tier,
+      lifetimeSpend: Math.round(lifetimeSpend * 100),
+      showsAttended,
+      notes: (r.notes ?? "").trim() || null,
+    });
+  }
+  if (data.length > 0) await db.fan.createMany({ data });
+
+  revalidatePath("/app/fans");
+  revalidatePath("/app");
+  return { imported: data.length, skipped: rows.length - data.length };
+}

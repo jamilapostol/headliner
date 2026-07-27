@@ -4,7 +4,17 @@ import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { money } from "@/lib/format";
 import { planUnlocksAI } from "@/lib/ai";
-import { createFan } from "@/lib/actions/fans";
+import { createFan, importFans } from "@/lib/actions/fans";
+import { CsvImportModal, type CsvColumn } from "@/components/csv-import-modal";
+
+const FAN_CSV_COLUMNS: CsvColumn[] = [
+  { key: "name", label: "Name", required: true },
+  { key: "email", label: "Email" },
+  { key: "tier", label: "Tier", aliases: ["VIP, Patron, Donor or Fan"] },
+  { key: "lifetimeSpend", label: "Lifetime spend ($)", aliases: ["lifetime spend"] },
+  { key: "showsAttended", label: "Shows attended", aliases: ["shows attended"] },
+  { key: "notes", label: "Notes" },
+];
 
 export type FanDTO = {
   id: string;
@@ -38,6 +48,7 @@ export function FansView({ fans, plan }: { fans: FanDTO[]; plan: string }) {
           <div className="font-mono text-[12px] text-white/45">
             {fans.length} supporters tracked · {vipCount} VIP · {patronCount} patrons
           </div>
+          <CsvImportModal entityLabel="fans" columns={FAN_CSV_COLUMNS} onImport={importFans} />
           <button onClick={() => setShowNew(true)} className="cursor-pointer rounded-lg bg-accent px-3.5 py-1.5 text-[12.5px] font-semibold text-canvas">
             + New fan
           </button>

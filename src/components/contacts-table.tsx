@@ -1,7 +1,19 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
-import { createContact, updateContact } from "@/lib/actions/contacts";
+import { createContact, updateContact, importContacts } from "@/lib/actions/contacts";
+import { CsvImportModal, type CsvColumn } from "@/components/csv-import-modal";
+
+const CONTACT_CSV_COLUMNS: CsvColumn[] = [
+  { key: "name", label: "Name", required: true },
+  { key: "org", label: "Organization" },
+  { key: "role", label: "Role" },
+  { key: "category", label: "Category", aliases: ["Venues, Promoters, Festivals, Media or Sponsors"] },
+  { key: "city", label: "City" },
+  { key: "email", label: "Email" },
+  { key: "phone", label: "Phone" },
+  { key: "notes", label: "Notes" },
+];
 
 export type ContactDTO = {
   id: string;
@@ -48,9 +60,12 @@ export function ContactsTable({ contacts }: { contacts: ContactDTO[] }) {
     <div className="mx-auto max-w-[1100px] px-4 py-5 sm:px-8 sm:py-7">
       <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
         <h1 className="text-[22px] tracking-[-.02em] sm:text-[26px]">Contacts</h1>
-        <button onClick={() => setShowNew(true)} className="cursor-pointer rounded-lg bg-accent px-3.5 py-1.5 text-[12.5px] font-semibold text-canvas">
-          + New contact
-        </button>
+        <div className="flex items-center gap-2">
+          <CsvImportModal entityLabel="contacts" columns={CONTACT_CSV_COLUMNS} onImport={importContacts} />
+          <button onClick={() => setShowNew(true)} className="cursor-pointer rounded-lg bg-accent px-3.5 py-1.5 text-[12.5px] font-semibold text-canvas">
+            + New contact
+          </button>
+        </div>
       </div>
       <div className="mb-3.5 flex flex-wrap items-center gap-2">
         <input
