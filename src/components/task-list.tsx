@@ -5,10 +5,27 @@ import { toggleTask, createTask, deleteTask } from "@/lib/actions/tasks";
 
 type Task = { id: string; title: string; dueLabel: string; done: boolean };
 
-export function TaskList({ tasks }: { tasks: Task[] }) {
+export function TaskList({ tasks: tasksProp }: { tasks: Task[] }) {
   const [, startTransition] = useTransition();
   const [title, setTitle] = useState("");
   const [dueLabel, setDueLabel] = useState("");
+  const [doneOverride, setDoneOverride] = useState<Record<string, boolean>>({});
+  const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
+
+  const tasks = tasksProp.filter((t) => !deletedIds.has(t.id)).map((t) => (t.id in doneOverride ? { ...t, done: doneOverride[t.id] } : t));
+
+  function toggle(taskId: string, current: boolean) {
+    setDoneOverride((o) => ({ ...o, [taskId]: !current }));
+    startTransition(async () => {
+      await toggleTask(taskId);
+      setDoneOverride((o) => Object.fromEntries(Object.entries(o).filter(([id]) => id !== taskId)));
+    });
+  }
+
+  function remove(taskId: string) {
+    setDeletedIds((s) => new Set(s).add(taskId));
+    startTransition(() => deleteTask(taskId));
+  }
 
   function add() {
     if (!title.trim()) return;
@@ -22,14 +39,14 @@ export function TaskList({ tasks }: { tasks: Task[] }) {
       {tasks.map((t) => (
         <div key={t.id} className="group flex items-center gap-2.5">
           <div
-            onClick={() => startTransition(() => toggleTask(t.id))}
+            onClick={() => toggle(t.id, t.done)}
             className="grid h-[17px] w-[17px] flex-none cursor-pointer place-items-center rounded-[5px] border-[1.5px] text-[11px] font-bold text-canvas"
             style={{ borderColor: t.done ? "#3fe87a" : "rgba(233,236,232,.3)", background: t.done ? "#3fe87a" : "transparent" }}
           >
             {t.done ? "✓" : ""}
           </div>
           <div
-            onClick={() => startTransition(() => toggleTask(t.id))}
+            onClick={() => toggle(t.id, t.done)}
             className="cursor-pointer text-[13px]"
             style={{ color: t.done ? "rgba(233,236,232,.35)" : "#e9ece8", textDecoration: t.done ? "line-through" : "none" }}
           >
@@ -41,7 +58,7 @@ export function TaskList({ tasks }: { tasks: Task[] }) {
             </div>
           )}
           <button
-            onClick={() => startTransition(() => deleteTask(t.id))}
+            onClick={() => remove(t.id)}
             className={`cursor-pointer px-1 text-[13px] text-white/30 opacity-0 hover:text-orange group-hover:opacity-100 ${t.dueLabel ? "" : "ml-auto"}`}
             aria-label="Delete task"
           >
