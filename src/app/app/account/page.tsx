@@ -4,11 +4,16 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { TEAM_MANAGER_ROLES, SEAT_LIMITS } from "@/lib/roles";
 import { AccountView } from "@/components/account-view";
 import { TeamSection, type MemberRow } from "@/components/team-section";
+import { IntegrationsPanel } from "@/components/integrations-panel";
 
 export default async function AccountPage() {
   const { user, workspace } = await requireWorkspace();
 
-  const memberships = await db.membership.findMany({ where: { workspaceId: workspace.id }, orderBy: { createdAt: "asc" } });
+  const [memberships, integrations] = await Promise.all([
+    db.membership.findMany({ where: { workspaceId: workspace.id }, orderBy: { createdAt: "asc" } }),
+    db.integration.findMany({ where: { workspaceId: workspace.id } }),
+  ]);
+  const connected = Object.fromEntries(integrations.map((i) => [i.key, i.connected]));
   const admin = createAdminClient();
   const members: MemberRow[] = await Promise.all(
     memberships.map(async (m) => {
@@ -43,6 +48,7 @@ export default async function AccountPage() {
           }}
         />
         <TeamSection members={members} canManage={canManage} seatLabel={`${memberships.length} / ${limit} seats`} />
+        <IntegrationsPanel connected={connected} />
       </div>
     </div>
   );

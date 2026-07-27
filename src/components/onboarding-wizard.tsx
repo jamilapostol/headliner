@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState, useTransition } from "react";
 import { completeOnboarding, type PlanChoice } from "@/lib/actions/onboarding";
+import { INTEGRATIONS } from "@/lib/integrations";
 
 type Role = "solo" | "band" | "manager" | "crew";
 type Volume = "few" | "half" | "full";
@@ -18,15 +19,6 @@ const VOLUMES: Array<{ key: Volume; label: string; sub: string }> = [
   { key: "few", label: "A handful of shows", sub: "1–4 shows a month, mostly regional" },
   { key: "half", label: "Touring in runs", sub: "2–4 week runs, a few times a year" },
   { key: "full", label: "Living on the road", sub: "100+ shows a year" },
-];
-
-const INTEGRATIONS = [
-  { key: "gmail", chip: "GM", chipBg: "#e8983f", label: "Gmail", sub: "Import booking threads" },
-  { key: "gcal", chip: "GC", chipBg: "#7ab8e8", label: "Google Calendar", sub: "Two-way sync" },
-  { key: "stripe", chip: "ST", chipBg: "#c99df5", label: "Stripe", sub: "Payments + invoices" },
-  { key: "square", chip: "SQ", chipBg: "#e9ece8", label: "Square", sub: "Merch table POS" },
-  { key: "spotify", chip: "SP", chipBg: "#3fe87a", label: "Spotify for Artists", sub: "Streaming + listener data" },
-  { key: "bit", chip: "BT", chipBg: "#e8e43f", label: "Bandsintown", sub: "Publish tour dates" },
 ];
 
 const RECS: Record<"light" | "heavy" | "team", { plan: PlanChoice; name: string; price: string; reason: string; feats: string[] }> = {
@@ -96,7 +88,7 @@ export function OnboardingWizard() {
 
         {step === 1 && (
           <>
-            <h1 className="mb-2 text-[30px] tracking-[-.02em]">Who&apos;s flying this thing?</h1>
+            <h1 className="mb-2 text-[30px] tracking-[-.02em]">Who&apos;s running this show?</h1>
             <p className="mb-7 text-[14.5px] text-white/55">We&apos;ll shape HEADLINER around how you work.</p>
             <div className="flex flex-col gap-2.5">
               {ROLES.map((r) => {

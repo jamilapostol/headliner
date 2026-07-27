@@ -79,6 +79,7 @@ model Workspace {
   fans         Fan[]
   campaigns    Campaign[]
   automations  Automation[]
+  integrations Integration[]
 }
 
 model Membership {
@@ -298,4 +299,17 @@ model Automation {
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@unique([workspaceId, key])
+}
+
+model Integration {
+  id          String    @id @default(cuid())
+  workspaceId String
+  key         String // gmail | gcal | stripe | square | spotify | bit
+  connected   Boolean   @default(false)
+  connectedAt DateTime?
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, key])
+  @@index([workspaceId])
 }
