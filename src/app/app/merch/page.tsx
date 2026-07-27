@@ -1,6 +1,7 @@
 import { requireWorkspace } from "@/lib/workspace";
 import { db } from "@/lib/db";
 import { MerchTable, type MerchItemDTO } from "@/components/merch-table";
+import { PointOfSale } from "@/components/point-of-sale";
 
 export default async function MerchPage() {
   const { workspace } = await requireWorkspace();
@@ -24,6 +25,7 @@ export default async function MerchPage() {
     maxStock: m.maxStock,
     glyph: m.glyph,
     color: m.color,
+    imageUrl: m.imageUrl,
   }));
 
   return (
@@ -53,7 +55,7 @@ export default async function MerchPage() {
             <br />
             Suggested float: <span className="font-mono text-text">$120 small bills</span>
           </div>
-          <div className="mt-3 cursor-pointer rounded-lg bg-accent px-4 py-2.5 text-center text-[12.5px] font-semibold text-canvas">Open point of sale</div>
+          <PointOfSale items={dtos} />
         </div>
       </div>
     </div>

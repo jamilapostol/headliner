@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useActionState, useRef, useState, useTransition } from "react";
+import Image from "next/image";
 import { money } from "@/lib/format";
-import { adjustStock, createMerchItem } from "@/lib/actions/merch";
+import { adjustStock, createMerchItem, uploadMerchImage, type ActionState } from "@/lib/actions/merch";
 
 export type MerchItemDTO = {
   id: string;
@@ -14,6 +15,7 @@ export type MerchItemDTO = {
   maxStock: number;
   glyph: string;
   color: string;
+  imageUrl: string | null;
 };
 
 export function MerchTable({ items }: { items: MerchItemDTO[] }) {
@@ -54,9 +56,7 @@ export function MerchTable({ items }: { items: MerchItemDTO[] }) {
           return (
             <div key={m.id} className="grid grid-cols-[1.8fr_.8fr_.8fr_1.1fr_1fr] items-center gap-2.5 border-b border-white/[.05] px-[18px] py-3 hover:bg-white/[.03]">
               <div className="flex items-center gap-2.5">
-                <div className="grid h-[30px] w-[30px] flex-none place-items-center rounded-[7px] text-[12px] font-bold text-canvas" style={{ background: m.color }}>
-                  {m.glyph}
-                </div>
+                <MerchPhoto item={m} />
                 <div>
                   <div className="text-[13px] font-semibold">{m.name}</div>
                   <div className="text-[11px] text-white/40">{m.variant}</div>
@@ -129,6 +129,40 @@ export function MerchTable({ items }: { items: MerchItemDTO[] }) {
         </div>
       )}
     </div>
+  );
+}
+
+const initialUploadState: ActionState = {};
+
+function MerchPhoto({ item }: { item: MerchItemDTO }) {
+  const [state, uploadAction, pending] = useActionState(uploadMerchImage, initialUploadState);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  return (
+    <form ref={formRef} action={uploadAction} className="relative flex-none">
+      <input type="hidden" name="itemId" value={item.id} />
+      <label
+        title={state.error ?? "Click to change photo"}
+        className="grid h-[30px] w-[30px] flex-none cursor-pointer place-items-center overflow-hidden rounded-[7px] text-[12px] font-bold text-canvas hover:opacity-80"
+        style={{ background: item.imageUrl ? undefined : item.color }}
+      >
+        {item.imageUrl ? (
+          <Image src={item.imageUrl} alt={item.name} width={30} height={30} className="h-full w-full object-cover" />
+        ) : pending ? (
+          "…"
+        ) : (
+          item.glyph
+        )}
+        <input
+          type="file"
+          name="file"
+          accept="image/*"
+          className="hidden"
+          onChange={() => formRef.current?.requestSubmit()}
+        />
+      </label>
+      {state.error && <div className="absolute top-full left-0 z-10 mt-1 w-max max-w-[160px] text-[10.5px] text-orange">{state.error}</div>}
+    </form>
   );
 }
 

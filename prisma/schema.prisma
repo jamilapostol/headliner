@@ -184,6 +184,7 @@ model MerchItem {
   maxStock    Int     @default(1)
   glyph       String  @default("M")
   color       String  @default("#3fe87a")
+  imageUrl    String? // public URL in the "merch" storage bucket
   createdAt   DateTime @default(now())
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
