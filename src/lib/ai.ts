@@ -1,4 +1,4 @@
-// Pilot AI — deterministic, template-based "AI" for the MVP so these
+// Roadie AI — deterministic, template-based "AI" for the MVP so these
 // features work end-to-end without an external LLM key. Swap the bodies of
 // these two functions for real Claude calls behind /api/ai when ready; the
 // call sites (bookings drawer, contracts panel) don't need to change.

@@ -12,7 +12,7 @@ export default function LoginPage() {
           <span className="text-[15px] font-bold">HEADLINER</span>
         </Link>
         <h1 className="mb-1 text-center text-[26px] font-semibold tracking-tight">Welcome back</h1>
-        <p className="mb-7 text-center text-[13.5px] text-muted">Log in to your cockpit.</p>
+        <p className="mb-7 text-center text-[13.5px] text-muted">Log in to your soundboard.</p>
         <AuthForm mode="login" action={logIn} />
       </div>
     </div>

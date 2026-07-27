@@ -106,7 +106,7 @@ export function ContractsView({ contracts, plan }: { contracts: ContractDTO[]; p
               </div>
             ) : (
               <div className="rounded-xl border border-purple/30 bg-purple/[.06] p-4">
-                <div className="mb-1 text-[12.5px] font-semibold text-purple">Pilot AI — contract summary</div>
+                <div className="mb-1 text-[12.5px] font-semibold text-purple">Roadie AI — contract summary</div>
                 <div className="text-[12px] leading-relaxed text-white/60">
                   AI risk flags and plain-English summaries unlock on the Touring plan.{" "}
                   <Link href="/app/billing" className="text-accent underline">

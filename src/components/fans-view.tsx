@@ -102,14 +102,14 @@ export function FansView({ fans, plan }: { fans: FanDTO[]; plan: string }) {
         <div className="mt-4 flex items-center gap-3 rounded-[10px] border border-accent/25 bg-accent-soft px-4 py-3">
           <span className="h-2 w-2 flex-none rounded-full bg-accent" />
           <div className="text-[13px]">
-            <strong className="text-accent">Pilot AI:</strong> {vipCount} VIPs are within 30 mi of an upcoming show but haven&apos;t bought tickets.{" "}
+            <strong className="text-accent">Roadie AI:</strong> {vipCount} VIPs are within 30 mi of an upcoming show but haven&apos;t bought tickets.{" "}
             <span className="cursor-pointer text-accent underline">Send them a personal invite →</span>
           </div>
         </div>
       ) : (
         <div className="mt-4 flex items-center gap-3 rounded-[10px] border border-purple/30 bg-purple/[.06] px-4 py-3">
           <div className="text-[13px] text-white/60">
-            <strong className="text-purple">Pilot AI:</strong> VIP-invite suggestions unlock on the Touring plan.{" "}
+            <strong className="text-purple">Roadie AI:</strong> VIP-invite suggestions unlock on the Touring plan.{" "}
             <Link href="/app/billing" className="text-accent underline">
               Upgrade →
             </Link>

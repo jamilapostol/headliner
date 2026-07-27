@@ -87,14 +87,14 @@ export function CampaignsView({
             <div className="flex items-center gap-3 rounded-[10px] border border-accent/25 bg-accent-soft px-4 py-3">
               <span className="h-2 w-2 flex-none rounded-full bg-accent" />
               <div className="text-[13px]">
-                <strong className="text-accent">Pilot AI:</strong> Next city announce is drafted for subscribers within 50 mi of your next confirmed show.{" "}
+                <strong className="text-accent">Roadie AI:</strong> Next city announce is drafted for subscribers within 50 mi of your next confirmed show.{" "}
                 <span className="cursor-pointer text-accent underline">Review draft →</span>
               </div>
             </div>
           ) : (
             <div className="flex items-center gap-3 rounded-[10px] border border-purple/30 bg-purple/[.06] px-4 py-3">
               <div className="text-[13px] text-white/60">
-                <strong className="text-purple">Pilot AI:</strong> Auto-drafted announcements unlock on the Touring plan.{" "}
+                <strong className="text-purple">Roadie AI:</strong> Auto-drafted announcements unlock on the Touring plan.{" "}
                 <Link href="/app/billing" className="text-accent underline">
                   Upgrade →
                 </Link>

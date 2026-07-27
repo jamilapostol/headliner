@@ -12,7 +12,7 @@ const FEATURES = [
   { glyph: "◉", color: "text-blue", title: "Music-native CRM", body: "Promoters, buyers, press and sponsors — with relationship strength and last-contact nudges." },
   { glyph: "▣", color: "text-orange", title: "Merch that counts itself", body: "Per-show inventory, margins, and restock forecasts before you run out in Denver." },
   { glyph: "$", color: "text-accent", title: "Money, settled", body: "Guarantees, settlements, invoices and P&L by tour, city and venue. Tax-season ready." },
-  { glyph: "✳", color: "text-purple", title: "Pilot AI", body: "Drafts your follow-ups, summarizes contracts, flags radius clauses, and predicts your best cities." },
+  { glyph: "✳", color: "text-purple", title: "Roadie AI", body: "Drafts your follow-ups, summarizes contracts, flags radius clauses, and predicts your best cities." },
 ];
 
 function tiers(annual: boolean) {
@@ -43,7 +43,7 @@ function tiers(annual: boolean) {
       per: "/mo",
       popular: true,
       cta: "Choose Touring",
-      feats: ["Everything in Pro", "Tour routing + day sheets", "Pilot AI (drafts, summaries)", "Contracts + e-sign", "3 team seats"],
+      feats: ["Everything in Pro", "Tour routing + day sheets", "Roadie AI (drafts, summaries)", "Contracts + e-sign", "3 team seats"],
     },
     {
       name: "Management Team",
@@ -63,7 +63,7 @@ const MATRIX: Array<[string, string, string, string, string]> = [
   ["Merch inventory", "—", "✓", "✓", "✓"],
   ["Financial hub + P&L", "—", "✓", "✓", "✓"],
   ["Tour routing + day sheets", "—", "—", "✓", "✓"],
-  ["Pilot AI", "—", "—", "✓", "✓"],
+  ["Roadie AI", "—", "—", "✓", "✓"],
   ["Contracts + e-sign", "—", "—", "✓", "✓"],
   ["Team seats", "1", "1", "3", "10"],
   ["Multi-artist workspaces", "—", "—", "—", "✓"],
@@ -104,7 +104,7 @@ export default function LandingPage() {
         <h1 className="mb-[18px] text-[34px] leading-[1.1] tracking-[-.03em] text-balance sm:text-[52px] sm:leading-[1.08]">
           Your whole career.
           <br />
-          One <span className="text-accent">cockpit</span>.
+          One <span className="text-accent">soundboard</span>.
         </h1>
         <p className="mx-auto mb-[30px] max-w-[560px] text-[15px] leading-[1.55] text-white/60 text-pretty sm:text-[17px]">
           Bookings, tours, merch, fans and money — the operating system for artists who run their career without a

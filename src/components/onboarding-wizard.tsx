@@ -41,8 +41,8 @@ const RECS: Record<"light" | "heavy" | "team", { plan: PlanChoice; name: string;
     plan: "touring",
     name: "Touring Artist",
     price: "$59",
-    reason: "You're on the road most of the year — routing, day sheets and Pilot AI pay for themselves on the first run.",
-    feats: ["Tour routing + day sheets", "Pilot AI drafts & summaries", "Contracts + e-sign", "3 team seats"],
+    reason: "You're on the road most of the year — routing, day sheets and Roadie AI pay for themselves on the first run.",
+    feats: ["Tour routing + day sheets", "Roadie AI drafts & summaries", "Contracts + e-sign", "3 team seats"],
   },
   team: {
     plan: "team",
@@ -186,7 +186,7 @@ export function OnboardingWizard() {
 
         {step === 4 && (
           <>
-            <h1 className="mb-2 text-[30px] tracking-[-.02em]">Your co-pilot recommends</h1>
+            <h1 className="mb-2 text-[30px] tracking-[-.02em]">Your roadie recommends</h1>
             <p className="mb-7 text-[14.5px] text-white/55">{rec.reason}</p>
             <div className="relative mb-3.5 rounded-2xl border border-accent/45 bg-accent-soft p-6">
               <div className="absolute -top-[11px] left-6 rounded-[20px] bg-yellow px-3 py-1 font-mono text-[10px] font-semibold tracking-[.1em] text-canvas">

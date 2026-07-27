@@ -16,7 +16,7 @@ const splineMono = Spline_Sans_Mono({
 
 export const metadata: Metadata = {
   title: "HEADLINER",
-  description: "Your whole career. One cockpit.",
+  description: "Your whole career. One soundboard.",
   manifest: "/manifest.json",
   icons: {
     icon: "/icon-512.png",

@@ -197,7 +197,7 @@ export function BookingsBoard({ bookings, plan, artistName }: { bookings: Bookin
             <div className="rounded-xl border border-accent/30 bg-accent-soft p-3.5">
               <div className="mb-2.5 flex items-center gap-2">
                 <span className="h-[7px] w-[7px] rounded-full bg-accent" />
-                <span className="text-[12.5px] font-semibold text-accent">Pilot AI — draft follow-up</span>
+                <span className="text-[12.5px] font-semibold text-accent">Roadie AI — draft follow-up</span>
               </div>
               {draft && draft.bookingId === open.id ? (
                 <>
@@ -235,7 +235,7 @@ export function BookingsBoard({ bookings, plan, artistName }: { bookings: Bookin
             </div>
           ) : (
             <div className="rounded-xl border border-purple/30 bg-purple/[.06] p-3.5">
-              <div className="mb-1 text-[12.5px] font-semibold text-purple">Pilot AI — draft follow-up</div>
+              <div className="mb-1 text-[12.5px] font-semibold text-purple">Roadie AI — draft follow-up</div>
               <div className="text-[12px] leading-relaxed text-white/60">
                 Email drafts, contract summaries and routing suggestions unlock on the Touring plan.{" "}
                 <a href="/app/billing" className="text-accent underline">
