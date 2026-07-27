@@ -26,14 +26,12 @@ export function AppSidebar({ userName, plan, avatarUrl }: { userName: string; pl
     .toUpperCase();
 
   const avatar = avatarUrl ? (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={avatarUrl} alt={userName} className="h-8 w-8 flex-none rounded-full object-cover" />
+    <Image src={avatarUrl} alt={userName} width={32} height={32} className="h-8 w-8 flex-none rounded-full object-cover" />
   ) : (
     <div className="grid h-8 w-8 flex-none place-items-center rounded-full bg-yellow text-[13px] font-bold text-canvas">{initials}</div>
   );
   const avatarSm = avatarUrl ? (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={avatarUrl} alt={userName} className="h-7 w-7 rounded-full object-cover" />
+    <Image src={avatarUrl} alt={userName} width={28} height={28} className="h-7 w-7 rounded-full object-cover" />
   ) : (
     <div className="grid h-7 w-7 place-items-center rounded-full bg-yellow text-[11px] font-bold text-canvas">{initials}</div>
   );

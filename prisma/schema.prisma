@@ -113,6 +113,8 @@ model Contact {
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   bookings  Booking[]
+
+  @@index([workspaceId])
 }
 
 model Booking {
@@ -135,6 +137,8 @@ model Booking {
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   contact   Contact?  @relation(fields: [contactId], references: [id])
   tourStop  TourStop?
+
+  @@index([workspaceId])
 }
 
 model Tour {
@@ -147,6 +151,8 @@ model Tour {
 
   workspace Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   stops     TourStop[]
+
+  @@index([workspaceId])
 }
 
 model TourStop {
@@ -163,6 +169,8 @@ model TourStop {
 
   tour    Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
   booking Booking? @relation(fields: [bookingId], references: [id])
+
+  @@index([tourId])
 }
 
 model MerchItem {
@@ -179,6 +187,8 @@ model MerchItem {
   createdAt   DateTime @default(now())
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
 }
 
 enum ContractStatus {
@@ -203,6 +213,8 @@ model Contract {
   createdAt   DateTime       @default(now())
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
 }
 
 model Task {
@@ -214,6 +226,8 @@ model Task {
   createdAt   DateTime  @default(now())
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
 }
 
 model Transaction {
@@ -227,6 +241,8 @@ model Transaction {
   createdAt   DateTime         @default(now())
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
 }
 
 enum FanTier {
@@ -250,6 +266,8 @@ model Fan {
   createdAt     DateTime @default(now())
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
 }
 
 model Campaign {
@@ -264,6 +282,8 @@ model Campaign {
   createdAt     DateTime @default(now())
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
 }
 
 model Automation {

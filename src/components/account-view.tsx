@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useRef } from "react";
+import Image from "next/image";
 import { updateProfile, changeEmail, changePassword, uploadAvatar, type ActionState } from "@/lib/actions/account";
 
 type Address = {
@@ -41,8 +42,7 @@ export function AccountView({
         <div className="mb-4 text-[13.5px] font-semibold">Photo</div>
         <form ref={avatarFormRef} action={avatarAction} className="flex items-center gap-4">
           {avatarUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={avatarUrl} alt={name} className="h-16 w-16 flex-none rounded-full object-cover" />
+            <Image src={avatarUrl} alt={name} width={64} height={64} className="h-16 w-16 flex-none rounded-full object-cover" />
           ) : (
             <div className="grid h-16 w-16 flex-none place-items-center rounded-full bg-yellow text-[20px] font-bold text-canvas">
               {initials}

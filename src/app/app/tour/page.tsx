@@ -6,20 +6,21 @@ import { TourView, type TourDTO } from "@/components/tour-view";
 export default async function TourPage() {
   const { workspace } = await requireWorkspace();
 
-  const tour = await db.tour.findFirst({
-    where: { workspaceId: workspace.id },
-    orderBy: { startDate: "asc" },
-    include: { stops: { include: { booking: true }, orderBy: { seq: "asc" } } },
-  });
+  const [tour, eligibleBookings] = await Promise.all([
+    db.tour.findFirst({
+      where: { workspaceId: workspace.id },
+      orderBy: { startDate: "asc" },
+      include: { stops: { include: { booking: true }, orderBy: { seq: "asc" } } },
+    }),
+    db.booking.findMany({
+      where: { workspaceId: workspace.id, stage: { in: ["Confirmed", "Paid"] }, tourStop: null },
+      orderBy: { date: "asc" },
+    }),
+  ]);
 
   if (!tour) {
     return <NewTourForm />;
   }
-
-  const eligibleBookings = await db.booking.findMany({
-    where: { workspaceId: workspace.id, stage: { in: ["Confirmed", "Paid"] }, tourStop: null },
-    orderBy: { date: "asc" },
-  });
 
   const dto: TourDTO = {
     id: tour.id,
