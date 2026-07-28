@@ -317,3 +317,13 @@ model Integration {
   @@unique([workspaceId, key])
   @@index([workspaceId])
 }
+
+// Editable marketing copy for the public landing page. Not workspace-scoped —
+// this is site-wide content. A missing row for a given key just means "use
+// the code default" (see src/lib/site-content.ts), so this table can be
+// empty and the landing page still renders correctly.
+model SiteContent {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
