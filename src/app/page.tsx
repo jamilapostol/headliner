@@ -263,6 +263,14 @@ export default function LandingPage() {
           Start free
         </Link>
         <div className="mt-10 font-mono text-[11px] text-white/30">© 2026 HEADLINER · By musicians, for musicians</div>
+        <div className="mt-2.5 flex items-center justify-center gap-4 font-mono text-[11px] text-white/30">
+          <Link href="/privacy" className="hover:text-white/60">
+            Privacy Policy
+          </Link>
+          <Link href="/terms" className="hover:text-white/60">
+            Terms of Service
+          </Link>
+        </div>
       </div>
     </div>
   );
