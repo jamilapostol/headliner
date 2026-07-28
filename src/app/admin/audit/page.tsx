@@ -27,7 +27,7 @@ export default async function AdminAuditPage() {
             <div>TARGET</div>
           </div>
           {entries.map((e) => (
-            <div key={e.id} className="grid grid-cols-[1fr_1.4fr_1.6fr_2.4fr_1fr] items-start gap-3 border-b border-white/[.05] px-[18px] py-3 last:border-b-0 hover:bg-white/[.02]">
+            <div key={e.id} className="grid grid-cols-[1fr_1.4fr_1.6fr_2.4fr_1fr] items-start gap-3 border-b border-text/[.05] px-[18px] py-3 last:border-b-0 hover:bg-text/[.03]">
               <div className="text-[11.5px] text-text/50">
                 {e.createdAt.toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZone: "UTC" })}
               </div>

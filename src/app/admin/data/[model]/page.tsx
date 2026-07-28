@@ -42,7 +42,7 @@ export default async function AdminModelPage({ params }: { params: Promise<{ mod
           </thead>
           <tbody>
             {rows.map((row) => (
-              <tr key={String(row.id)} className="border-b border-white/[.05] last:border-b-0 hover:bg-white/[.02]">
+              <tr key={String(row.id)} className="border-b border-text/[.05] last:border-b-0 hover:bg-text/[.03]">
                 {columns.map((f) => (
                   <td key={f.name} className="max-w-[220px] truncate whitespace-nowrap px-3 py-2 text-text/75">
                     {formatCell(row[f.name])}

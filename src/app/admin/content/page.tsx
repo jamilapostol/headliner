@@ -21,7 +21,7 @@ export default async function AdminContentPage() {
       <div className="flex flex-col gap-6">
         {sections.map((section) => (
           <div key={section} className="rounded-card border border-border bg-surface px-5 py-1">
-            <div className="border-b border-white/[.06] py-3 text-[13px] font-semibold text-text/70">{section}</div>
+            <div className="border-b border-text/[.06] py-3 text-[13px] font-semibold text-text/70">{section}</div>
             {SITE_CONTENT_FIELDS.filter((f) => f.section === section).map((f) => (
               <SiteContentField
                 key={f.key}

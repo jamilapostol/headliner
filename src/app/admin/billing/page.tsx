@@ -115,7 +115,7 @@ export default async function AdminBillingPage() {
               <div>DUE</div>
             </div>
             {rows.map((r) => (
-              <div key={r.workspaceId} className="grid grid-cols-[1.6fr_1fr_1fr_1fr_1fr_1fr] items-center gap-3 border-b border-white/[.05] px-[18px] py-3 last:border-b-0 hover:bg-white/[.02]">
+              <div key={r.workspaceId} className="grid grid-cols-[1.6fr_1fr_1fr_1fr_1fr_1fr] items-center gap-3 border-b border-text/[.05] px-[18px] py-3 last:border-b-0 hover:bg-text/[.03]">
                 <div>
                   <div className="text-[13px] font-semibold">{r.name}</div>
                   {r.error && <div className="text-[10.5px] text-orange">{r.error}</div>}

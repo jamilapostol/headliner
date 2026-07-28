@@ -66,7 +66,7 @@ export function AdminWorkspacesTable({ workspaces }: { workspaces: WorkspaceRow[
             <div />
           </div>
           {filtered.map((w) => (
-            <div key={w.id} className="grid grid-cols-[1.6fr_1fr_1.6fr_1fr_1fr_auto] items-center gap-3 border-b border-white/[.05] px-[18px] py-3 last:border-b-0 hover:bg-white/[.02]">
+            <div key={w.id} className="grid grid-cols-[1.6fr_1fr_1.6fr_1fr_1fr_auto] items-center gap-3 border-b border-text/[.05] px-[18px] py-3 last:border-b-0 hover:bg-text/[.03]">
               <div>
                 <div className="text-[13px] font-semibold">{w.name}</div>
                 <div className="font-mono text-[10px] text-text/35">{w.id}</div>

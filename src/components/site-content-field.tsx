@@ -37,7 +37,7 @@ export function SiteContentField({
   const Input = multiline ? "textarea" : "input";
 
   return (
-    <div className="border-b border-white/[.05] py-3.5 last:border-b-0">
+    <div className="border-b border-text/[.05] py-3.5 last:border-b-0">
       <div className="mb-1.5 flex items-center justify-between">
         <span className="text-[12px] font-medium text-text/50">{label}</span>
         {isOverridden && <span className="font-mono text-[9.5px] tracking-[.08em] text-orange">EDITED</span>}
