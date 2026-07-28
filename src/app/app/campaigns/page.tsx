@@ -1,23 +1,32 @@
 import { requireWorkspace } from "@/lib/workspace";
 import { db } from "@/lib/db";
+import { resendEnabled } from "@/lib/resend";
 import { CampaignsView, type CampaignDTO, type AutomationDTO } from "@/components/campaigns-view";
+
+const FAN_TIERS = ["VIP", "Patron", "Donor", "Fan"] as const;
 
 export default async function CampaignsPage() {
   const { workspace } = await requireWorkspace();
 
-  const [campaigns, automations, fanCount] = await Promise.all([
-    db.campaign.findMany({ where: { workspaceId: workspace.id }, orderBy: { sentAt: "desc" } }),
+  const [campaigns, automations, subscribedFans, tierCounts] = await Promise.all([
+    db.campaign.findMany({ where: { workspaceId: workspace.id }, orderBy: { createdAt: "desc" } }),
     db.automation.findMany({ where: { workspaceId: workspace.id }, orderBy: { id: "asc" } }),
-    db.fan.count({ where: { workspaceId: workspace.id } }),
+    db.fan.count({ where: { workspaceId: workspace.id, unsubscribed: false, email: { not: null } } }),
+    Promise.all(
+      FAN_TIERS.map((tier) =>
+        db.fan.count({ where: { workspaceId: workspace.id, tier, unsubscribed: false, email: { not: null } } })
+      )
+    ),
   ]);
 
   const campaignDtos: CampaignDTO[] = campaigns.map((c) => ({
     id: c.id,
     name: c.name,
-    audienceLabel: c.audienceLabel,
-    sentAt: c.sentAt.toISOString(),
-    openRate: c.openRate,
-    clickRate: c.clickRate,
+    subject: c.subject,
+    audienceTier: c.audienceTier,
+    status: c.status,
+    recipientCount: c.recipientCount,
+    sentAt: c.sentAt ? c.sentAt.toISOString() : null,
     revenue: c.revenue,
   }));
 
@@ -28,5 +37,22 @@ export default async function CampaignsPage() {
     enabled: a.enabled,
   }));
 
-  return <CampaignsView campaigns={campaignDtos} automations={automationDtos} subscriberCount={fanCount} plan={workspace.plan} />;
+  const audienceCounts = {
+    all: subscribedFans,
+    VIP: tierCounts[0],
+    Patron: tierCounts[1],
+    Donor: tierCounts[2],
+    Fan: tierCounts[3],
+  };
+
+  return (
+    <CampaignsView
+      campaigns={campaignDtos}
+      automations={automationDtos}
+      subscriberCount={subscribedFans}
+      audienceCounts={audienceCounts}
+      resendEnabled={resendEnabled}
+      plan={workspace.plan}
+    />
+  );
 }

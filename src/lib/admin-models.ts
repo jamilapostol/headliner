@@ -29,6 +29,7 @@ const CONTACT_CATEGORY = ["Venues", "Promoters", "Festivals", "Media", "Sponsors
 const TRANSACTION_KIND = ["income", "expense"] as const;
 const CONTRACT_STATUS = ["DRAFT", "AWAITING_SIGN", "SIGNED", "ACTIVE"] as const;
 const FAN_TIER = ["VIP", "Patron", "Donor", "Fan"] as const;
+const CAMPAIGN_STATUS = ["Draft", "Sending", "Sent", "Failed"] as const;
 
 const id: FieldDef = { name: "id", type: "string", readonly: true };
 const createdAt: FieldDef = { name: "createdAt", type: "datetime", readonly: true };
@@ -238,6 +239,7 @@ export const ADMIN_MODELS: ModelDef[] = [
       { name: "showsAttended", type: "int" },
       { name: "lastSeenLabel", type: "string" },
       { name: "notes", type: "text" },
+      { name: "unsubscribed", type: "boolean" },
       createdAt,
     ],
   },
@@ -250,10 +252,14 @@ export const ADMIN_MODELS: ModelDef[] = [
       id,
       { name: "workspaceId", type: "string", required: true },
       { name: "name", type: "string", required: true },
-      { name: "audienceLabel", type: "string", required: true },
-      { name: "sentAt", type: "datetime", required: true },
-      { name: "openRate", type: "float", required: true },
-      { name: "clickRate", type: "float", required: true },
+      { name: "subject", type: "string" },
+      { name: "body", type: "text" },
+      { name: "audienceTier", type: "enum", enumValues: FAN_TIER },
+      { name: "status", type: "enum", enumValues: CAMPAIGN_STATUS },
+      { name: "recipientCount", type: "int" },
+      { name: "sentAt", type: "datetime" },
+      { name: "openRate", type: "float" },
+      { name: "clickRate", type: "float" },
       { name: "revenue", type: "int" },
       createdAt,
     ],

@@ -275,11 +275,7 @@ function ContactDrawer({ contact, onClose }: { contact: ContactDTO; onClose: () 
       </div>
 
       <div className="mb-2 font-mono text-[10.5px] tracking-[.1em] text-text/40">STRENGTH</div>
-      <div className="mb-5 flex gap-1">
-        {[1, 2, 3, 4, 5].map((n) => (
-          <span key={n} className="h-2.5 w-2.5 rounded-full" style={{ background: n <= contact.strength ? "#3fe87a" : "rgba(var(--border-rgb),.1)" }} />
-        ))}
-      </div>
+      <StrengthPicker contactId={contact.id} strength={contact.strength} />
 
       <EditableField
         label="NOTES"
@@ -288,6 +284,38 @@ function ContactDrawer({ contact, onClose }: { contact: ContactDTO; onClose: () 
         multiline
         onSave={(v) => updateContact(contact.id, { notes: v })}
       />
+    </div>
+  );
+}
+
+function StrengthPicker({ contactId, strength }: { contactId: string; strength: number }) {
+  const [committed, setCommitted] = useState(strength);
+  const [hovered, setHovered] = useState<number | null>(null);
+  const [, startTransition] = useTransition();
+
+  function pick(n: number) {
+    setCommitted(n);
+    startTransition(() => updateContact(contactId, { strength: n }));
+  }
+
+  const shown = hovered ?? committed;
+
+  return (
+    <div className="mb-5 flex items-center gap-2.5">
+      <div className="flex gap-1" onMouseLeave={() => setHovered(null)}>
+        {[1, 2, 3, 4, 5].map((n) => (
+          <span
+            key={n}
+            role="button"
+            aria-label={`Set relationship strength to ${n}`}
+            onClick={() => pick(n)}
+            onMouseEnter={() => setHovered(n)}
+            className="h-2.5 w-2.5 cursor-pointer rounded-full transition-transform hover:scale-125"
+            style={{ background: n <= shown ? "#3fe87a" : "rgba(var(--border-rgb),.15)" }}
+          />
+        ))}
+      </div>
+      <span className="font-mono text-[11px] text-text/40">{committed}/5</span>
     </div>
   );
 }

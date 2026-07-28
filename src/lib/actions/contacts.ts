@@ -30,7 +30,7 @@ export async function createContact(formData: FormData) {
 
 export async function updateContact(
   contactId: string,
-  fields: { email?: string; phone?: string; notes?: string }
+  fields: { email?: string; phone?: string; notes?: string; strength?: number }
 ) {
   const session = await getSession();
   if (!session) return;
@@ -38,12 +38,15 @@ export async function updateContact(
   const contact = await db.contact.findUnique({ where: { id: contactId } });
   if (!contact || contact.workspaceId !== session.workspaceId) return;
 
+  const strength = fields.strength !== undefined ? Math.min(5, Math.max(1, Math.round(fields.strength))) : undefined;
+
   await db.contact.update({
     where: { id: contactId },
     data: {
       ...(fields.email !== undefined ? { email: fields.email || null } : {}),
       ...(fields.phone !== undefined ? { phone: fields.phone || null } : {}),
       ...(fields.notes !== undefined ? { notes: fields.notes || null } : {}),
+      ...(strength !== undefined ? { strength } : {}),
     },
   });
   revalidatePath("/app/contacts");

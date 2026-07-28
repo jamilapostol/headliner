@@ -216,10 +216,10 @@ async function main() {
 
   await db.campaign.createMany({
     data: [
-      { workspaceId: workspace.id, name: "Low Light Tour on sale", audienceLabel: "Full list", sentAt: new Date("2026-06-30"), openRate: 0.52, clickRate: 0.19, revenue: 384000 },
-      { workspaceId: workspace.id, name: "Seattle — 20 tickets left", audienceLabel: "Seattle metro (388)", sentAt: new Date("2026-07-12"), openRate: 0.61, clickRate: 0.27, revenue: 92000 },
-      { workspaceId: workspace.id, name: "Smoke-clear vinyl restock", audienceLabel: "Past buyers (912)", sentAt: new Date("2026-07-02"), openRate: 0.48, clickRate: 0.22, revenue: 141000 },
-      { workspaceId: workspace.id, name: "June patron update", audienceLabel: "Patrons (62)", sentAt: new Date("2026-06-28"), openRate: 0.84, clickRate: 0.31, revenue: null },
+      { workspaceId: workspace.id, name: "Low Light Tour on sale", subject: "Low Light Tour on sale", body: "Tickets are live — grab yours before the room sells out.", status: "Sent", recipientCount: 1200, sentAt: new Date("2026-06-30"), openRate: 0.52, clickRate: 0.19, revenue: 384000 },
+      { workspaceId: workspace.id, name: "Seattle — 20 tickets left", subject: "Seattle — 20 tickets left", body: "Down to the last 20 for Seattle. Don't sleep on it.", status: "Sent", recipientCount: 388, sentAt: new Date("2026-07-12"), openRate: 0.61, clickRate: 0.27, revenue: 92000 },
+      { workspaceId: workspace.id, name: "Smoke-clear vinyl restock", subject: "Smoke-clear vinyl restock", body: "The smoke-clear pressing is back in stock, limited run.", status: "Sent", recipientCount: 912, sentAt: new Date("2026-07-02"), openRate: 0.48, clickRate: 0.22, revenue: 141000 },
+      { workspaceId: workspace.id, name: "June patron update", subject: "June patron update", audienceTier: "Patron", body: "A quick behind-the-scenes update for our patrons this month.", status: "Sent", recipientCount: 62, sentAt: new Date("2026-06-28"), openRate: 0.84, clickRate: 0.31, revenue: null },
     ],
   });
   console.log("Seeded 4 campaigns");

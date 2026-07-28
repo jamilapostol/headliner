@@ -269,6 +269,7 @@ model Fan {
   showsAttended Int      @default(0)
   lastSeenLabel String?
   notes         String?
+  unsubscribed  Boolean  @default(false)
   createdAt     DateTime @default(now())
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
@@ -276,16 +277,27 @@ model Fan {
   @@index([workspaceId])
 }
 
+enum CampaignStatus {
+  Draft
+  Sending
+  Sent
+  Failed
+}
+
 model Campaign {
-  id            String   @id @default(cuid())
-  workspaceId   String
-  name          String
-  audienceLabel String
-  sentAt        DateTime
-  openRate      Float
-  clickRate     Float
-  revenue       Int? // cents; null when not applicable (e.g. patron updates)
-  createdAt     DateTime @default(now())
+  id             String         @id @default(cuid())
+  workspaceId    String
+  name           String
+  subject        String         @default("")
+  body           String         @default("") // plain text; sent as the email body
+  audienceTier   FanTier? // null = all subscribed fans
+  status         CampaignStatus @default(Draft)
+  recipientCount Int            @default(0) // set when queued; actual send count once sent
+  sentAt         DateTime?
+  openRate       Float          @default(0)
+  clickRate      Float          @default(0)
+  revenue        Int? // cents; null when not applicable (e.g. patron updates)
+  createdAt      DateTime       @default(now())
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
