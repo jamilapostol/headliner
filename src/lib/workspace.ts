@@ -17,5 +17,6 @@ export const requireWorkspace = cache(async () => {
   return {
     user: { id: session.userId, name: session.name, email: session.email, avatarUrl: session.avatarUrl, role: session.role },
     workspace,
+    impersonatedBy: session.impersonatedBy,
   };
 });

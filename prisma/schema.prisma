@@ -82,6 +82,19 @@ model Workspace {
   integrations Integration[]
 }
 
+model AdminAuditLog {
+  id         String   @id @default(cuid())
+  adminEmail String
+  action     String // e.g. "workspace.plan.update", "record.create", "record.update", "record.delete", "impersonate.start"
+  targetType String // model key, or "workspace"
+  targetId   String
+  detail     String?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([targetType, targetId])
+}
+
 model Membership {
   id          String   @id @default(cuid())
   workspaceId String

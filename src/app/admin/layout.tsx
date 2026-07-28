@@ -24,6 +24,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <Link href="/admin/data" className="rounded-lg px-2.5 py-2 text-[13px] font-medium hover:bg-text/5">
             Data browser
           </Link>
+          <Link href="/admin/billing" className="rounded-lg px-2.5 py-2 text-[13px] font-medium hover:bg-text/5">
+            Billing health
+          </Link>
+          <Link href="/admin/audit" className="rounded-lg px-2.5 py-2 text-[13px] font-medium hover:bg-text/5">
+            Audit log
+          </Link>
         </nav>
         <div className="mt-8 border-t border-border pt-4 px-2">
           <Link href="/app" className="text-[12px] text-text/50 hover:text-text">

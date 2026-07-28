@@ -1,6 +1,9 @@
 import { cache } from "react";
+import { cookies } from "next/headers";
 import { db } from "@/lib/db";
 import { createClient } from "@/lib/supabase/server";
+import { isAdminEmail } from "@/lib/admin";
+import { IMPERSONATION_COOKIE } from "@/lib/impersonation";
 
 export type Session = {
   userId: string;
@@ -10,6 +13,11 @@ export type Session = {
   avatarUrl: string | null;
   role: string;
   membershipAccepted: boolean;
+  // Set when an admin is viewing the app as another workspace. The rest of
+  // the session (userId/workspaceId/role) already reflects the target
+  // workspace's owner — this just carries the real admin's identity through
+  // for the "viewing as" banner and the exit action.
+  impersonatedBy?: { email: string };
 };
 
 // Resolves the Supabase-authenticated user plus their workspace membership.
@@ -35,18 +43,35 @@ export const getSession = cache(async (): Promise<Session | null> => {
   const user = session?.user;
   if (!user) return null;
 
-  const membership = await db.membership.findFirst({ where: { userId: user.id } });
+  const realEmail = user.email ?? "";
+  let membership = await db.membership.findFirst({ where: { userId: user.id } });
   if (!membership) return null;
 
-  const name = (user.user_metadata?.name as string | undefined) ?? user.email ?? "";
-  const avatarUrl = (user.user_metadata?.avatar_url as string | undefined) ?? null;
+  let impersonatedBy: { email: string } | undefined;
+  if (isAdminEmail(realEmail)) {
+    const targetWorkspaceId = (await cookies()).get(IMPERSONATION_COOKIE)?.value;
+    if (targetWorkspaceId && targetWorkspaceId !== membership.workspaceId) {
+      const targetMembership = await db.membership.findFirst({
+        where: { workspaceId: targetWorkspaceId },
+        orderBy: { createdAt: "asc" },
+      });
+      if (targetMembership) {
+        membership = targetMembership;
+        impersonatedBy = { email: realEmail };
+      }
+    }
+  }
+
+  const name = impersonatedBy ? "Support" : ((user.user_metadata?.name as string | undefined) ?? user.email ?? "");
+  const avatarUrl = impersonatedBy ? null : ((user.user_metadata?.avatar_url as string | undefined) ?? null);
   return {
-    userId: user.id,
+    userId: membership.userId,
     workspaceId: membership.workspaceId,
-    email: user.email ?? "",
+    email: realEmail,
     name,
     avatarUrl,
     role: membership.role,
     membershipAccepted: membership.acceptedAt !== null,
+    impersonatedBy,
   };
 });
