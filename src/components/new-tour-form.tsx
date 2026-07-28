@@ -13,10 +13,10 @@ export function NewTourForm() {
   return (
     <div className="mx-auto max-w-[420px] px-4 py-5 sm:px-8 sm:py-7">
       <h1 className="mb-1 text-[22px] tracking-[-.02em] sm:text-[26px]">Tour</h1>
-      <div className="mb-6 text-[13px] text-white/50">Create a tour, then add your confirmed bookings as stops to get routing and day sheets.</div>
+      <div className="mb-6 text-[13px] text-text/50">Create a tour, then add your confirmed bookings as stops to get routing and day sheets.</div>
       <form action={submit} className="flex flex-col gap-3 rounded-card border border-border bg-surface p-5">
         <label className="flex flex-col gap-1.5">
-          <span className="text-[12px] font-medium text-white/50">Tour name</span>
+          <span className="text-[12px] font-medium text-text/50">Tour name</span>
           <input
             name="name"
             required
@@ -26,7 +26,7 @@ export function NewTourForm() {
         </label>
         <div className="grid grid-cols-2 gap-3">
           <label className="flex flex-col gap-1.5">
-            <span className="text-[12px] font-medium text-white/50">Start date</span>
+            <span className="text-[12px] font-medium text-text/50">Start date</span>
             <input
               name="startDate"
               type="date"
@@ -35,7 +35,7 @@ export function NewTourForm() {
             />
           </label>
           <label className="flex flex-col gap-1.5">
-            <span className="text-[12px] font-medium text-white/50">End date</span>
+            <span className="text-[12px] font-medium text-text/50">End date</span>
             <input
               name="endDate"
               type="date"
@@ -47,7 +47,7 @@ export function NewTourForm() {
         <button
           type="submit"
           disabled={pending}
-          className="mt-1 cursor-pointer rounded-[10px] bg-accent py-2.5 text-[13.5px] font-semibold text-canvas disabled:opacity-60"
+          className="mt-1 cursor-pointer rounded-[10px] bg-accent py-2.5 text-[13.5px] font-semibold text-ink disabled:opacity-60"
         >
           {pending ? "Creating…" : "Create tour"}
         </button>

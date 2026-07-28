@@ -21,7 +21,7 @@ const STATUS_STYLE: Record<string, { bg: string; color: string; label: string }>
   SIGNED: { bg: "rgba(63,232,122,.1)", color: "#3fe87a", label: "SIGNED" },
   ACTIVE: { bg: "rgba(63,232,122,.1)", color: "#3fe87a", label: "ACTIVE" },
   AWAITING_SIGN: { bg: "rgba(232,228,63,.1)", color: "#e8e43f", label: "AWAITING SIGN" },
-  DRAFT: { bg: "rgba(255,255,255,.06)", color: "rgba(233,236,232,.5)", label: "DRAFT" },
+  DRAFT: { bg: "rgba(var(--border-rgb),.06)", color: "rgba(var(--fg-rgb),.5)", label: "DRAFT" },
 };
 
 function renewLabel(iso: string) {
@@ -42,16 +42,16 @@ export function ContractsView({ contracts, plan }: { contracts: ContractDTO[]; p
     <div className="mx-auto max-w-[1100px] px-4 py-5 sm:px-8 sm:py-7">
       <div className="mb-1 flex flex-wrap items-baseline justify-between gap-2">
         <h1 className="text-[22px] tracking-[-.02em] sm:text-[26px]">Contracts</h1>
-        <button onClick={() => setShowNew(true)} className="cursor-pointer rounded-lg bg-accent px-3.5 py-1.5 text-[12.5px] font-semibold text-canvas">
+        <button onClick={() => setShowNew(true)} className="cursor-pointer rounded-lg bg-accent px-3.5 py-1.5 text-[12.5px] font-semibold text-ink">
           + New contract
         </button>
       </div>
-      <div className="mb-[18px] text-[13px] text-white/50">Agreements, riders and renewals.</div>
+      <div className="mb-[18px] text-[13px] text-text/50">Agreements, riders and renewals.</div>
 
       <div className="grid grid-cols-1 items-start gap-3.5 lg:grid-cols-[1.6fr_1fr]">
         <div className="overflow-x-auto rounded-card border border-border bg-surface">
           <div className="min-w-[520px]">
-          <div className="grid grid-cols-[2fr_1fr_1fr_1fr] gap-3 border-b border-border px-[18px] py-[11px] font-mono text-[10.5px] tracking-[.1em] text-white/40">
+          <div className="grid grid-cols-[2fr_1fr_1fr_1fr] gap-3 border-b border-border px-[18px] py-[11px] font-mono text-[10.5px] tracking-[.1em] text-text/40">
             <div>AGREEMENT</div>
             <div>COUNTERPARTY</div>
             <div>VALUE</div>
@@ -63,17 +63,17 @@ export function ContractsView({ contracts, plan }: { contracts: ContractDTO[]; p
               <div
                 key={c.id}
                 onClick={() => setSelId(c.id)}
-                className="grid cursor-pointer grid-cols-[2fr_1fr_1fr_1fr] items-center gap-3 border-b border-white/[.05] px-[18px] py-3 hover:bg-white/[.03]"
+                className="grid cursor-pointer grid-cols-[2fr_1fr_1fr_1fr] items-center gap-3 border-b border-text/[.05] px-[18px] py-3 hover:bg-text/[.03]"
                 style={{ background: c.id === selected?.id ? "rgba(63,232,122,.07)" : "transparent" }}
               >
                 <div>
                   <div className="text-[13px] font-semibold">{c.name}</div>
-                  <div className="text-[11px] text-white/40">
+                  <div className="text-[11px] text-text/40">
                     {c.kind}
                     {c.date ? ` · ${c.date}` : ""}
                   </div>
                 </div>
-                <div className="text-[12.5px] text-white/70">{c.counterparty}</div>
+                <div className="text-[12.5px] text-text/70">{c.counterparty}</div>
                 <div className="font-mono text-[12.5px]">{c.value}</div>
                 <div className="w-fit rounded-full px-2.5 py-[3px] font-mono text-[10.5px]" style={{ background: s.bg, color: s.color }}>
                   {s.label}
@@ -81,7 +81,7 @@ export function ContractsView({ contracts, plan }: { contracts: ContractDTO[]; p
               </div>
             );
           })}
-          {contracts.length === 0 && <div className="px-[18px] py-7 text-center text-[13px] text-white/40">No contracts yet.</div>}
+          {contracts.length === 0 && <div className="px-[18px] py-7 text-center text-[13px] text-text/40">No contracts yet.</div>}
           </div>
         </div>
 
@@ -99,7 +99,7 @@ export function ContractsView({ contracts, plan }: { contracts: ContractDTO[]; p
                       <span className="flex-none font-mono" style={{ color: f.flag === "✓" ? "#3fe87a" : "#e8983f" }}>
                         {f.flag}
                       </span>
-                      <span className="text-white/80">{f.text}</span>
+                      <span className="text-text/80">{f.text}</span>
                     </div>
                   ))}
                 </div>
@@ -107,7 +107,7 @@ export function ContractsView({ contracts, plan }: { contracts: ContractDTO[]; p
             ) : (
               <div className="rounded-xl border border-purple/30 bg-purple/[.06] p-4">
                 <div className="mb-1 text-[12.5px] font-semibold text-purple">Roadie AI — contract summary</div>
-                <div className="text-[12px] leading-relaxed text-white/60">
+                <div className="text-[12px] leading-relaxed text-text/60">
                   AI risk flags and plain-English summaries unlock on the Touring plan.{" "}
                   <Link href="/app/billing" className="text-accent underline">
                     Upgrade →
@@ -120,14 +120,14 @@ export function ContractsView({ contracts, plan }: { contracts: ContractDTO[]; p
 
           <div className="rounded-card border border-border bg-surface px-4 py-[18px]">
             <div className="mb-2.5 text-[14.5px] font-semibold">Renewals coming up</div>
-            {renewals.length === 0 && <div className="text-[13px] text-white/40">Nothing on the horizon.</div>}
+            {renewals.length === 0 && <div className="text-[13px] text-text/40">Nothing on the horizon.</div>}
             {renewals.map((r) => {
               const label = renewLabel(r.renewsAt!);
               const soon = label.includes("days") && parseInt(label) <= 45;
               return (
-                <div key={r.id} className="flex items-center justify-between border-b border-white/[.05] py-1.5 last:border-b-0">
+                <div key={r.id} className="flex items-center justify-between border-b border-text/[.05] py-1.5 last:border-b-0">
                   <div className="text-[13px]">{r.name}</div>
-                  <div className="font-mono text-[11px]" style={{ color: soon ? "#e8983f" : "rgba(233,236,232,.5)" }}>
+                  <div className="font-mono text-[11px]" style={{ color: soon ? "#e8983f" : "rgba(var(--fg-rgb),.5)" }}>
                     {label}
                   </div>
                 </div>
@@ -161,7 +161,7 @@ function NewContractForm({ onClose }: { onClose: () => void }) {
         <form action={submit} className="flex flex-col gap-3">
           <Field label="Name" name="name" placeholder="Performance agreement — The Bluebird" />
           <label className="flex flex-col gap-1.5">
-            <span className="text-[12px] font-medium text-white/50">Kind</span>
+            <span className="text-[12px] font-medium text-text/50">Kind</span>
             <select
               name="kind"
               defaultValue="Performance"
@@ -178,7 +178,7 @@ function NewContractForm({ onClose }: { onClose: () => void }) {
           <Field label="Value" name="value" placeholder="$1,800" />
           <div className="grid grid-cols-2 gap-3">
             <label className="flex flex-col gap-1.5">
-              <span className="text-[12px] font-medium text-white/50">Status</span>
+              <span className="text-[12px] font-medium text-text/50">Status</span>
               <select
                 name="status"
                 defaultValue="DRAFT"
@@ -194,10 +194,10 @@ function NewContractForm({ onClose }: { onClose: () => void }) {
             <Field label="Renews (optional)" name="renewsAt" type="date" />
           </div>
           <div className="mt-2 flex gap-2">
-            <button type="button" onClick={onClose} className="flex-1 cursor-pointer rounded-[10px] border border-border py-2.5 text-[13.5px] text-white/70">
+            <button type="button" onClick={onClose} className="flex-1 cursor-pointer rounded-[10px] border border-border py-2.5 text-[13.5px] text-text/70">
               Cancel
             </button>
-            <button type="submit" disabled={pending} className="flex-1 cursor-pointer rounded-[10px] bg-accent py-2.5 text-[13.5px] font-semibold text-canvas disabled:opacity-60">
+            <button type="submit" disabled={pending} className="flex-1 cursor-pointer rounded-[10px] bg-accent py-2.5 text-[13.5px] font-semibold text-ink disabled:opacity-60">
               {pending ? "Adding…" : "Add contract"}
             </button>
           </div>
@@ -210,7 +210,7 @@ function NewContractForm({ onClose }: { onClose: () => void }) {
 function Field({ label, name, placeholder, type = "text" }: { label: string; name: string; placeholder?: string; type?: string }) {
   return (
     <label className="flex flex-col gap-1.5">
-      <span className="text-[12px] font-medium text-white/50">{label}</span>
+      <span className="text-[12px] font-medium text-text/50">{label}</span>
       <input
         name={name}
         type={type}
@@ -232,18 +232,18 @@ function DocumentCard({ contract }: { contract: ContractDTO }) {
       <div className="mb-2.5 text-[14.5px] font-semibold">Document</div>
       {contract.fileName ? (
         <div className="flex items-center gap-2.5">
-          <span className="flex-1 truncate text-[12.5px] text-white/80">{contract.fileName}</span>
+          <span className="flex-1 truncate text-[12.5px] text-text/80">{contract.fileName}</span>
           <a
             href={`/api/contracts/${contract.id}/document`}
             target="_blank"
             rel="noopener noreferrer"
-            className="cursor-pointer rounded-lg border border-white/15 px-2.5 py-1.5 text-[11.5px] text-white/70 hover:border-white/35"
+            className="cursor-pointer rounded-lg border border-text/15 px-2.5 py-1.5 text-[11.5px] text-text/70 hover:border-text/35"
           >
             View
           </a>
           <button
             onClick={() => startTransition(() => void removeContractDocument(contract.id))}
-            className="cursor-pointer px-1 text-[13px] text-white/40 hover:text-orange"
+            className="cursor-pointer px-1 text-[13px] text-text/40 hover:text-orange"
             aria-label="Remove document"
           >
             ×
@@ -252,7 +252,7 @@ function DocumentCard({ contract }: { contract: ContractDTO }) {
       ) : (
         <form ref={formRef} action={uploadAction} className="flex flex-col gap-2">
           <input type="hidden" name="contractId" value={contract.id} />
-          <label className="cursor-pointer rounded-[10px] border border-dashed border-white/20 px-3 py-4 text-center text-[12.5px] text-white/50 hover:border-accent/40 hover:text-white/70">
+          <label className="cursor-pointer rounded-[10px] border border-dashed border-text/20 px-3 py-4 text-center text-[12.5px] text-text/50 hover:border-accent/40 hover:text-text/70">
             {uploadPending ? "Uploading…" : "Click to upload a PDF or document"}
             <input
               type="file"

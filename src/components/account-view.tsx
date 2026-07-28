@@ -44,12 +44,12 @@ export function AccountView({
           {avatarUrl ? (
             <Image src={avatarUrl} alt={name} width={64} height={64} className="h-16 w-16 flex-none rounded-full object-cover" />
           ) : (
-            <div className="grid h-16 w-16 flex-none place-items-center rounded-full bg-yellow text-[20px] font-bold text-canvas">
+            <div className="grid h-16 w-16 flex-none place-items-center rounded-full bg-yellow text-[20px] font-bold text-ink">
               {initials}
             </div>
           )}
           <div className="flex flex-col gap-1.5">
-            <label className="cursor-pointer rounded-lg border border-white/15 px-3.5 py-2 text-center text-[12.5px] font-semibold text-white/80 hover:border-white/35">
+            <label className="cursor-pointer rounded-lg border border-text/15 px-3.5 py-2 text-center text-[12.5px] font-semibold text-text/80 hover:border-text/35">
               {avatarPending ? "Uploading…" : "Change photo"}
               <input
                 type="file"
@@ -59,7 +59,7 @@ export function AccountView({
                 onChange={() => avatarFormRef.current?.requestSubmit()}
               />
             </label>
-            <div className="text-[11px] text-white/40">PNG, JPG or GIF. Max 2MB.</div>
+            <div className="text-[11px] text-text/40">PNG, JPG or GIF. Max 2MB.</div>
             {avatarState.error && <div className="text-[12px] text-orange">{avatarState.error}</div>}
             {avatarState.success && <div className="text-[12px] text-accent">{avatarState.success}</div>}
           </div>
@@ -86,7 +86,7 @@ export function AccountView({
           <button
             type="submit"
             disabled={profilePending}
-            className="mt-1 w-fit cursor-pointer rounded-lg bg-accent px-4 py-2 text-[12.5px] font-semibold text-canvas disabled:opacity-60"
+            className="mt-1 w-fit cursor-pointer rounded-lg bg-accent px-4 py-2 text-[12.5px] font-semibold text-ink disabled:opacity-60"
           >
             {profilePending ? "Saving…" : "Save"}
           </button>
@@ -103,7 +103,7 @@ export function AccountView({
           <button
             type="submit"
             disabled={emailPending}
-            className="w-fit cursor-pointer rounded-lg border border-white/15 px-4 py-2 text-[12.5px] font-semibold text-white/80 disabled:opacity-60"
+            className="w-fit cursor-pointer rounded-lg border border-text/15 px-4 py-2 text-[12.5px] font-semibold text-text/80 disabled:opacity-60"
           >
             {emailPending ? "Saving…" : "Update email"}
           </button>
@@ -121,7 +121,7 @@ export function AccountView({
           <button
             type="submit"
             disabled={passwordPending}
-            className="w-fit cursor-pointer rounded-lg border border-white/15 px-4 py-2 text-[12.5px] font-semibold text-white/80 disabled:opacity-60"
+            className="w-fit cursor-pointer rounded-lg border border-text/15 px-4 py-2 text-[12.5px] font-semibold text-text/80 disabled:opacity-60"
           >
             {passwordPending ? "Saving…" : "Update password"}
           </button>
@@ -146,7 +146,7 @@ function Field({
 }) {
   return (
     <label className="flex flex-1 flex-col gap-1.5">
-      <span className="text-[12px] font-medium text-white/50">{label}</span>
+      <span className="text-[12px] font-medium text-text/50">{label}</span>
       <input
         name={name}
         type={type}

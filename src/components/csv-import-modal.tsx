@@ -78,7 +78,7 @@ export function CsvImportModal({
     <>
       <button
         onClick={() => setOpen(true)}
-        className="cursor-pointer rounded-lg border border-white/15 px-3.5 py-1.5 text-[12.5px] font-semibold text-white/75 hover:border-white/35"
+        className="cursor-pointer rounded-lg border border-text/15 px-3.5 py-1.5 text-[12.5px] font-semibold text-text/75 hover:border-text/35"
       >
         Import CSV
       </button>
@@ -88,18 +88,18 @@ export function CsvImportModal({
           <div onClick={(e) => e.stopPropagation()} className="flex max-h-[85vh] w-full max-w-[520px] flex-col rounded-2xl border border-border bg-surface p-6">
             <div className="mb-1 flex items-center justify-between">
               <div className="text-[17px] font-semibold">Import {entityLabel} from CSV</div>
-              <button onClick={close} className="cursor-pointer px-1 text-[18px] text-white/50 hover:text-text">
+              <button onClick={close} className="cursor-pointer px-1 text-[18px] text-text/50 hover:text-text">
                 ✕
               </button>
             </div>
 
             {stage.step === "picker" && (
               <>
-                <div className="mb-4 text-[12.5px] text-white/50">
+                <div className="mb-4 text-[12.5px] text-text/50">
                   First row should be column headers. We&apos;ll try to match them automatically —{" "}
-                  <span className="font-semibold text-white/70">{columns.map((c) => c.label).join(", ")}</span>.
+                  <span className="font-semibold text-text/70">{columns.map((c) => c.label).join(", ")}</span>.
                 </div>
-                <label className="cursor-pointer rounded-[10px] border border-dashed border-white/20 px-3 py-8 text-center text-[12.5px] text-white/50 hover:border-accent/40 hover:text-white/70">
+                <label className="cursor-pointer rounded-[10px] border border-dashed border-text/20 px-3 py-8 text-center text-[12.5px] text-text/50 hover:border-accent/40 hover:text-text/70">
                   Click to choose a .csv file
                   <input
                     ref={fileRef}
@@ -120,7 +120,7 @@ export function CsvImportModal({
                 <div className="mb-4 rounded-lg border border-orange/30 bg-orange-soft px-3.5 py-3 text-[12.5px] text-orange">{stage.message}</div>
                 <button
                   onClick={() => setStage({ step: "picker" })}
-                  className="cursor-pointer rounded-[10px] border border-border py-2.5 text-[13.5px] text-white/70"
+                  className="cursor-pointer rounded-[10px] border border-border py-2.5 text-[13.5px] text-text/70"
                 >
                   Try another file
                 </button>
@@ -129,20 +129,20 @@ export function CsvImportModal({
 
             {stage.step === "preview" && (
               <>
-                <div className="mb-3 text-[12.5px] text-white/55">
+                <div className="mb-3 text-[12.5px] text-text/55">
                   {stage.rows.length} row{stage.rows.length === 1 ? "" : "s"} ready to import.
                   {stage.unmatched.length > 0 && (
-                    <span className="text-white/35"> Ignoring unrecognized column{stage.unmatched.length === 1 ? "" : "s"}: {stage.unmatched.join(", ")}.</span>
+                    <span className="text-text/35"> Ignoring unrecognized column{stage.unmatched.length === 1 ? "" : "s"}: {stage.unmatched.join(", ")}.</span>
                   )}
                 </div>
-                <div className="mb-4 overflow-x-auto rounded-lg border border-white/[.08]">
+                <div className="mb-4 overflow-x-auto rounded-lg border border-text/[.08]">
                   <table className="w-full min-w-[420px] text-[11.5px]">
                     <thead>
-                      <tr className="border-b border-white/[.08] bg-surface-nested">
+                      <tr className="border-b border-text/[.08] bg-surface-nested">
                         {columns
                           .filter((c) => stage.rows[0]?.[c.key] !== undefined)
                           .map((c) => (
-                            <th key={c.key} className="px-2.5 py-1.5 text-left font-mono font-normal text-white/45">
+                            <th key={c.key} className="px-2.5 py-1.5 text-left font-mono font-normal text-text/45">
                               {c.label}
                             </th>
                           ))}
@@ -150,11 +150,11 @@ export function CsvImportModal({
                     </thead>
                     <tbody>
                       {stage.rows.slice(0, 5).map((r, i) => (
-                        <tr key={i} className="border-b border-white/[.05] last:border-b-0">
+                        <tr key={i} className="border-b border-text/[.05] last:border-b-0">
                           {columns
                             .filter((c) => stage.rows[0]?.[c.key] !== undefined)
                             .map((c) => (
-                              <td key={c.key} className="max-w-[140px] truncate px-2.5 py-1.5 text-white/70">
+                              <td key={c.key} className="max-w-[140px] truncate px-2.5 py-1.5 text-text/70">
                                 {r[c.key] || "—"}
                               </td>
                             ))}
@@ -162,16 +162,16 @@ export function CsvImportModal({
                       ))}
                     </tbody>
                   </table>
-                  {stage.rows.length > 5 && <div className="px-2.5 py-1.5 text-[10.5px] text-white/35">…and {stage.rows.length - 5} more</div>}
+                  {stage.rows.length > 5 && <div className="px-2.5 py-1.5 text-[10.5px] text-text/35">…and {stage.rows.length - 5} more</div>}
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={() => setStage({ step: "picker" })} className="flex-1 cursor-pointer rounded-[10px] border border-border py-2.5 text-[13.5px] text-white/70">
+                  <button onClick={() => setStage({ step: "picker" })} className="flex-1 cursor-pointer rounded-[10px] border border-border py-2.5 text-[13.5px] text-text/70">
                     Back
                   </button>
                   <button
                     onClick={confirmImport}
                     disabled={pending}
-                    className="flex-1 cursor-pointer rounded-[10px] bg-accent py-2.5 text-[13.5px] font-semibold text-canvas disabled:opacity-60"
+                    className="flex-1 cursor-pointer rounded-[10px] bg-accent py-2.5 text-[13.5px] font-semibold text-ink disabled:opacity-60"
                   >
                     {pending ? "Importing…" : `Import ${stage.rows.length} row${stage.rows.length === 1 ? "" : "s"}`}
                   </button>
@@ -185,7 +185,7 @@ export function CsvImportModal({
                   Imported {stage.imported} row{stage.imported === 1 ? "" : "s"}.
                   {stage.skipped > 0 && ` Skipped ${stage.skipped} row${stage.skipped === 1 ? "" : "s"} missing a required field.`}
                 </div>
-                <button onClick={close} className="cursor-pointer rounded-[10px] bg-accent py-2.5 text-[13.5px] font-semibold text-canvas">
+                <button onClick={close} className="cursor-pointer rounded-[10px] bg-accent py-2.5 text-[13.5px] font-semibold text-ink">
                   Done
                 </button>
               </>

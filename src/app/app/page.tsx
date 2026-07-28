@@ -46,21 +46,21 @@ export default async function DashboardPage() {
       label: "UPCOMING SHOWS",
       value: String(upcomingShows.length),
       delta: `${outstandingBookings.length} confirmed, unpaid`,
-      color: "text-white/50",
+      color: "text-text/50",
     },
     { label: "OUTSTANDING", value: money(outstandingTotal), delta: `${outstandingBookings.length} confirmed bookings`, color: "text-orange" },
-    { label: "CONTACTS", value: String(contactsCount), delta: "in your CRM", color: "text-white/50" },
+    { label: "CONTACTS", value: String(contactsCount), delta: "in your CRM", color: "text-text/50" },
   ];
 
   return (
     <div className="mx-auto max-w-[1200px] px-4 py-5 sm:px-8 sm:py-7">
       <div className="mb-1.5 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
         <h1 className="text-[22px] tracking-[-.02em] sm:text-[26px]">Good morning, {user.name.split(" ")[0]}</h1>
-        <div className="font-mono text-[12px] text-white/45">
+        <div className="font-mono text-[12px] text-text/45">
           {now.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" })}
         </div>
       </div>
-      <div className="mb-[22px] text-[14px] text-white/55">
+      <div className="mb-[22px] text-[14px] text-text/55">
         {workspace.name} · {upcomingShows.length} shows upcoming
         {nextShow ? ` · next show in ${daysToNext} day${daysToNext === 1 ? "" : "s"}` : ""}
       </div>
@@ -76,7 +76,7 @@ export default async function DashboardPage() {
       <div className="mb-[22px] grid grid-cols-2 gap-3.5 lg:grid-cols-4">
         {stats.map((s) => (
           <div key={s.label} className="rounded-card border border-border bg-surface px-[18px] py-4">
-            <div className="mb-2 font-mono text-[10.5px] tracking-[.1em] text-white/45">{s.label}</div>
+            <div className="mb-2 font-mono text-[10.5px] tracking-[.1em] text-text/45">{s.label}</div>
             <div className="text-[24px] font-bold tracking-[-.02em]">{s.value}</div>
             <div className={`mt-1 text-[11.5px] ${s.color}`}>{s.delta}</div>
           </div>
@@ -92,18 +92,18 @@ export default async function DashboardPage() {
             </a>
           </div>
           <div className="flex flex-col gap-0.5">
-            {upcomingShows.length === 0 && <div className="py-6 text-center text-[13px] text-white/40">No upcoming shows yet.</div>}
+            {upcomingShows.length === 0 && <div className="py-6 text-center text-[13px] text-text/40">No upcoming shows yet.</div>}
             {upcomingShows.map((sh) => {
               const advanced = sh.stage === "Confirmed" || sh.stage === "Paid";
               return (
-                <div key={sh.id} className="flex items-center gap-3.5 rounded-lg px-2.5 py-2.5 hover:bg-white/[.04]">
+                <div key={sh.id} className="flex items-center gap-3.5 rounded-lg px-2.5 py-2.5 hover:bg-text/[.04]">
                   <div className="w-11 flex-none text-center">
-                    <div className="font-mono text-[10px] text-white/45">{fmtDateUTC(sh.date, { month: "short" }).toUpperCase()}</div>
+                    <div className="font-mono text-[10px] text-text/45">{fmtDateUTC(sh.date, { month: "short" }).toUpperCase()}</div>
                     <div className="text-[18px] font-bold">{sh.date.getUTCDate()}</div>
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="text-[13.5px] font-semibold">{sh.venue}</div>
-                    <div className="text-[12px] text-white/50">{sh.city}</div>
+                    <div className="text-[12px] text-text/50">{sh.city}</div>
                   </div>
                   <div className="font-mono text-[12px] text-accent">{money(sh.fee)}</div>
                   <div

@@ -5,6 +5,7 @@ import { TEAM_MANAGER_ROLES, SEAT_LIMITS } from "@/lib/roles";
 import { AccountView } from "@/components/account-view";
 import { TeamSection, type MemberRow } from "@/components/team-section";
 import { IntegrationsPanel } from "@/components/integrations-panel";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default async function AccountPage() {
   const { user, workspace } = await requireWorkspace();
@@ -32,7 +33,7 @@ export default async function AccountPage() {
   return (
     <div className="mx-auto max-w-[720px] px-4 py-5 sm:px-8 sm:py-7">
       <h1 className="mb-1 text-[22px] tracking-[-.02em] sm:text-[26px]">Profile</h1>
-      <div className="mb-6 text-[13px] text-white/50">Manage your photo, contact details, password and business address.</div>
+      <div className="mb-6 text-[13px] text-text/50">Manage your photo, contact details, password and business address.</div>
       <div className="flex flex-col gap-8">
         <AccountView
           name={user.name}
@@ -49,6 +50,7 @@ export default async function AccountPage() {
         />
         <TeamSection members={members} canManage={canManage} seatLabel={`${memberships.length} / ${limit} seats`} />
         <IntegrationsPanel connected={connected} />
+        <ThemeToggle />
       </div>
     </div>
   );

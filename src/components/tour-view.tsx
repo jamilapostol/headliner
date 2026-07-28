@@ -45,19 +45,19 @@ export function TourView({ tour, eligibleBookings }: { tour: TourDTO; eligibleBo
         <h1 className="text-[22px] tracking-[-.02em] sm:text-[26px]">{tour.name}</h1>
         <button
           onClick={() => setShowAddStop(true)}
-          className="cursor-pointer rounded-lg bg-accent px-3.5 py-1.5 text-[12.5px] font-semibold text-canvas"
+          className="cursor-pointer rounded-lg bg-accent px-3.5 py-1.5 text-[12.5px] font-semibold text-ink"
         >
           + Add stop
         </button>
       </div>
-      <div className="mb-[18px] text-[13px] text-white/50">
+      <div className="mb-[18px] text-[13px] text-text/50">
         {new Date(tour.startDate).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" })} –{" "}
         {new Date(tour.endDate).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" })} · {tour.stops.length} shows ·{" "}
         {totalMiles.toLocaleString()} mi
       </div>
 
       {tour.stops.length === 0 ? (
-        <div className="rounded-card border border-dashed border-white/15 bg-surface px-6 py-10 text-center text-[13px] text-white/50">
+        <div className="rounded-card border border-dashed border-text/15 bg-surface px-6 py-10 text-center text-[13px] text-text/50">
           No stops yet. Click &ldquo;+ Add stop&rdquo; to add a confirmed booking to this tour.
         </div>
       ) : (
@@ -66,31 +66,31 @@ export function TourView({ tour, eligibleBookings }: { tour: TourDTO; eligibleBo
             {tour.stops.map((s, i) => (
               <div
                 key={s.id}
-                className="group flex items-center gap-2 rounded-lg px-3 py-2.5 hover:bg-white/5"
+                className="group flex items-center gap-2 rounded-lg px-3 py-2.5 hover:bg-text/5"
                 style={{ background: i === selIdx ? "rgba(63,232,122,.09)" : "transparent" }}
               >
                 <div onClick={() => setSelIdx(i)} className="flex flex-1 cursor-pointer items-center gap-3">
-                  <div className="w-[46px] font-mono text-[11px]" style={{ color: i === selIdx ? "#3fe87a" : "rgba(233,236,232,.5)" }}>
+                  <div className="w-[46px] font-mono text-[11px]" style={{ color: i === selIdx ? "#3fe87a" : "rgba(var(--fg-rgb),.5)" }}>
                     {fmtDate(s.date)}
                   </div>
                   <div className="flex-1">
                     <div className="text-[13px] font-semibold">{s.city}</div>
-                    <div className="text-[11px] text-white/45">{s.venue}</div>
+                    <div className="text-[11px] text-text/45">{s.venue}</div>
                   </div>
-                  <div className="font-mono text-[10.5px] text-white/40">{s.driveMiles ? `${s.driveMiles} mi` : "—"}</div>
+                  <div className="font-mono text-[10.5px] text-text/40">{s.driveMiles ? `${s.driveMiles} mi` : "—"}</div>
                 </div>
                 <div className="flex flex-none flex-col opacity-0 group-hover:opacity-100">
                   <button
                     disabled={i === 0}
                     onClick={() => startTransition(() => moveStop(s.id, "up"))}
-                    className="cursor-pointer px-1 text-[10px] text-white/40 hover:text-accent disabled:cursor-default disabled:opacity-20"
+                    className="cursor-pointer px-1 text-[10px] text-text/40 hover:text-accent disabled:cursor-default disabled:opacity-20"
                   >
                     ▲
                   </button>
                   <button
                     disabled={i === tour.stops.length - 1}
                     onClick={() => startTransition(() => moveStop(s.id, "down"))}
-                    className="cursor-pointer px-1 text-[10px] text-white/40 hover:text-accent disabled:cursor-default disabled:opacity-20"
+                    className="cursor-pointer px-1 text-[10px] text-text/40 hover:text-accent disabled:cursor-default disabled:opacity-20"
                   >
                     ▼
                   </button>
@@ -100,7 +100,7 @@ export function TourView({ tour, eligibleBookings }: { tour: TourDTO; eligibleBo
                     if (selIdx >= tour.stops.length - 1) setSelIdx(Math.max(0, tour.stops.length - 2));
                     startTransition(() => removeStop(s.id));
                   }}
-                  className="cursor-pointer px-1 text-[13px] text-white/30 opacity-0 hover:text-orange group-hover:opacity-100"
+                  className="cursor-pointer px-1 text-[13px] text-text/30 opacity-0 hover:text-orange group-hover:opacity-100"
                   aria-label="Remove stop"
                 >
                   ×
@@ -139,45 +139,45 @@ function StopDetail({ stop }: { stop: TourStopDTO }) {
           <div className="text-[15px] font-semibold">
             {stop.venue} — {stop.city}
           </div>
-          <div className="font-mono text-[11px] text-white/45">{fmtDate(stop.date)}</div>
+          <div className="font-mono text-[11px] text-text/45">{fmtDate(stop.date)}</div>
         </div>
         <div className="flex flex-col">
           {stop.schedule.map((ev, i) => (
-            <div key={i} className="group flex items-center gap-4 border-b border-white/5 py-2 last:border-b-0">
+            <div key={i} className="group flex items-center gap-4 border-b border-text/5 py-2 last:border-b-0">
               <div className="w-14 font-mono text-[12px] text-accent">{ev.time}</div>
               <div className="flex-1 text-[13px]">{ev.what}</div>
-              <div className="text-[11.5px] text-white/40">{ev.who}</div>
+              <div className="text-[11.5px] text-text/40">{ev.who}</div>
               <button
                 onClick={() => startTransition(() => removeScheduleEvent(stop.id, i))}
-                className="cursor-pointer px-1 text-[13px] text-white/30 opacity-0 hover:text-orange group-hover:opacity-100"
+                className="cursor-pointer px-1 text-[13px] text-text/30 opacity-0 hover:text-orange group-hover:opacity-100"
                 aria-label="Remove event"
               >
                 ×
               </button>
             </div>
           ))}
-          {stop.schedule.length === 0 && <div className="py-2 text-[12.5px] text-white/35">No schedule yet.</div>}
+          {stop.schedule.length === 0 && <div className="py-2 text-[12.5px] text-text/35">No schedule yet.</div>}
         </div>
-        <div className="mt-2 flex flex-wrap items-center gap-2 border-t border-white/[.06] pt-2.5">
+        <div className="mt-2 flex flex-wrap items-center gap-2 border-t border-text/[.06] pt-2.5">
           <input
             value={eventTime}
             onChange={(e) => setEventTime(e.target.value)}
             placeholder="6:00 PM"
-            className="w-20 flex-none rounded-md border border-border bg-surface-nested px-2 py-1.5 font-mono text-[11.5px] text-text outline-none placeholder:text-white/25"
+            className="w-20 flex-none rounded-md border border-border bg-surface-nested px-2 py-1.5 font-mono text-[11.5px] text-text outline-none placeholder:text-text/25"
           />
           <input
             value={eventWhat}
             onChange={(e) => setEventWhat(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && addEvent()}
             placeholder="What (e.g. Load-in)"
-            className="min-w-0 flex-1 rounded-md border border-border bg-surface-nested px-2 py-1.5 text-[12.5px] text-text outline-none placeholder:text-white/25"
+            className="min-w-0 flex-1 rounded-md border border-border bg-surface-nested px-2 py-1.5 text-[12.5px] text-text outline-none placeholder:text-text/25"
           />
           <input
             value={eventWho}
             onChange={(e) => setEventWho(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && addEvent()}
             placeholder="Who"
-            className="w-24 flex-none rounded-md border border-border bg-surface-nested px-2 py-1.5 text-[12.5px] text-text outline-none placeholder:text-white/25"
+            className="w-24 flex-none rounded-md border border-border bg-surface-nested px-2 py-1.5 text-[12.5px] text-text outline-none placeholder:text-text/25"
           />
           <button onClick={addEvent} className="cursor-pointer px-1.5 text-[15px] text-accent hover:text-accent/70" aria-label="Add event">
             +
@@ -186,7 +186,7 @@ function StopDetail({ stop }: { stop: TourStopDTO }) {
       </div>
       <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-3">
         <div className="rounded-card border border-border bg-surface px-4 py-3.5">
-          <div className="mb-1.5 font-mono text-[10px] tracking-[.1em] text-white/45">GUARANTEE</div>
+          <div className="mb-1.5 font-mono text-[10px] tracking-[.1em] text-text/45">GUARANTEE</div>
           <div className="text-[19px] font-bold text-accent">{money(stop.fee)}</div>
         </div>
         <EditableStat
@@ -241,7 +241,7 @@ function EditableStat({
 
   return (
     <div className="rounded-card border border-border bg-surface px-4 py-3.5">
-      <div className="mb-1.5 font-mono text-[10px] tracking-[.1em] text-white/45">{label}</div>
+      <div className="mb-1.5 font-mono text-[10px] tracking-[.1em] text-text/45">{label}</div>
       {editing ? (
         <input
           autoFocus
@@ -287,14 +287,14 @@ function AddStopModal({ tourId, bookings, onClose }: { tourId: string; bookings:
       <div onClick={(e) => e.stopPropagation()} className="w-full max-w-[420px] rounded-2xl border border-border bg-surface p-6">
         <div className="mb-4 text-[17px] font-semibold">Add stop</div>
         {bookings.length === 0 ? (
-          <div className="text-[13px] text-white/55">
+          <div className="text-[13px] text-text/55">
             No confirmed bookings available to add. Move a booking to Confirmed or Paid on the Bookings board first.
           </div>
         ) : (
           <form action={submit} className="flex flex-col gap-3">
             <input type="hidden" name="tourId" value={tourId} />
             <label className="flex flex-col gap-1.5">
-              <span className="text-[12px] font-medium text-white/50">Booking</span>
+              <span className="text-[12px] font-medium text-text/50">Booking</span>
               <select
                 name="bookingId"
                 required
@@ -318,14 +318,14 @@ function AddStopModal({ tourId, bookings, onClose }: { tourId: string; bookings:
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 cursor-pointer rounded-[10px] border border-border py-2.5 text-[13.5px] text-white/70"
+                className="flex-1 cursor-pointer rounded-[10px] border border-border py-2.5 text-[13.5px] text-text/70"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={pending}
-                className="flex-1 cursor-pointer rounded-[10px] bg-accent py-2.5 text-[13.5px] font-semibold text-canvas disabled:opacity-60"
+                className="flex-1 cursor-pointer rounded-[10px] bg-accent py-2.5 text-[13.5px] font-semibold text-ink disabled:opacity-60"
               >
                 {pending ? "Adding…" : "Add stop"}
               </button>
@@ -340,7 +340,7 @@ function AddStopModal({ tourId, bookings, onClose }: { tourId: string; bookings:
 function Field({ label, name, placeholder, type = "text" }: { label: string; name: string; placeholder?: string; type?: string }) {
   return (
     <label className="flex flex-col gap-1.5">
-      <span className="text-[12px] font-medium text-white/50">{label}</span>
+      <span className="text-[12px] font-medium text-text/50">{label}</span>
       <input
         name={name}
         type={type}

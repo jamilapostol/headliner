@@ -63,21 +63,21 @@ export default async function CalendarPage({
       <div className="mb-1 flex flex-wrap items-baseline justify-between gap-2">
         <h1 className="text-[22px] tracking-[-.02em] sm:text-[26px]">Calendar</h1>
         <div className="flex items-center gap-3">
-          <Link href={`/app/calendar?y=${prev.getFullYear()}&m=${prev.getMonth() + 1}`} className="rounded-lg border border-border px-2.5 py-1 text-[13px] text-white/70 hover:border-white/25">
+          <Link href={`/app/calendar?y=${prev.getFullYear()}&m=${prev.getMonth() + 1}`} className="rounded-lg border border-border px-2.5 py-1 text-[13px] text-text/70 hover:border-text/25">
             ←
           </Link>
           <div className="w-[140px] text-center text-[14px] font-semibold">{format(anchor, "MMMM yyyy")}</div>
-          <Link href={`/app/calendar?y=${next.getFullYear()}&m=${next.getMonth() + 1}`} className="rounded-lg border border-border px-2.5 py-1 text-[13px] text-white/70 hover:border-white/25">
+          <Link href={`/app/calendar?y=${next.getFullYear()}&m=${next.getMonth() + 1}`} className="rounded-lg border border-border px-2.5 py-1 text-[13px] text-text/70 hover:border-text/25">
             →
           </Link>
         </div>
       </div>
-      <div className="mb-3 text-[13px] text-white/50">Every booking on your calendar, in one grid.</div>
+      <div className="mb-3 text-[13px] text-text/50">Every booking on your calendar, in one grid.</div>
       <div className="mb-5 flex flex-wrap items-center gap-x-4 gap-y-1.5">
         {STAGES.map((s) => (
           <div key={s.key} className="flex items-center gap-1.5">
             <span className="h-[7px] w-[7px] flex-none rounded-full" style={{ background: s.dot }} />
-            <span className="font-mono text-[10.5px] tracking-[.08em] text-white/45">{s.label}</span>
+            <span className="font-mono text-[10.5px] tracking-[.08em] text-text/45">{s.label}</span>
           </div>
         ))}
       </div>
@@ -86,7 +86,7 @@ export default async function CalendarPage({
         <div className="min-w-[560px]">
         <div className="grid grid-cols-7 border-b border-border">
           {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((d) => (
-            <div key={d} className="px-3 py-2 font-mono text-[10.5px] tracking-[.1em] text-white/40">
+            <div key={d} className="px-3 py-2 font-mono text-[10.5px] tracking-[.1em] text-text/40">
               {d}
             </div>
           ))}
@@ -99,10 +99,10 @@ export default async function CalendarPage({
             return (
               <div
                 key={key}
-                className="min-h-[104px] border-b border-r border-white/[.05] p-2 last:border-r-0"
+                className="min-h-[104px] border-b border-r border-text/[.05] p-2 last:border-r-0"
                 style={{ background: isToday(day) ? "rgba(63,232,122,.05)" : "transparent" }}
               >
-                <div className="mb-1.5 font-mono text-[11px]" style={{ color: inMonth ? (isToday(day) ? "#3fe87a" : "rgba(233,236,232,.6)") : "rgba(233,236,232,.2)" }}>
+                <div className="mb-1.5 font-mono text-[11px]" style={{ color: inMonth ? (isToday(day) ? "#3fe87a" : "rgba(var(--fg-rgb),.6)") : "rgba(var(--fg-rgb),.2)" }}>
                   {format(day, "d")}
                 </div>
                 <div className="flex flex-col gap-1">

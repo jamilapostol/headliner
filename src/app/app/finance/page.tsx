@@ -54,20 +54,20 @@ export default async function FinancePage() {
           <NewTransactionForm />
         </div>
       </div>
-      <div className="mb-5 text-[13px] text-white/50">{year} year to date</div>
+      <div className="mb-5 text-[13px] text-text/50">{year} year to date</div>
 
       <div className="grid grid-cols-1 items-start gap-3.5 lg:grid-cols-[1.4fr_1fr]">
         <div className="rounded-card border border-border bg-surface px-5 py-[18px]">
           <div className="mb-4 text-[14.5px] font-semibold">Revenue by source</div>
           <div className="flex flex-col gap-3.5">
-            {revSources.length === 0 && <div className="text-[13px] text-white/40">No income logged yet.</div>}
+            {revSources.length === 0 && <div className="text-[13px] text-text/40">No income logged yet.</div>}
             {revSources.map(([label, amt], i) => (
               <div key={label}>
                 <div className="mb-1.5 flex justify-between text-[12.5px]">
                   <span>{label}</span>
-                  <span className="font-mono text-white/60">{money(amt)}</span>
+                  <span className="font-mono text-text/60">{money(amt)}</span>
                 </div>
-                <div className="h-2 rounded-full bg-white/[.06]">
+                <div className="h-2 rounded-full bg-text/[.06]">
                   <div
                     className="h-2 rounded-full"
                     style={{ width: `${Math.round((amt / maxRev) * 100)}%`, background: SOURCE_COLORS[i % SOURCE_COLORS.length] }}
@@ -82,24 +82,24 @@ export default async function FinancePage() {
           <div className="rounded-card border border-border bg-surface px-5 py-[18px]">
             <div className="mb-3 text-[14.5px] font-semibold">P&amp;L snapshot</div>
             {pnl.map((p) => (
-              <div key={p.label} className="flex justify-between border-b border-white/[.05] py-[7px] text-[13px]">
-                <span className="text-white/65">{p.label}</span>
+              <div key={p.label} className="flex justify-between border-b border-text/[.05] py-[7px] text-[13px]">
+                <span className="text-text/65">{p.label}</span>
                 <span className={`font-mono ${p.color} ${p.weight}`}>{p.value}</span>
               </div>
             ))}
           </div>
           <div className="rounded-card border border-border bg-surface px-5 py-[18px]">
             <div className="mb-2.5 text-[14.5px] font-semibold">Outstanding (confirmed, unpaid)</div>
-            {outstanding.length === 0 && <div className="text-[13px] text-white/40">Nothing outstanding.</div>}
+            {outstanding.length === 0 && <div className="text-[13px] text-text/40">Nothing outstanding.</div>}
             {outstanding.map((b) => (
-              <div key={b.id} className="flex items-center justify-between border-b border-white/[.05] py-2">
+              <div key={b.id} className="flex items-center justify-between border-b border-text/[.05] py-2">
                 <div>
                   <div className="text-[13px] font-semibold">{b.venue}</div>
-                  <div className="text-[11px] text-white/40">{b.city}</div>
+                  <div className="text-[11px] text-text/40">{b.city}</div>
                 </div>
                 <div className="text-right">
                   <div className="font-mono text-[12.5px]">{money(b.fee)}</div>
-                  <div className="text-[10.5px] text-white/45">{fmtDateUTC(b.date, { month: "short", day: "numeric" })}</div>
+                  <div className="text-[10.5px] text-text/45">{fmtDateUTC(b.date, { month: "short", day: "numeric" })}</div>
                 </div>
               </div>
             ))}

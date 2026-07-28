@@ -9,7 +9,7 @@ export function NewTransactionForm() {
 
   if (!open) {
     return (
-      <button onClick={() => setOpen(true)} className="cursor-pointer rounded-lg bg-accent px-3.5 py-1.5 text-[12.5px] font-semibold text-canvas">
+      <button onClick={() => setOpen(true)} className="cursor-pointer rounded-lg bg-accent px-3.5 py-1.5 text-[12.5px] font-semibold text-ink">
         + Add entry
       </button>
     );
@@ -29,7 +29,7 @@ export function NewTransactionForm() {
           className="flex flex-col gap-3"
         >
           <label className="flex flex-col gap-1.5">
-            <span className="text-[12px] font-medium text-white/50">Type</span>
+            <span className="text-[12px] font-medium text-text/50">Type</span>
             <select name="kind" defaultValue="income" className="rounded-[10px] border border-border bg-surface-nested px-3.5 py-2.5 text-[13.5px] text-text outline-none">
               <option value="income">Income</option>
               <option value="expense">Expense</option>
@@ -40,10 +40,10 @@ export function NewTransactionForm() {
           <Field label="Source" name="source" placeholder="Bluebird Theater" />
           <Field label="Date" name="occurredAt" type="date" />
           <div className="mt-2 flex gap-2">
-            <button type="button" onClick={() => setOpen(false)} className="flex-1 cursor-pointer rounded-[10px] border border-border py-2.5 text-[13.5px] text-white/70">
+            <button type="button" onClick={() => setOpen(false)} className="flex-1 cursor-pointer rounded-[10px] border border-border py-2.5 text-[13.5px] text-text/70">
               Cancel
             </button>
-            <button type="submit" disabled={pending} className="flex-1 cursor-pointer rounded-[10px] bg-accent py-2.5 text-[13.5px] font-semibold text-canvas disabled:opacity-60">
+            <button type="submit" disabled={pending} className="flex-1 cursor-pointer rounded-[10px] bg-accent py-2.5 text-[13.5px] font-semibold text-ink disabled:opacity-60">
               {pending ? "Adding…" : "Add"}
             </button>
           </div>
@@ -56,7 +56,7 @@ export function NewTransactionForm() {
 function Field({ label, name, placeholder, type = "text" }: { label: string; name: string; placeholder?: string; type?: string }) {
   return (
     <label className="flex flex-col gap-1.5">
-      <span className="text-[12px] font-medium text-white/50">{label}</span>
+      <span className="text-[12px] font-medium text-text/50">{label}</span>
       <input
         name={name}
         type={type}

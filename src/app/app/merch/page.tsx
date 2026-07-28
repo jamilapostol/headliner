@@ -40,17 +40,17 @@ export default async function MerchPage() {
               tour.stops.map((s) => (
                 <div key={s.id} className="flex items-center justify-between text-[12.5px]">
                   <span>{s.booking?.city ?? "TBD"}</span>
-                  <span className="font-mono text-white/60">{s.merchNote ?? "—"}</span>
+                  <span className="font-mono text-text/60">{s.merchNote ?? "—"}</span>
                 </div>
               ))
             ) : (
-              <div className="text-[13px] text-white/40">No tour scheduled yet — see the Tour page.</div>
+              <div className="text-[13px] text-text/40">No tour scheduled yet — see the Tour page.</div>
             )}
           </div>
         </div>
         <div className="rounded-card border border-border bg-surface px-5 py-[18px]">
           <div className="mb-2.5 text-[14.5px] font-semibold">Tonight&apos;s table</div>
-          <div className="text-[12.5px] leading-relaxed text-white/60">
+          <div className="text-[12.5px] leading-relaxed text-text/60">
             QR checkout ready · pair a Square reader when you get to the venue
             <br />
             Suggested float: <span className="font-mono text-text">$120 small bills</span>

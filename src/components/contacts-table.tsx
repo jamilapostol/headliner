@@ -94,7 +94,7 @@ export function ContactsTable({ contacts }: { contacts: ContactDTO[] }) {
         <h1 className="text-[22px] tracking-[-.02em] sm:text-[26px]">Contacts</h1>
         <div className="flex items-center gap-2">
           <CsvImportModal entityLabel="contacts" columns={CONTACT_CSV_COLUMNS} onImport={importContacts} />
-          <button onClick={() => setShowNew(true)} className="cursor-pointer rounded-lg bg-accent px-3.5 py-1.5 text-[12.5px] font-semibold text-canvas">
+          <button onClick={() => setShowNew(true)} className="cursor-pointer rounded-lg bg-accent px-3.5 py-1.5 text-[12.5px] font-semibold text-ink">
             + New contact
           </button>
         </div>
@@ -104,7 +104,7 @@ export function ContactsTable({ contacts }: { contacts: ContactDTO[] }) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search contacts…"
-          className="w-[220px] rounded-lg border border-white/10 bg-surface px-3 py-2 text-[13px] text-text outline-none"
+          className="w-[220px] rounded-lg border border-text/10 bg-surface px-3 py-2 text-[13px] text-text outline-none"
         />
         {CATS.map((c) => (
           <button
@@ -112,9 +112,9 @@ export function ContactsTable({ contacts }: { contacts: ContactDTO[] }) {
             onClick={() => setCat(c)}
             className="cursor-pointer rounded-[20px] px-3.5 py-[7px] text-[12px]"
             style={{
-              border: `1px solid ${c === cat ? "#3fe87a" : "rgba(255,255,255,.12)"}`,
+              border: `1px solid ${c === cat ? "#3fe87a" : "rgba(var(--border-rgb),.12)"}`,
               background: c === cat ? "rgba(63,232,122,.1)" : "transparent",
-              color: c === cat ? "#3fe87a" : "rgba(233,236,232,.65)",
+              color: c === cat ? "#3fe87a" : "rgba(var(--fg-rgb),.65)",
             }}
           >
             {c}
@@ -124,7 +124,7 @@ export function ContactsTable({ contacts }: { contacts: ContactDTO[] }) {
 
       <div className="overflow-x-auto rounded-card border border-border bg-surface">
         <div className="min-w-[620px]">
-          <div className="grid grid-cols-[2fr_1.2fr_1.2fr_1fr_.8fr] gap-3 border-b border-border px-[18px] py-[11px] font-mono text-[10.5px] tracking-[.1em] text-white/40">
+          <div className="grid grid-cols-[2fr_1.2fr_1.2fr_1fr_.8fr] gap-3 border-b border-border px-[18px] py-[11px] font-mono text-[10.5px] tracking-[.1em] text-text/40">
             <div>NAME</div>
             <div>ROLE</div>
             <div>CITY</div>
@@ -138,34 +138,34 @@ export function ContactsTable({ contacts }: { contacts: ContactDTO[] }) {
               <div
                 key={c.id}
                 onClick={() => setOpenId(c.id)}
-                className="grid cursor-pointer grid-cols-[2fr_1.2fr_1.2fr_1fr_.8fr] items-center gap-3 border-b border-white/[.05] px-[18px] py-3 hover:bg-white/[.03]"
+                className="grid cursor-pointer grid-cols-[2fr_1.2fr_1.2fr_1fr_.8fr] items-center gap-3 border-b border-text/[.05] px-[18px] py-3 hover:bg-text/[.03]"
               >
                 <div className="flex items-center gap-2.5">
                   <div
-                    className="grid h-7 w-7 flex-none place-items-center rounded-full text-[11px] font-bold text-canvas"
+                    className="grid h-7 w-7 flex-none place-items-center rounded-full text-[11px] font-bold text-ink"
                     style={{ background: AVATAR_COLORS[i % AVATAR_COLORS.length] }}
                   >
                     {initials}
                   </div>
                   <div>
                     <div className="text-[13px] font-semibold">{c.name}</div>
-                    <div className="text-[11px] text-white/40">{c.org}</div>
+                    <div className="text-[11px] text-text/40">{c.org}</div>
                   </div>
                 </div>
-                <div className="text-[12.5px] text-white/70">{c.role}</div>
-                <div className="text-[12.5px] text-white/70">{c.city}</div>
-                <div className="font-mono text-[11.5px]" style={{ color: last.stale ? "#e8983f" : "rgba(233,236,232,.5)" }}>
+                <div className="text-[12.5px] text-text/70">{c.role}</div>
+                <div className="text-[12.5px] text-text/70">{c.city}</div>
+                <div className="font-mono text-[11.5px]" style={{ color: last.stale ? "#e8983f" : "rgba(var(--fg-rgb),.5)" }}>
                   {last.label}
                 </div>
                 <div className="flex gap-[3px]">
                   {[1, 2, 3, 4, 5].map((n) => (
-                    <span key={n} className="h-2 w-2 rounded-full" style={{ background: n <= c.strength ? "#3fe87a" : "rgba(255,255,255,.1)" }} />
+                    <span key={n} className="h-2 w-2 rounded-full" style={{ background: n <= c.strength ? "#3fe87a" : "rgba(var(--border-rgb),.1)" }} />
                   ))}
                 </div>
               </div>
             );
           })}
-          {filtered.length === 0 && <div className="px-[18px] py-7 text-center text-[13px] text-white/40">No contacts match your search.</div>}
+          {filtered.length === 0 && <div className="px-[18px] py-7 text-center text-[13px] text-text/40">No contacts match your search.</div>}
         </div>
       </div>
 
@@ -191,7 +191,7 @@ export function ContactsTable({ contacts }: { contacts: ContactDTO[] }) {
                 <NField label="Phone" name="phone" type="tel" placeholder="(303) 555-0142" />
               </div>
               <label className="flex flex-col gap-1.5">
-                <span className="text-[12px] font-medium text-white/50">Category</span>
+                <span className="text-[12px] font-medium text-text/50">Category</span>
                 <select
                   name="category"
                   defaultValue="Venues"
@@ -205,10 +205,10 @@ export function ContactsTable({ contacts }: { contacts: ContactDTO[] }) {
                 </select>
               </label>
               <div className="mt-2 flex gap-2">
-                <button type="button" onClick={() => setShowNew(false)} className="flex-1 cursor-pointer rounded-[10px] border border-border py-2.5 text-[13.5px] text-white/70">
+                <button type="button" onClick={() => setShowNew(false)} className="flex-1 cursor-pointer rounded-[10px] border border-border py-2.5 text-[13.5px] text-text/70">
                   Cancel
                 </button>
-                <button type="submit" disabled={pending} className="flex-1 cursor-pointer rounded-[10px] bg-accent py-2.5 text-[13.5px] font-semibold text-canvas disabled:opacity-60">
+                <button type="submit" disabled={pending} className="flex-1 cursor-pointer rounded-[10px] bg-accent py-2.5 text-[13.5px] font-semibold text-ink disabled:opacity-60">
                   {pending ? "Adding…" : "Add contact"}
                 </button>
               </div>
@@ -228,30 +228,30 @@ function ContactDrawer({ contact, onClose }: { contact: ContactDTO; onClose: () 
   const last = daysAgoLabel(contact.lastContactedAt);
 
   return (
-    <div className="animate-tp-fade fixed inset-0 z-20 box-border h-screen w-full overflow-y-auto border-l border-white/[.09] bg-[#121813] px-5 py-[18px] sm:inset-auto sm:top-0 sm:right-0 sm:w-[380px] sm:px-6 sm:py-[22px]">
+    <div className="animate-tp-fade fixed inset-0 z-20 box-border h-screen w-full overflow-y-auto border-l border-text/[.09] bg-surface px-5 py-[18px] sm:inset-auto sm:top-0 sm:right-0 sm:w-[380px] sm:px-6 sm:py-[22px]">
       <div className="mb-1 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="grid h-8 w-8 flex-none place-items-center rounded-full bg-accent text-[12px] font-bold text-canvas">{initials}</div>
+          <div className="grid h-8 w-8 flex-none place-items-center rounded-full bg-accent text-[12px] font-bold text-ink">{initials}</div>
           <div className="text-[18px] font-bold">{contact.name}</div>
         </div>
-        <button onClick={onClose} className="cursor-pointer px-1 text-[18px] text-white/50 hover:text-text">
+        <button onClick={onClose} className="cursor-pointer px-1 text-[18px] text-text/50 hover:text-text">
           ✕
         </button>
       </div>
-      <div className="mb-4 text-[12.5px] text-white/50">
+      <div className="mb-4 text-[12.5px] text-text/50">
         {contact.role || "—"}
         {contact.org ? ` at ${contact.org}` : ""}
         {contact.city ? ` · ${contact.city}` : ""}
       </div>
 
       <div className="mb-[18px] grid grid-cols-2 gap-2.5">
-        <div className="rounded-[10px] border border-white/[.08] bg-surface-nested p-3">
-          <div className="mb-1 font-mono text-[10px] text-white/45">CATEGORY</div>
+        <div className="rounded-[10px] border border-text/[.08] bg-surface-nested p-3">
+          <div className="mb-1 font-mono text-[10px] text-text/45">CATEGORY</div>
           <div className="text-[13px] font-semibold leading-tight">{contact.category}</div>
         </div>
-        <div className="rounded-[10px] border border-white/[.08] bg-surface-nested p-3">
-          <div className="mb-1 font-mono text-[10px] text-white/45">LAST CONTACT</div>
-          <div className="text-[13px] font-semibold leading-tight" style={{ color: last.stale ? "#e8983f" : "#e9ece8" }}>
+        <div className="rounded-[10px] border border-text/[.08] bg-surface-nested p-3">
+          <div className="mb-1 font-mono text-[10px] text-text/45">LAST CONTACT</div>
+          <div className="text-[13px] font-semibold leading-tight" style={{ color: last.stale ? "#e8983f" : "var(--text)" }}>
             {last.label}
           </div>
         </div>
@@ -274,10 +274,10 @@ function ContactDrawer({ contact, onClose }: { contact: ContactDTO; onClose: () 
         />
       </div>
 
-      <div className="mb-2 font-mono text-[10.5px] tracking-[.1em] text-white/40">STRENGTH</div>
+      <div className="mb-2 font-mono text-[10.5px] tracking-[.1em] text-text/40">STRENGTH</div>
       <div className="mb-5 flex gap-1">
         {[1, 2, 3, 4, 5].map((n) => (
-          <span key={n} className="h-2.5 w-2.5 rounded-full" style={{ background: n <= contact.strength ? "#3fe87a" : "rgba(255,255,255,.1)" }} />
+          <span key={n} className="h-2.5 w-2.5 rounded-full" style={{ background: n <= contact.strength ? "#3fe87a" : "rgba(var(--border-rgb),.1)" }} />
         ))}
       </div>
 
@@ -317,8 +317,8 @@ function EditableField({
   }
 
   return (
-    <div className="rounded-[10px] border border-white/[.08] bg-surface-nested p-3">
-      <div className="mb-1 font-mono text-[10px] text-white/45">{label}</div>
+    <div className="rounded-[10px] border border-text/[.08] bg-surface-nested p-3">
+      <div className="mb-1 font-mono text-[10px] text-text/45">{label}</div>
       {editing ? (
         multiline ? (
           <textarea
@@ -328,7 +328,7 @@ function EditableField({
             onChange={(e) => setDraft(e.target.value)}
             onBlur={save}
             onKeyDown={(e) => e.key === "Escape" && (setDraft(value), setEditing(false))}
-            className="w-full resize-none rounded-md border border-accent/40 bg-[#0f1410] px-2 py-1.5 text-[13px] text-text outline-none"
+            className="w-full resize-none rounded-md border border-accent/40 bg-canvas px-2 py-1.5 text-[13px] text-text outline-none"
           />
         ) : (
           <input
@@ -344,7 +344,7 @@ function EditableField({
                 setEditing(false);
               }
             }}
-            className="w-full rounded-md border border-accent/40 bg-[#0f1410] px-2 py-1.5 text-[13.5px] text-text outline-none"
+            className="w-full rounded-md border border-accent/40 bg-canvas px-2 py-1.5 text-[13.5px] text-text outline-none"
           />
         )
       ) : (
@@ -354,7 +354,7 @@ function EditableField({
             setEditing(true);
           }}
           className="cursor-pointer whitespace-pre-line text-[13.5px] font-semibold leading-snug hover:text-accent"
-          style={{ color: value ? undefined : "rgba(233,236,232,.35)" }}
+          style={{ color: value ? undefined : "rgba(var(--fg-rgb),.35)" }}
         >
           {value || placeholder}
         </div>
@@ -366,7 +366,7 @@ function EditableField({
 function NField({ label, name, placeholder, type = "text" }: { label: string; name: string; placeholder?: string; type?: string }) {
   return (
     <label className="flex flex-col gap-1.5">
-      <span className="text-[12px] font-medium text-white/50">{label}</span>
+      <span className="text-[12px] font-medium text-text/50">{label}</span>
       <input
         name={name}
         type={type}

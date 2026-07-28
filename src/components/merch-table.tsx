@@ -30,19 +30,19 @@ export function MerchTable({ items }: { items: MerchItemDTO[] }) {
       <div className="mb-1 flex flex-wrap items-baseline justify-between gap-2">
         <h1 className="text-[22px] tracking-[-.02em] sm:text-[26px]">Merchandise</h1>
         <div className="flex flex-wrap items-center gap-3">
-          <div className="font-mono text-[12px] text-white/45">
+          <div className="font-mono text-[12px] text-text/45">
             {totalUnits} units in van · {money(retailValue)} retail
           </div>
-          <button onClick={() => setShowNew(true)} className="cursor-pointer rounded-lg bg-accent px-3.5 py-1.5 text-[12.5px] font-semibold text-canvas">
+          <button onClick={() => setShowNew(true)} className="cursor-pointer rounded-lg bg-accent px-3.5 py-1.5 text-[12.5px] font-semibold text-ink">
             + New item
           </button>
         </div>
       </div>
-      <div className="mb-[18px] text-[13px] text-white/50">Inventory travels with the tour — adjust counts after each settle-up.</div>
+      <div className="mb-[18px] text-[13px] text-text/50">Inventory travels with the tour — adjust counts after each settle-up.</div>
 
       <div className="overflow-x-auto rounded-card border border-border bg-surface">
         <div className="min-w-[560px]">
-        <div className="grid grid-cols-[1.8fr_.8fr_.8fr_1.1fr_1fr] gap-2.5 border-b border-border px-[18px] py-[11px] font-mono text-[10.5px] tracking-[.1em] text-white/40">
+        <div className="grid grid-cols-[1.8fr_.8fr_.8fr_1.1fr_1fr] gap-2.5 border-b border-border px-[18px] py-[11px] font-mono text-[10.5px] tracking-[.1em] text-text/40">
           <div>ITEM</div>
           <div>PRICE</div>
           <div>MARGIN</div>
@@ -54,12 +54,12 @@ export function MerchTable({ items }: { items: MerchItemDTO[] }) {
           const low = pct < 0.25;
           const margin = m.price ? Math.round(((m.price - m.cogs) / m.price) * 100) : 0;
           return (
-            <div key={m.id} className="grid grid-cols-[1.8fr_.8fr_.8fr_1.1fr_1fr] items-center gap-2.5 border-b border-white/[.05] px-[18px] py-3 hover:bg-white/[.03]">
+            <div key={m.id} className="grid grid-cols-[1.8fr_.8fr_.8fr_1.1fr_1fr] items-center gap-2.5 border-b border-text/[.05] px-[18px] py-3 hover:bg-text/[.03]">
               <div className="flex items-center gap-2.5">
                 <MerchPhoto item={m} />
                 <div>
                   <div className="text-[13px] font-semibold">{m.name}</div>
-                  <div className="text-[11px] text-white/40">{m.variant}</div>
+                  <div className="text-[11px] text-text/40">{m.variant}</div>
                 </div>
               </div>
               <div className="font-mono text-[12.5px]">{money(m.price)}</div>
@@ -69,14 +69,14 @@ export function MerchTable({ items }: { items: MerchItemDTO[] }) {
                   <span>
                     {m.stock}/{m.maxStock}
                   </span>
-                  <button onClick={() => startTransition(() => adjustStock(m.id, -1))} className="cursor-pointer text-white/40 hover:text-text" title="Sell one">
+                  <button onClick={() => startTransition(() => adjustStock(m.id, -1))} className="cursor-pointer text-text/40 hover:text-text" title="Sell one">
                     −
                   </button>
-                  <button onClick={() => startTransition(() => adjustStock(m.id, 10))} className="cursor-pointer text-white/40 hover:text-text" title="Restock +10">
+                  <button onClick={() => startTransition(() => adjustStock(m.id, 10))} className="cursor-pointer text-text/40 hover:text-text" title="Restock +10">
                     +10
                   </button>
                 </div>
-                <div className="h-1 w-14 rounded-full bg-white/[.07]">
+                <div className="h-1 w-14 rounded-full bg-text/[.07]">
                   <div className="h-1 rounded-full" style={{ width: `${Math.round(pct * 100)}%`, background: low ? "#e8983f" : "#3fe87a" }} />
                 </div>
               </div>
@@ -89,7 +89,7 @@ export function MerchTable({ items }: { items: MerchItemDTO[] }) {
             </div>
           );
         })}
-        {items.length === 0 && <div className="px-[18px] py-7 text-center text-[13px] text-white/40">No merch items yet.</div>}
+        {items.length === 0 && <div className="px-[18px] py-7 text-center text-[13px] text-text/40">No merch items yet.</div>}
         </div>
       </div>
 
@@ -117,10 +117,10 @@ export function MerchTable({ items }: { items: MerchItemDTO[] }) {
                 <F label="Max stock" name="maxStock" type="number" placeholder="50" />
               </div>
               <div className="mt-2 flex gap-2">
-                <button type="button" onClick={() => setShowNew(false)} className="flex-1 cursor-pointer rounded-[10px] border border-border py-2.5 text-[13.5px] text-white/70">
+                <button type="button" onClick={() => setShowNew(false)} className="flex-1 cursor-pointer rounded-[10px] border border-border py-2.5 text-[13.5px] text-text/70">
                   Cancel
                 </button>
-                <button type="submit" className="flex-1 cursor-pointer rounded-[10px] bg-accent py-2.5 text-[13.5px] font-semibold text-canvas">
+                <button type="submit" className="flex-1 cursor-pointer rounded-[10px] bg-accent py-2.5 text-[13.5px] font-semibold text-ink">
                   Add item
                 </button>
               </div>
@@ -143,7 +143,7 @@ function MerchPhoto({ item }: { item: MerchItemDTO }) {
       <input type="hidden" name="itemId" value={item.id} />
       <label
         title={state.error ?? "Click to change photo"}
-        className="grid h-[30px] w-[30px] flex-none cursor-pointer place-items-center overflow-hidden rounded-[7px] text-[12px] font-bold text-canvas hover:opacity-80"
+        className="grid h-[30px] w-[30px] flex-none cursor-pointer place-items-center overflow-hidden rounded-[7px] text-[12px] font-bold text-ink hover:opacity-80"
         style={{ background: item.imageUrl ? undefined : item.color }}
       >
         {item.imageUrl ? (
@@ -169,7 +169,7 @@ function MerchPhoto({ item }: { item: MerchItemDTO }) {
 function F({ label, name, placeholder, type = "text" }: { label: string; name: string; placeholder?: string; type?: string }) {
   return (
     <label className="flex flex-col gap-1.5">
-      <span className="text-[12px] font-medium text-white/50">{label}</span>
+      <span className="text-[12px] font-medium text-text/50">{label}</span>
       <input
         name={name}
         type={type}

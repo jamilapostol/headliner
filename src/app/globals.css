@@ -1,18 +1,68 @@
 @import "tailwindcss";
 
-@theme {
+:root {
+  --canvas: #0d110e;
+  --sidebar: #101512;
+  --surface: #151b16;
+  --surface-nested: #171e18;
+  --elevated: #1a211b;
+  --border: rgba(255, 255, 255, 0.07);
+  --border-hover: rgba(255, 255, 255, 0.1);
+  --text: #e9ece8;
+  --muted: rgba(233, 236, 232, 0.5);
+  --fg-rgb: 233, 236, 232;
+  --border-rgb: 255, 255, 255;
+  --scrollbar-thumb: #232b24;
+}
+
+/* explicit dark override — lets a page force dark regardless of an ancestor's data-theme */
+[data-theme="dark"] {
+  --canvas: #0d110e;
+  --sidebar: #101512;
+  --surface: #151b16;
+  --surface-nested: #171e18;
+  --elevated: #1a211b;
+  --border: rgba(255, 255, 255, 0.07);
+  --border-hover: rgba(255, 255, 255, 0.1);
+  --text: #e9ece8;
+  --muted: rgba(233, 236, 232, 0.5);
+  --fg-rgb: 233, 236, 232;
+  --border-rgb: 255, 255, 255;
+  --scrollbar-thumb: #232b24;
+}
+
+[data-theme="light"] {
+  --canvas: #f6f7f4;
+  --sidebar: #eef0ea;
+  --surface: #ffffff;
+  --surface-nested: #f2f3ef;
+  --elevated: #ffffff;
+  --border: rgba(13, 17, 14, 0.1);
+  --border-hover: rgba(13, 17, 14, 0.16);
+  --text: #10140f;
+  --muted: rgba(16, 20, 15, 0.55);
+  --fg-rgb: 16, 20, 15;
+  --border-rgb: 13, 17, 14;
+  --scrollbar-thumb: #d8dad4;
+}
+
+@theme inline {
   --font-sans: var(--font-space-grotesk), sans-serif;
   --font-mono: var(--font-spline-mono), monospace;
 
-  --color-canvas: #0d110e;
-  --color-sidebar: #101512;
-  --color-surface: #151b16;
-  --color-surface-nested: #171e18;
-  --color-border: rgba(255, 255, 255, 0.07);
-  --color-border-hover: rgba(255, 255, 255, 0.1);
+  --color-canvas: var(--canvas);
+  --color-sidebar: var(--sidebar);
+  --color-surface: var(--surface);
+  --color-surface-nested: var(--surface-nested);
+  --color-elevated: var(--elevated);
+  --color-border: var(--border);
+  --color-border-hover: var(--border-hover);
 
-  --color-text: #e9ece8;
-  --color-muted: rgba(233, 236, 232, 0.5);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+
+  /* fixed ink color for text on accent-colored surfaces (buttons, badges) — stays constant across themes */
+  --color-ink: #0d110e;
 
   --color-accent: #3fe87a;
   --color-accent-soft: rgba(63, 232, 122, 0.07);
@@ -46,7 +96,7 @@
   height: 10px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #232b24;
+  background: var(--scrollbar-thumb);
   border-radius: 5px;
 }
 ::-webkit-scrollbar-track {

@@ -73,12 +73,12 @@ export function MobileDayView({
           <Image src="/logo.svg" alt="HEADLINER" width={24} height={24} />
           <span className="text-[14px] font-bold">Show day</span>
         </div>
-        <div className="font-mono text-[11px] text-white/45">{todayLabel}</div>
+        <div className="font-mono text-[11px] text-text/45">{todayLabel}</div>
       </div>
 
       {nextShow ? (
         <>
-          <div className="mb-3.5 text-[12.5px] text-white/50">
+          <div className="mb-3.5 text-[12.5px] text-text/50">
             {nextShow.isToday ? `Today's the day — ${nextShow.city}` : `${nextShow.daysUntil} day${nextShow.daysUntil === 1 ? "" : "s"} to ${nextShow.city}`}
           </div>
 
@@ -90,15 +90,15 @@ export function MobileDayView({
               NEXT SHOW · {nextShow.dateLabel}
             </div>
             <div className="mb-0.5 text-[19px] font-bold tracking-[-.02em]">{nextShow.venue}</div>
-            <div className="mb-3 text-[12.5px] text-white/60">{nextShow.city}</div>
+            <div className="mb-3 text-[12.5px] text-text/60">{nextShow.city}</div>
             <div className="flex gap-2">
               {[
                 { label: "LOAD-IN", value: nextShow.loadIn },
                 { label: "DOORS", value: nextShow.doors },
                 { label: "SET", value: nextShow.set },
               ].map((s) => (
-                <div key={s.label} className="flex-1 rounded-[10px] border border-white/[.08] bg-white/5 py-2.5 text-center">
-                  <div className="font-mono text-[10px] text-white/45">{s.label}</div>
+                <div key={s.label} className="flex-1 rounded-[10px] border border-text/[.08] bg-text/5 py-2.5 text-center">
+                  <div className="font-mono text-[10px] text-text/45">{s.label}</div>
                   <div className="mt-0.5 text-[14px] font-bold">{s.value ?? "—"}</div>
                 </div>
               ))}
@@ -106,7 +106,7 @@ export function MobileDayView({
           </div>
         </>
       ) : (
-        <div className="mb-3.5 text-[12.5px] text-white/50">No upcoming shows scheduled.</div>
+        <div className="mb-3.5 text-[12.5px] text-text/50">No upcoming shows scheduled.</div>
       )}
 
       <div className="mb-4 grid grid-cols-2 gap-2.5">
@@ -115,28 +115,28 @@ export function MobileDayView({
             <Link
               key={a.key}
               href="/app/merch"
-              className="rounded-[14px] border border-white/[.08] bg-surface px-[15px] py-3.5 active:bg-[#1a221b]"
+              className="rounded-[14px] border border-text/[.08] bg-surface px-[15px] py-3.5 active:bg-text/[.06]"
             >
               <div className={`mb-2 font-mono text-[16px] ${a.color}`}>{a.glyph}</div>
               <div className="text-[13px] font-semibold">{a.label}</div>
-              <div className="mt-0.5 text-[10.5px] text-white/45">{a.sub}</div>
+              <div className="mt-0.5 text-[10.5px] text-text/45">{a.sub}</div>
             </Link>
           ) : (
             <button
               key={a.key}
               onClick={() => tap(a.key)}
-              className="cursor-pointer rounded-[14px] border border-white/[.08] bg-surface px-[15px] py-3.5 text-left active:bg-[#1a221b]"
+              className="cursor-pointer rounded-[14px] border border-text/[.08] bg-surface px-[15px] py-3.5 text-left active:bg-text/[.06]"
             >
               <div className={`mb-2 font-mono text-[16px] ${a.color}`}>{a.glyph}</div>
               <div className="text-[13px] font-semibold">{a.label}</div>
-              <div className="mt-0.5 text-[10.5px] text-white/45">{a.sub}</div>
+              <div className="mt-0.5 text-[10.5px] text-text/45">{a.sub}</div>
             </button>
           )
         )}
       </div>
 
       <div
-        className="pointer-events-none fixed inset-x-4 z-20 mx-auto flex max-w-[440px] items-center gap-2.5 rounded-xl border border-accent/35 bg-[#151b16] px-3.5 py-2.5 text-[12.5px] shadow-lg transition-all duration-300 ease-out"
+        className="pointer-events-none fixed inset-x-4 z-20 mx-auto flex max-w-[440px] items-center gap-2.5 rounded-xl border border-accent/35 bg-surface px-3.5 py-2.5 text-[12.5px] shadow-lg transition-all duration-300 ease-out"
         style={{
           bottom: "calc(env(safe-area-inset-bottom) + 20px)",
           opacity: toastVisible ? 1 : 0,
@@ -149,35 +149,35 @@ export function MobileDayView({
 
       {nextShow && (
         <>
-          <div className="mb-2.5 font-mono text-[10.5px] tracking-[.12em] text-white/40">
+          <div className="mb-2.5 font-mono text-[10.5px] tracking-[.12em] text-text/40">
             {nextShow.isToday ? "TODAY — SHOW DAY" : `TODAY — HEADING TO ${nextShow.city.split(",")[0].toUpperCase()}`}
           </div>
           <div className="mb-4 rounded-[14px] border border-border bg-surface px-4">
             {nextShow.schedule.map((ev, i) => (
-              <div key={i} className="flex gap-3.5 border-b border-white/5 py-2.5 last:border-b-0">
-                <div className="w-11 flex-none font-mono text-[12px] text-white/40">{ev.time}</div>
+              <div key={i} className="flex gap-3.5 border-b border-text/5 py-2.5 last:border-b-0">
+                <div className="w-11 flex-none font-mono text-[12px] text-text/40">{ev.time}</div>
                 <div className="flex-1">
                   <div className="text-[13px] font-semibold">{ev.what}</div>
-                  {ev.who && <div className="text-[11px] text-white/40">{ev.who}</div>}
+                  {ev.who && <div className="text-[11px] text-text/40">{ev.who}</div>}
                 </div>
               </div>
             ))}
-            {nextShow.schedule.length === 0 && <div className="py-3 text-center text-[12.5px] text-white/40">Nothing scheduled yet.</div>}
+            {nextShow.schedule.length === 0 && <div className="py-3 text-center text-[12.5px] text-text/40">Nothing scheduled yet.</div>}
           </div>
         </>
       )}
 
-      <div className="mb-2.5 font-mono text-[10.5px] tracking-[.12em] text-white/40">ON THE ROAD</div>
+      <div className="mb-2.5 font-mono text-[10.5px] tracking-[.12em] text-text/40">ON THE ROAD</div>
       <div className="grid grid-cols-2 gap-2.5">
         <div className="rounded-[14px] border border-border bg-surface px-[15px] py-3.5">
-          <div className="mb-1 font-mono text-[10px] text-white/45">PER DIEM LEFT</div>
+          <div className="mb-1 font-mono text-[10px] text-text/45">PER DIEM LEFT</div>
           <div className="text-[19px] font-bold text-accent">{money(perDiemLeft)}</div>
-          <div className="mt-0.5 text-[10.5px] text-white/40">of {money(perDiemTotal)} today</div>
+          <div className="mt-0.5 text-[10.5px] text-text/40">of {money(perDiemTotal)} today</div>
         </div>
         <div className="rounded-[14px] border border-border bg-surface px-[15px] py-3.5">
-          <div className="mb-1 font-mono text-[10px] text-white/45">TOUR EXPENSES</div>
+          <div className="mb-1 font-mono text-[10px] text-text/45">TOUR EXPENSES</div>
           <div className="text-[19px] font-bold">{money(tourExpensesTotal)}</div>
-          <div className="mt-0.5 text-[10.5px] text-white/40">
+          <div className="mt-0.5 text-[10.5px] text-text/40">
             {receiptCount} receipt{receiptCount === 1 ? "" : "s"} logged
           </div>
         </div>
@@ -200,7 +200,7 @@ export function MobileDayView({
               className="flex flex-col gap-3"
             >
               <label className="flex flex-col gap-1.5">
-                <span className="text-[12px] font-medium text-white/50">Amount ($)</span>
+                <span className="text-[12px] font-medium text-text/50">Amount ($)</span>
                 <input
                   name="amount"
                   type="number"
@@ -208,22 +208,22 @@ export function MobileDayView({
                   required
                   autoFocus
                   placeholder="52.10"
-                  className="rounded-[10px] border border-white/10 bg-surface-nested px-3.5 py-3 text-[16px] text-text outline-none focus:border-accent/50"
+                  className="rounded-[10px] border border-text/10 bg-surface-nested px-3.5 py-3 text-[16px] text-text outline-none focus:border-accent/50"
                 />
               </label>
               <label className="flex flex-col gap-1.5">
-                <span className="text-[12px] font-medium text-white/50">What for</span>
+                <span className="text-[12px] font-medium text-text/50">What for</span>
                 <input
                   name="note"
                   placeholder="Gas, food, merch supplies…"
-                  className="rounded-[10px] border border-white/10 bg-surface-nested px-3.5 py-3 text-[14px] text-text outline-none focus:border-accent/50"
+                  className="rounded-[10px] border border-text/10 bg-surface-nested px-3.5 py-3 text-[14px] text-text outline-none focus:border-accent/50"
                 />
               </label>
               <div className="mt-2 flex gap-2">
-                <button type="button" onClick={() => setShowExpense(false)} className="flex-1 cursor-pointer rounded-[10px] border border-border py-3 text-[13.5px] text-white/70">
+                <button type="button" onClick={() => setShowExpense(false)} className="flex-1 cursor-pointer rounded-[10px] border border-border py-3 text-[13.5px] text-text/70">
                   Cancel
                 </button>
-                <button type="submit" disabled={pending} className="flex-1 cursor-pointer rounded-[10px] bg-accent py-3 text-[13.5px] font-semibold text-canvas disabled:opacity-60">
+                <button type="submit" disabled={pending} className="flex-1 cursor-pointer rounded-[10px] bg-accent py-3 text-[13.5px] font-semibold text-ink disabled:opacity-60">
                   {pending ? "Logging…" : "Log it"}
                 </button>
               </div>

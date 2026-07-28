@@ -46,24 +46,24 @@ export default async function AnalyticsPage() {
     { label: "Confirmed", n: confirmedBookings.length },
   ];
   const funnelMax = funnel[0]?.n || 1;
-  const funnelColors = ["rgba(233,236,232,.25)", "#7ab8e8", "#e8e43f", "#3fe87a"];
+  const funnelColors = ["rgba(var(--fg-rgb),.25)", "#7ab8e8", "#e8e43f", "#3fe87a"];
 
   const stats = [
     { label: "NET · 12 MO", value: money(netTotal), delta: `${income.length + expense.length} transactions logged`, color: netTotal >= 0 ? "text-accent" : "text-orange" },
-    { label: "SHOWS CONFIRMED", value: String(confirmedBookings.length), delta: `of ${bookings.length} in pipeline`, color: "text-white/50" },
-    { label: "AVG GUARANTEE", value: money(avgGuarantee), delta: "confirmed + paid bookings", color: "text-white/50" },
-    { label: "FANS TRACKED", value: String(fanCount), delta: "in your CRM", color: "text-white/50" },
+    { label: "SHOWS CONFIRMED", value: String(confirmedBookings.length), delta: `of ${bookings.length} in pipeline`, color: "text-text/50" },
+    { label: "AVG GUARANTEE", value: money(avgGuarantee), delta: "confirmed + paid bookings", color: "text-text/50" },
+    { label: "FANS TRACKED", value: String(fanCount), delta: "in your CRM", color: "text-text/50" },
   ];
 
   return (
     <div className="mx-auto max-w-[1150px] px-4 py-5 sm:px-8 sm:py-7">
       <h1 className="mb-1 text-[22px] tracking-[-.02em] sm:text-[26px]">Analytics</h1>
-      <div className="mb-5 text-[13px] text-white/50">Last 12 months across shows, merch and audience.</div>
+      <div className="mb-5 text-[13px] text-text/50">Last 12 months across shows, merch and audience.</div>
 
       <div className="mb-[18px] grid grid-cols-2 gap-3.5 lg:grid-cols-4">
         {stats.map((s) => (
           <div key={s.label} className="rounded-card border border-border bg-surface px-[18px] py-4">
-            <div className="mb-2 font-mono text-[10.5px] tracking-[.1em] text-white/45">{s.label}</div>
+            <div className="mb-2 font-mono text-[10.5px] tracking-[.1em] text-text/45">{s.label}</div>
             <div className="text-[24px] font-bold tracking-[-.02em]">{s.value}</div>
             <div className={`mt-1 text-[11.5px] ${s.color}`}>{s.delta}</div>
           </div>
@@ -81,11 +81,11 @@ export default async function AnalyticsPage() {
               </div>
             ))}
           </div>
-          <div className="mt-2 flex justify-between font-mono text-[10px] text-white/40">
+          <div className="mt-2 flex justify-between font-mono text-[10px] text-text/40">
             <span>{monthlyBars[0]?.label}</span>
             <span>{monthlyBars[monthlyBars.length - 1]?.label}</span>
           </div>
-          <div className="mt-3 flex gap-4 text-[11.5px] text-white/55">
+          <div className="mt-3 flex gap-4 text-[11.5px] text-text/55">
             <span>
               <span className="mr-1.5 inline-block h-[9px] w-[9px] rounded-[2px] bg-accent" />
               Performance
@@ -100,10 +100,10 @@ export default async function AnalyticsPage() {
         <div className="flex flex-col gap-3.5">
           <div className="rounded-card border border-border bg-surface px-5 py-[18px]">
             <div className="mb-3 text-[14.5px] font-semibold">Best cities</div>
-            {bestCities.length === 0 && <div className="text-[13px] text-white/40">No bookings yet.</div>}
+            {bestCities.length === 0 && <div className="text-[13px] text-text/40">No bookings yet.</div>}
             {bestCities.map(([city, total], i) => (
               <div key={city} className="flex items-center gap-2.5 py-1.5">
-                <span className="w-4 font-mono text-[11px] text-white/35">{i + 1}</span>
+                <span className="w-4 font-mono text-[11px] text-text/35">{i + 1}</span>
                 <span className="flex-1 text-[13px]">{city}</span>
                 <span className="font-mono text-[12px] text-accent">{money(total)}</span>
               </div>
@@ -114,15 +114,15 @@ export default async function AnalyticsPage() {
             {funnel.map((f, i) => (
               <div key={f.label} className="mb-2.5">
                 <div className="mb-1 flex justify-between text-[11.5px]">
-                  <span className="text-white/65">{f.label}</span>
-                  <span className="font-mono text-white/50">{f.n}</span>
+                  <span className="text-text/65">{f.label}</span>
+                  <span className="font-mono text-text/50">{f.n}</span>
                 </div>
-                <div className="h-[7px] rounded-full bg-white/[.06]">
+                <div className="h-[7px] rounded-full bg-text/[.06]">
                   <div className="h-[7px] rounded-full" style={{ width: `${Math.round((f.n / funnelMax) * 100)}%`, background: funnelColors[i] }} />
                 </div>
               </div>
             ))}
-            <div className="mt-1 text-[11.5px] text-white/50">
+            <div className="mt-1 text-[11.5px] text-text/50">
               {funnelMax ? Math.round((funnel[3].n / funnelMax) * 100) : 0}% outreach → confirmed
             </div>
           </div>

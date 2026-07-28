@@ -48,7 +48,7 @@ const RECS: Record<"light" | "heavy" | "team", { plan: PlanChoice; name: string;
 function radioClasses(sel: boolean) {
   return {
     card: sel ? "border-accent/50 bg-accent-soft" : "border-border bg-surface",
-    radio: sel ? "border-accent bg-accent" : "border-white/30 bg-transparent",
+    radio: sel ? "border-accent bg-accent" : "border-text/30 bg-transparent",
   };
 }
 
@@ -78,18 +78,18 @@ export function OnboardingWizard() {
             <Image src="/logo.svg" alt="HEADLINER" width={26} height={26} />
             <span className="text-[14px] font-bold">HEADLINER</span>
           </div>
-          <div className="font-mono text-[11px] text-white/40">STEP {step} OF 4</div>
+          <div className="font-mono text-[11px] text-text/40">STEP {step} OF 4</div>
         </div>
         <div className="mb-11 flex gap-1.5">
           {[1, 2, 3, 4].map((n) => (
-            <div key={n} className="h-[3px] flex-1 rounded" style={{ background: n <= step ? "#3fe87a" : "rgba(255,255,255,.1)" }} />
+            <div key={n} className="h-[3px] flex-1 rounded" style={{ background: n <= step ? "#3fe87a" : "rgba(var(--border-rgb),.1)" }} />
           ))}
         </div>
 
         {step === 1 && (
           <>
             <h1 className="mb-2 text-[30px] tracking-[-.02em]">Who&apos;s running this show?</h1>
-            <p className="mb-7 text-[14.5px] text-white/55">We&apos;ll shape HEADLINER around how you work.</p>
+            <p className="mb-7 text-[14.5px] text-text/55">We&apos;ll shape HEADLINER around how you work.</p>
             <div className="flex flex-col gap-2.5">
               {ROLES.map((r) => {
                 const c = radioClasses(role === r.key);
@@ -102,9 +102,9 @@ export function OnboardingWizard() {
                     <div className={`font-mono text-[17px] ${r.glyphColor}`}>{r.glyph}</div>
                     <div className="flex-1">
                       <div className="text-[15px] font-semibold">{r.label}</div>
-                      <div className="text-[12.5px] text-white/50">{r.sub}</div>
+                      <div className="text-[12.5px] text-text/50">{r.sub}</div>
                     </div>
-                    <div className={`grid h-5 w-5 place-items-center rounded-full border-[1.5px] text-[11px] font-bold text-canvas ${c.radio}`}>
+                    <div className={`grid h-5 w-5 place-items-center rounded-full border-[1.5px] text-[11px] font-bold text-ink ${c.radio}`}>
                       {role === r.key ? "✓" : ""}
                     </div>
                   </div>
@@ -117,7 +117,7 @@ export function OnboardingWizard() {
         {step === 2 && (
           <>
             <h1 className="mb-2 text-[30px] tracking-[-.02em]">How much are you on the road?</h1>
-            <p className="mb-7 text-[14.5px] text-white/55">This helps us recommend the right plan — you can change it anytime.</p>
+            <p className="mb-7 text-[14.5px] text-text/55">This helps us recommend the right plan — you can change it anytime.</p>
             <div className="flex flex-col gap-2.5">
               {VOLUMES.map((v) => {
                 const c = radioClasses(volume === v.key);
@@ -129,9 +129,9 @@ export function OnboardingWizard() {
                   >
                     <div className="flex-1">
                       <div className="text-[15px] font-semibold">{v.label}</div>
-                      <div className="text-[12.5px] text-white/50">{v.sub}</div>
+                      <div className="text-[12.5px] text-text/50">{v.sub}</div>
                     </div>
-                    <div className={`grid h-5 w-5 place-items-center rounded-full border-[1.5px] text-[11px] font-bold text-canvas ${c.radio}`}>
+                    <div className={`grid h-5 w-5 place-items-center rounded-full border-[1.5px] text-[11px] font-bold text-ink ${c.radio}`}>
                       {volume === v.key ? "✓" : ""}
                     </div>
                   </div>
@@ -144,7 +144,7 @@ export function OnboardingWizard() {
         {step === 3 && (
           <>
             <h1 className="mb-2 text-[30px] tracking-[-.02em]">Bring your world in</h1>
-            <p className="mb-7 text-[14.5px] text-white/55">
+            <p className="mb-7 text-[14.5px] text-text/55">
               Connect what you already use — we&apos;ll import contacts, shows and sales. All optional.
             </p>
             <div className="grid grid-cols-2 gap-2.5">
@@ -159,16 +159,16 @@ export function OnboardingWizard() {
                     }`}
                   >
                     <div
-                      className="grid h-8 w-8 flex-none place-items-center rounded-lg font-mono text-[12px] font-bold text-canvas"
+                      className="grid h-8 w-8 flex-none place-items-center rounded-lg font-mono text-[12px] font-bold text-ink"
                       style={{ background: ig.chipBg }}
                     >
                       {ig.chip}
                     </div>
                     <div className="flex-1">
                       <div className="text-[13.5px] font-semibold">{ig.label}</div>
-                      <div className="text-[11px] text-white/45">{ig.sub}</div>
+                      <div className="text-[11px] text-text/45">{ig.sub}</div>
                     </div>
-                    <div className={`font-mono text-[12px] ${on ? "text-accent" : "text-white/40"}`}>{on ? "CONNECTED" : "CONNECT"}</div>
+                    <div className={`font-mono text-[12px] ${on ? "text-accent" : "text-text/40"}`}>{on ? "CONNECTED" : "CONNECT"}</div>
                   </div>
                 );
               })}
@@ -179,28 +179,28 @@ export function OnboardingWizard() {
         {step === 4 && (
           <>
             <h1 className="mb-2 text-[30px] tracking-[-.02em]">Your roadie recommends</h1>
-            <p className="mb-7 text-[14.5px] text-white/55">{rec.reason}</p>
+            <p className="mb-7 text-[14.5px] text-text/55">{rec.reason}</p>
             <div className="relative mb-3.5 rounded-2xl border border-accent/45 bg-accent-soft p-6">
-              <div className="absolute -top-[11px] left-6 rounded-[20px] bg-yellow px-3 py-1 font-mono text-[10px] font-semibold tracking-[.1em] text-canvas">
+              <div className="absolute -top-[11px] left-6 rounded-[20px] bg-yellow px-3 py-1 font-mono text-[10px] font-semibold tracking-[.1em] text-ink">
                 RECOMMENDED
               </div>
               <div className="mb-3.5 flex items-baseline justify-between">
                 <div className="text-[19px] font-bold">{rec.name}</div>
                 <div>
                   <span className="text-[26px] font-bold">{rec.price}</span>
-                  <span className="text-[12px] text-white/45">/mo</span>
+                  <span className="text-[12px] text-text/45">/mo</span>
                 </div>
               </div>
               <div className="mb-[18px] flex flex-col gap-2">
                 {rec.feats.map((f) => (
                   <div key={f} className="flex gap-[9px] text-[13px]">
                     <span className="text-accent">✓</span>
-                    <span className="text-white/80">{f}</span>
+                    <span className="text-text/80">{f}</span>
                   </div>
                 ))}
               </div>
-              <div className="mb-3.5 flex items-center gap-2.5 rounded-[10px] border border-white/10 bg-surface px-3.5 py-3">
-                <div className="font-mono text-[12px] text-white/50">CARD</div>
+              <div className="mb-3.5 flex items-center gap-2.5 rounded-[10px] border border-text/10 bg-surface px-3.5 py-3">
+                <div className="font-mono text-[12px] text-text/50">CARD</div>
                 <input placeholder="4242 4242 4242 4242" className="flex-1 bg-transparent font-mono text-[13px] text-text outline-none" />
                 <input placeholder="MM/YY" className="w-[52px] bg-transparent font-mono text-[13px] text-text outline-none" />
                 <input placeholder="CVC" className="w-9 bg-transparent font-mono text-[13px] text-text outline-none" />
@@ -208,13 +208,13 @@ export function OnboardingWizard() {
               <button
                 disabled={pending}
                 onClick={() => finish(rec.plan)}
-                className="block w-full rounded-[10px] bg-accent p-[13px] text-center text-[14.5px] font-semibold text-canvas disabled:opacity-60"
+                className="block w-full rounded-[10px] bg-accent p-[13px] text-center text-[14.5px] font-semibold text-ink disabled:opacity-60"
               >
                 {pending ? "Setting up…" : "Start 14-day free trial"}
               </button>
-              <div className="mt-2.5 text-center text-[11.5px] text-white/40">No charge until your trial ends. Cancel in two clicks.</div>
+              <div className="mt-2.5 text-center text-[11.5px] text-text/40">No charge until your trial ends. Cancel in two clicks.</div>
             </div>
-            <button disabled={pending} onClick={() => finish("free")} className="block w-full py-2.5 text-center text-[13px] text-white/50">
+            <button disabled={pending} onClick={() => finish("free")} className="block w-full py-2.5 text-center text-[13px] text-text/50">
               Skip — start on the Free plan
             </button>
           </>
@@ -225,7 +225,7 @@ export function OnboardingWizard() {
             <div
               onClick={() => step > 1 && setStep(step - 1)}
               className="cursor-pointer px-1 py-[11px] text-[13.5px]"
-              style={{ color: step > 1 ? "rgba(233,236,232,.6)" : "rgba(233,236,232,.15)" }}
+              style={{ color: step > 1 ? "rgba(var(--fg-rgb),.6)" : "rgba(var(--fg-rgb),.15)" }}
             >
               ← Back
             </div>
@@ -233,8 +233,8 @@ export function OnboardingWizard() {
               onClick={() => canNext && setStep(step + 1)}
               className="rounded-[10px] px-[26px] py-[11px] text-[14px] font-semibold"
               style={{
-                background: canNext ? "#3fe87a" : "rgba(255,255,255,.08)",
-                color: canNext ? "#0d110e" : "rgba(233,236,232,.3)",
+                background: canNext ? "#3fe87a" : "rgba(var(--border-rgb),.08)",
+                color: canNext ? "#0d110e" : "rgba(var(--fg-rgb),.3)",
                 cursor: canNext ? "pointer" : "default",
               }}
             >

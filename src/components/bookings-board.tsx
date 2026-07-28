@@ -83,15 +83,15 @@ export function BookingsBoard({ bookings: bookingsProp, plan, artistName }: { bo
     <div className="flex h-full flex-col px-4 py-5 sm:px-8 sm:py-7">
       <div className="mb-1 flex flex-wrap items-baseline gap-x-3.5 gap-y-1">
         <h1 className="text-[22px] tracking-[-.02em] sm:text-[26px]">Booking pipeline</h1>
-        <div className="font-mono text-[12px] text-white/45">{money(pipelineTotal)} in play</div>
+        <div className="font-mono text-[12px] text-text/45">{money(pipelineTotal)} in play</div>
         <button
           onClick={() => setShowNew(true)}
-          className="ml-auto cursor-pointer rounded-lg bg-accent px-3.5 py-1.5 text-[12.5px] font-semibold text-canvas"
+          className="ml-auto cursor-pointer rounded-lg bg-accent px-3.5 py-1.5 text-[12.5px] font-semibold text-ink"
         >
           + New booking
         </button>
       </div>
-      <div className="mb-[18px] text-[13px] text-white/50">Drag cards between stages, or click one to open details and move it from there.</div>
+      <div className="mb-[18px] text-[13px] text-text/50">Drag cards between stages, or click one to open details and move it from there.</div>
 
       <div className="flex flex-1 items-start gap-3 overflow-x-auto pb-3">
         {STAGES.map((stage) => {
@@ -108,14 +108,14 @@ export function BookingsBoard({ bookings: bookingsProp, plan, artistName }: { bo
               onDrop={() => drop(stage.key)}
               className="min-h-[300px] w-[236px] flex-none rounded-card border p-3 transition-colors"
               style={{
-                background: isDragTarget ? "rgba(63,232,122,.06)" : "#12181366",
-                borderColor: isDragTarget ? "rgba(63,232,122,.5)" : "rgba(255,255,255,.06)",
+                background: isDragTarget ? "rgba(63,232,122,.06)" : "rgba(var(--fg-rgb),.03)",
+                borderColor: isDragTarget ? "rgba(63,232,122,.5)" : "rgba(var(--border-rgb),.06)",
               }}
             >
               <div className="mb-3 flex items-center gap-2 px-1">
                 <span className="h-[7px] w-[7px] rounded-full" style={{ background: stage.dot }} />
-                <span className="font-mono text-[11px] tracking-[.1em] text-white/60">{stage.label}</span>
-                <span className="ml-auto font-mono text-[11px] text-white/35">{cards.length}</span>
+                <span className="font-mono text-[11px] tracking-[.1em] text-text/60">{stage.label}</span>
+                <span className="ml-auto font-mono text-[11px] text-text/35">{cards.length}</span>
               </div>
               <div className="flex flex-col gap-2">
                 {cards.map((c) => (
@@ -131,16 +131,16 @@ export function BookingsBoard({ bookings: bookingsProp, plan, artistName }: { bo
                       setOpenId(c.id);
                       setDraft(null);
                     }}
-                    className="cursor-grab rounded-[10px] border border-white/[.08] bg-surface-nested px-[13px] py-3 transition-opacity hover:border-accent/40 active:cursor-grabbing"
+                    className="cursor-grab rounded-[10px] border border-text/[.08] bg-surface-nested px-[13px] py-3 transition-opacity hover:border-accent/40 active:cursor-grabbing"
                     style={{ opacity: dragId === c.id ? 0.4 : 1 }}
                   >
                     <div className="mb-0.5 text-[13.5px] font-semibold">{c.venue}</div>
-                    <div className="mb-2 text-[11.5px] text-white/50">
+                    <div className="mb-2 text-[11.5px] text-text/50">
                       {c.city} · {fmtDateRange(c.date, c.endDate)}
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="font-mono text-[12px] text-accent">{money(c.fee)}</span>
-                      <span className="text-[10.5px] text-white/40">{c.contactName}</span>
+                      <span className="text-[10.5px] text-text/40">{c.contactName}</span>
                     </div>
                   </div>
                 ))}
@@ -153,7 +153,7 @@ export function BookingsBoard({ bookings: bookingsProp, plan, artistName }: { bo
       {open && (
         <div
           key={open.id}
-          className="animate-tp-fade fixed inset-0 z-20 box-border h-screen w-full overflow-y-auto border-l border-white/[.09] bg-[#121813] px-5 py-[18px] sm:inset-auto sm:top-0 sm:right-0 sm:w-[380px] sm:px-6 sm:py-[22px]"
+          className="animate-tp-fade fixed inset-0 z-20 box-border h-screen w-full overflow-y-auto border-l border-text/[.09] bg-surface px-5 py-[18px] sm:inset-auto sm:top-0 sm:right-0 sm:w-[380px] sm:px-6 sm:py-[22px]"
         >
           <div className="mb-1 flex items-center justify-between">
             <div className="text-[18px] font-bold">{open.venue}</div>
@@ -162,12 +162,12 @@ export function BookingsBoard({ bookings: bookingsProp, plan, artistName }: { bo
                 setOpenId(null);
                 setDraft(null);
               }}
-              className="cursor-pointer px-1 text-[18px] text-white/50 hover:text-text"
+              className="cursor-pointer px-1 text-[18px] text-text/50 hover:text-text"
             >
               ✕
             </button>
           </div>
-          <div className="mb-4 text-[12.5px] text-white/50">
+          <div className="mb-4 text-[12.5px] text-text/50">
             {open.city} · {fmtDateRange(open.date, open.endDate)}
           </div>
           <div className="mb-[18px] grid grid-cols-2 gap-2.5">
@@ -179,8 +179,8 @@ export function BookingsBoard({ bookings: bookingsProp, plan, artistName }: { bo
               format={(v) => money(Math.round(Number(v) * 100))}
               onSave={(v) => updateBookingDetails(open.id, { fee: v ? Number(v) : 0 })}
             />
-            <div className="rounded-[10px] border border-white/[.08] bg-surface-nested p-3">
-              <div className="mb-1 font-mono text-[10px] text-white/45">CONTACT</div>
+            <div className="rounded-[10px] border border-text/[.08] bg-surface-nested p-3">
+              <div className="mb-1 font-mono text-[10px] text-text/45">CONTACT</div>
               <InlineEdit
                 value={open.contactName ?? ""}
                 placeholder="Add a name"
@@ -190,17 +190,17 @@ export function BookingsBoard({ bookings: bookingsProp, plan, artistName }: { bo
               <InlineEdit
                 value={open.contactPhone ?? ""}
                 placeholder="Add a phone"
-                className="mt-0.5 text-[11px] text-white/45"
+                className="mt-0.5 text-[11px] text-text/45"
                 onSave={(v) => updateBookingDetails(open.id, { contactPhone: v })}
               />
             </div>
           </div>
           <div className="mb-5">
-            <div className="mb-2 font-mono text-[10.5px] tracking-[.1em] text-white/40">STAGE</div>
+            <div className="mb-2 font-mono text-[10.5px] tracking-[.1em] text-text/40">STAGE</div>
             <select
               value={open.stage}
               onChange={(e) => moveStage(open.id, e.target.value as Stage)}
-              className="w-full cursor-pointer rounded-[10px] border border-white/[.08] bg-surface-nested px-3 py-2.5 text-[13px] text-text outline-none focus:border-accent/50"
+              className="w-full cursor-pointer rounded-[10px] border border-text/[.08] bg-surface-nested px-3 py-2.5 text-[13px] text-text outline-none focus:border-accent/50"
             >
               {STAGES.map((s) => (
                 <option key={s.key} value={s.key}>
@@ -209,7 +209,7 @@ export function BookingsBoard({ bookings: bookingsProp, plan, artistName }: { bo
               ))}
             </select>
           </div>
-          <div className="mb-2 font-mono text-[10.5px] tracking-[.1em] text-white/40">CHECKLIST</div>
+          <div className="mb-2 font-mono text-[10.5px] tracking-[.1em] text-text/40">CHECKLIST</div>
           <div className="mb-5 flex flex-col gap-[7px]">
             {checklist.map((c) => (
               <ChecklistItem key={c.label} label={c.label} field={c.field} initialOn={c.on} bookingId={open.id} />
@@ -223,11 +223,11 @@ export function BookingsBoard({ bookings: bookingsProp, plan, artistName }: { bo
               </div>
               {draft && draft.bookingId === open.id ? (
                 <>
-                  <div className="whitespace-pre-line rounded-lg border border-white/[.06] bg-[#0f1410] p-3 text-[12.5px] leading-relaxed text-white/85">
+                  <div className="whitespace-pre-line rounded-lg border border-text/[.06] bg-canvas p-3 text-[12.5px] leading-relaxed text-text/85">
                     {draft.text}
                   </div>
                   <div className="mt-2.5 flex gap-2">
-                    <div className="flex-1 cursor-pointer rounded-lg bg-accent py-2 text-center text-[12.5px] font-semibold text-canvas">Send via Gmail</div>
+                    <div className="flex-1 cursor-pointer rounded-lg bg-accent py-2 text-center text-[12.5px] font-semibold text-ink">Send via Gmail</div>
                     <button
                       onClick={() =>
                         setDraft({
@@ -235,7 +235,7 @@ export function BookingsBoard({ bookings: bookingsProp, plan, artistName }: { bo
                           text: draftFollowupEmail({ contactName: open.contactName, venue: open.venue, city: open.city, date: open.date, artistName }),
                         })
                       }
-                      className="cursor-pointer rounded-lg border border-white/15 px-3 py-2 text-[12.5px] text-white/70"
+                      className="cursor-pointer rounded-lg border border-text/15 px-3 py-2 text-[12.5px] text-text/70"
                     >
                       Redo
                     </button>
@@ -258,7 +258,7 @@ export function BookingsBoard({ bookings: bookingsProp, plan, artistName }: { bo
           ) : (
             <div className="rounded-xl border border-purple/30 bg-purple/[.06] p-3.5">
               <div className="mb-1 text-[12.5px] font-semibold text-purple">Roadie AI — draft follow-up</div>
-              <div className="text-[12px] leading-relaxed text-white/60">
+              <div className="text-[12px] leading-relaxed text-text/60">
                 Email drafts, contract summaries and routing suggestions unlock on the Touring plan.{" "}
                 <a href="/app/billing" className="text-accent underline">
                   Upgrade →
@@ -302,8 +302,8 @@ function EditableStat({
   }
 
   return (
-    <div className="rounded-[10px] border border-white/[.08] bg-surface-nested p-3">
-      <div className="mb-1 font-mono text-[10px] text-white/45">{label}</div>
+    <div className="rounded-[10px] border border-text/[.08] bg-surface-nested p-3">
+      <div className="mb-1 font-mono text-[10px] text-text/45">{label}</div>
       {editing ? (
         <input
           autoFocus
@@ -318,7 +318,7 @@ function EditableStat({
               setEditing(false);
             }
           }}
-          className="w-full rounded-md border border-accent/40 bg-[#0f1410] px-2 py-1 text-[15px] font-bold text-accent outline-none"
+          className="w-full rounded-md border border-accent/40 bg-canvas px-2 py-1 text-[15px] font-bold text-accent outline-none"
         />
       ) : (
         <div
@@ -372,7 +372,7 @@ function InlineEdit({
             setEditing(false);
           }
         }}
-        className={`w-full rounded-md border border-accent/40 bg-[#0f1410] px-1.5 py-0.5 outline-none ${className}`}
+        className={`w-full rounded-md border border-accent/40 bg-canvas px-1.5 py-0.5 outline-none ${className}`}
       />
     );
   }
@@ -384,7 +384,7 @@ function InlineEdit({
         setEditing(true);
       }}
       className={`cursor-pointer hover:opacity-80 ${className}`}
-      style={{ color: committed ? undefined : "rgba(233,236,232,.35)" }}
+      style={{ color: committed ? undefined : "rgba(var(--fg-rgb),.35)" }}
     >
       {committed || placeholder}
     </div>
@@ -412,10 +412,10 @@ function ChecklistItem({
 
   return (
     <div onClick={toggle} className="flex cursor-pointer items-center gap-2.5 text-[13px] hover:opacity-80">
-      <span className="font-mono text-[12px]" style={{ color: on ? "#3fe87a" : "rgba(233,236,232,.3)" }}>
+      <span className="font-mono text-[12px]" style={{ color: on ? "#3fe87a" : "rgba(var(--fg-rgb),.3)" }}>
         {on ? "✓" : "○"}
       </span>
-      <span style={{ color: on ? "#e9ece8" : "rgba(233,236,232,.5)" }}>{label}</span>
+      <span style={{ color: on ? "var(--text)" : "rgba(var(--fg-rgb),.5)" }}>{label}</span>
     </div>
   );
 }

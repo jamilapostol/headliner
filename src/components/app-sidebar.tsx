@@ -28,12 +28,12 @@ export function AppSidebar({ userName, plan, avatarUrl }: { userName: string; pl
   const avatar = avatarUrl ? (
     <Image src={avatarUrl} alt={userName} width={32} height={32} className="h-8 w-8 flex-none rounded-full object-cover" />
   ) : (
-    <div className="grid h-8 w-8 flex-none place-items-center rounded-full bg-yellow text-[13px] font-bold text-canvas">{initials}</div>
+    <div className="grid h-8 w-8 flex-none place-items-center rounded-full bg-yellow text-[13px] font-bold text-ink">{initials}</div>
   );
   const avatarSm = avatarUrl ? (
     <Image src={avatarUrl} alt={userName} width={28} height={28} className="h-7 w-7 rounded-full object-cover" />
   ) : (
-    <div className="grid h-7 w-7 place-items-center rounded-full bg-yellow text-[11px] font-bold text-canvas">{initials}</div>
+    <div className="grid h-7 w-7 place-items-center rounded-full bg-yellow text-[11px] font-bold text-ink">{initials}</div>
   );
 
   return (
@@ -69,8 +69,8 @@ export function AppSidebar({ userName, plan, avatarUrl }: { userName: string; pl
                 key={nv.href}
                 href={nv.href}
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-2.5 rounded-lg px-3 py-[9px] text-[13.5px] font-medium hover:bg-white/5"
-                style={{ color: active ? "#0d110e" : "rgba(233,236,232,.75)", background: active ? "#3fe87a" : "transparent" }}
+                className="flex items-center gap-2.5 rounded-lg px-3 py-[9px] text-[13.5px] font-medium hover:bg-text/5"
+                style={{ color: active ? "#0d110e" : "rgba(var(--fg-rgb),.75)", background: active ? "#3fe87a" : "transparent" }}
               >
                 <span className="w-4 font-mono text-[11px] opacity-70">{nv.glyph}</span>
                 {nv.label}
@@ -82,7 +82,7 @@ export function AppSidebar({ userName, plan, avatarUrl }: { userName: string; pl
         <Link
           href="/mobile"
           onClick={() => setOpen(false)}
-          className="mx-3 mt-auto flex items-center gap-2.5 rounded-lg px-3 py-[9px] text-[12.5px] font-medium text-white/60 hover:bg-white/5"
+          className="mx-3 mt-auto flex items-center gap-2.5 rounded-lg px-3 py-[9px] text-[12.5px] font-medium text-text/60 hover:bg-text/5"
         >
           <span className="w-4 font-mono text-[11px] opacity-70">▤</span>
           Show-day view
@@ -91,14 +91,14 @@ export function AppSidebar({ userName, plan, avatarUrl }: { userName: string; pl
           {menuOpen && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
-              <div className="absolute bottom-full left-3.5 z-50 mb-2 w-[190px] overflow-hidden rounded-[10px] border border-white/10 bg-[#1a211b] shadow-xl">
+              <div className="absolute bottom-full left-3.5 z-50 mb-2 w-[190px] overflow-hidden rounded-[10px] border border-text/10 bg-elevated shadow-xl">
                 <Link
                   href="/app/account"
                   onClick={() => {
                     setMenuOpen(false);
                     setOpen(false);
                   }}
-                  className="flex items-center gap-2 px-3.5 py-2.5 text-[13px] text-text hover:bg-white/5"
+                  className="flex items-center gap-2 px-3.5 py-2.5 text-[13px] text-text hover:bg-text/5"
                 >
                   Profile
                 </Link>
@@ -108,14 +108,14 @@ export function AppSidebar({ userName, plan, avatarUrl }: { userName: string; pl
                     setMenuOpen(false);
                     setOpen(false);
                   }}
-                  className="flex items-center gap-2 px-3.5 py-2.5 text-[13px] text-text hover:bg-white/5"
+                  className="flex items-center gap-2 px-3.5 py-2.5 text-[13px] text-text hover:bg-text/5"
                 >
                   Billing
                 </Link>
                 <form action={logOut}>
                   <button
                     type="submit"
-                    className="flex w-full cursor-pointer items-center gap-2 border-t border-white/10 px-3.5 py-2.5 text-left text-[13px] text-white/70 hover:bg-white/5"
+                    className="flex w-full cursor-pointer items-center gap-2 border-t border-text/10 px-3.5 py-2.5 text-left text-[13px] text-text/70 hover:bg-text/5"
                   >
                     Log out
                   </button>
@@ -125,12 +125,12 @@ export function AppSidebar({ userName, plan, avatarUrl }: { userName: string; pl
           )}
           <button
             onClick={() => setMenuOpen((v) => !v)}
-            className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg p-1 hover:bg-white/5"
+            className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg p-1 hover:bg-text/5"
           >
             {avatar}
             <div className="min-w-0 flex-1 text-left">
               <div className="truncate text-[13px] font-semibold">{userName}</div>
-              <div className="text-[11px] text-white/45">{PLAN_LABEL[plan] ?? plan}</div>
+              <div className="text-[11px] text-text/45">{PLAN_LABEL[plan] ?? plan}</div>
             </div>
           </button>
         </div>

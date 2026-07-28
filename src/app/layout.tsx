@@ -40,7 +40,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${splineMono.variable} h-full`}>
+    <html lang="en" className={`${spaceGrotesk.variable} ${splineMono.variable} h-full`} suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}`,
+          }}
+        />
+      </head>
       <body className="min-h-full bg-canvas text-text antialiased">{children}</body>
     </html>
   );

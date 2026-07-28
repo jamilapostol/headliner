@@ -5,7 +5,7 @@ import { signUp } from "@/lib/actions/auth";
 
 export default function SignupPage() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center px-6">
+    <div className="flex min-h-screen flex-col items-center justify-center px-6 text-text" data-theme="dark">
       <div className="w-full max-w-[380px]">
         <Link href="/" className="mb-8 flex items-center justify-center gap-2.5">
           <Image src="/logo.svg" alt="HEADLINER" width={28} height={28} />
