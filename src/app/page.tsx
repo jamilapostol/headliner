@@ -262,7 +262,7 @@ export default function LandingPage() {
         <Link href="/signup" className="inline-block rounded-[10px] bg-accent px-7 py-[13px] text-[15px] font-semibold text-canvas">
           Start free
         </Link>
-        <div className="mt-10 font-mono text-[11px] text-white/30">© 2026 HEADLINER · Made for the road</div>
+        <div className="mt-10 font-mono text-[11px] text-white/30">© 2026 HEADLINER · By musicians, for musicians</div>
       </div>
     </div>
   );
