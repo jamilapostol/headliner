@@ -3,16 +3,17 @@
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth";
-import { withErrorLog, withErrorFallback } from "@/lib/action-error";
+import { withErrorLog, withErrorFallback, withErrorState } from "@/lib/action-error";
 import { MAX_IMPORT_ROWS } from "@/lib/import-limits";
+import { CONTACT_LIMITS } from "@/lib/plan-limits";
 
 const CATEGORIES = ["Venues", "Promoters", "Festivals", "Media", "Sponsors"] as const;
 export type Category = (typeof CATEGORIES)[number];
 
-export async function createContact(formData: FormData) {
-  return withErrorLog("createContact", async () => {
+export async function createContact(formData: FormData): Promise<{ error?: string }> {
+  return withErrorState("createContact", async () => {
     const session = await getSession();
-    if (!session) return;
+    if (!session) return { error: "Not signed in." };
 
     const name = String(formData.get("name") ?? "").trim();
     const org = String(formData.get("org") ?? "").trim();
@@ -22,13 +23,23 @@ export async function createContact(formData: FormData) {
     const phone = String(formData.get("phone") ?? "").trim();
     const category = String(formData.get("category") ?? "Venues");
 
-    if (!name || !CATEGORIES.includes(category as Category)) return;
+    if (!name || !CATEGORIES.includes(category as Category)) return {};
+
+    const workspace = await db.workspace.findUniqueOrThrow({ where: { id: session.workspaceId } });
+    const limit = CONTACT_LIMITS[workspace.plan] ?? Infinity;
+    if (Number.isFinite(limit)) {
+      const count = await db.contact.count({ where: { workspaceId: session.workspaceId } });
+      if (count >= limit) {
+        return { error: `Free plan is limited to ${limit} contacts. Upgrade to add more.` };
+      }
+    }
 
     await db.contact.create({
       data: { workspaceId: session.workspaceId, name, org, role, city, email, phone, category: category as Category, strength: 3 },
     });
     revalidatePath("/app/contacts");
     revalidatePath("/app");
+    return {};
   });
 }
 
@@ -63,7 +74,14 @@ export async function importContacts(rows: Record<string, string>[]) {
     const session = await getSession();
     if (!session) return { imported: 0, skipped: rows.length };
 
-    const capped = rows.slice(0, MAX_IMPORT_ROWS);
+    let capped = rows.slice(0, MAX_IMPORT_ROWS);
+    const workspace = await db.workspace.findUniqueOrThrow({ where: { id: session.workspaceId } });
+    const limit = CONTACT_LIMITS[workspace.plan] ?? Infinity;
+    if (Number.isFinite(limit)) {
+      const existing = await db.contact.count({ where: { workspaceId: session.workspaceId } });
+      capped = capped.slice(0, Math.max(0, limit - existing));
+    }
+
     const data = [];
     for (const r of capped) {
       const name = (r.name ?? "").trim();

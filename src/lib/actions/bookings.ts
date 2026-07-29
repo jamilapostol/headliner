@@ -3,7 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth";
-import { withErrorLog } from "@/lib/action-error";
+import { withErrorLog, withErrorState } from "@/lib/action-error";
+import { BOOKING_LIMITS } from "@/lib/plan-limits";
 
 const STAGES = ["Lead", "Contacted", "Negotiating", "Offer_Sent", "Confirmed", "Paid"] as const;
 export type Stage = (typeof STAGES)[number];
@@ -61,10 +62,10 @@ export async function toggleBookingChecklist(bookingId: string, field: Checklist
   });
 }
 
-export async function createBooking(formData: FormData) {
-  return withErrorLog("createBooking", async () => {
+export async function createBooking(formData: FormData): Promise<{ error?: string }> {
+  return withErrorState("createBooking", async () => {
     const session = await getSession();
-    if (!session) return;
+    if (!session) return { error: "Not signed in." };
 
     const venue = String(formData.get("venue") ?? "").trim();
     const city = String(formData.get("city") ?? "").trim();
@@ -74,7 +75,16 @@ export async function createBooking(formData: FormData) {
     const contactName = String(formData.get("contactName") ?? "").trim();
     const contactPhone = String(formData.get("contactPhone") ?? "").trim();
 
-    if (!venue || !city || !date) return;
+    if (!venue || !city || !date) return {};
+
+    const workspace = await db.workspace.findUniqueOrThrow({ where: { id: session.workspaceId } });
+    const limit = BOOKING_LIMITS[workspace.plan] ?? Infinity;
+    if (Number.isFinite(limit)) {
+      const count = await db.booking.count({ where: { workspaceId: session.workspaceId } });
+      if (count >= limit) {
+        return { error: `Free plan is limited to ${limit} active bookings. Upgrade to add more.` };
+      }
+    }
 
     const endDate = endDateRaw && endDateRaw >= date ? new Date(endDateRaw) : null;
 
@@ -94,5 +104,6 @@ export async function createBooking(formData: FormData) {
     revalidatePath("/app/bookings");
     revalidatePath("/app");
     revalidatePath("/app/calendar");
+    return {};
   });
 }

@@ -44,6 +44,7 @@ export function ContactsTable({ contacts }: { contacts: ContactDTO[] }) {
   const [query, setQuery] = useState("");
   const [cat, setCat] = useState("All");
   const [showNew, setShowNew] = useState(false);
+  const [newContactError, setNewContactError] = useState<string | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -94,7 +95,13 @@ export function ContactsTable({ contacts }: { contacts: ContactDTO[] }) {
         <h1 className="text-[22px] tracking-[-.02em] sm:text-[26px]">Contacts</h1>
         <div className="flex items-center gap-2">
           <CsvImportModal entityLabel="contacts" columns={CONTACT_CSV_COLUMNS} onImport={importContacts} />
-          <button onClick={() => setShowNew(true)} className="cursor-pointer rounded-lg bg-accent px-3.5 py-1.5 text-[12.5px] font-semibold text-ink">
+          <button
+            onClick={() => {
+              setNewContactError(null);
+              setShowNew(true);
+            }}
+            className="cursor-pointer rounded-lg bg-accent px-3.5 py-1.5 text-[12.5px] font-semibold text-ink"
+          >
             + New contact
           </button>
         </div>
@@ -176,7 +183,11 @@ export function ContactsTable({ contacts }: { contacts: ContactDTO[] }) {
             <form
               action={(fd) =>
                 startTransition(async () => {
-                  await createContact(fd);
+                  const result = await createContact(fd);
+                  if (result?.error) {
+                    setNewContactError(result.error);
+                    return;
+                  }
                   setShowNew(false);
                 })
               }
@@ -204,6 +215,9 @@ export function ContactsTable({ contacts }: { contacts: ContactDTO[] }) {
                   ))}
                 </select>
               </label>
+              {newContactError && (
+                <div className="rounded-lg border border-orange/30 bg-orange-soft px-3 py-2 text-[13px] text-orange">{newContactError}</div>
+              )}
               <div className="mt-2 flex gap-2">
                 <button type="button" onClick={() => setShowNew(false)} className="flex-1 cursor-pointer rounded-[10px] border border-border py-2.5 text-[13.5px] text-text/70">
                   Cancel

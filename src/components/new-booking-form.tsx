@@ -1,15 +1,21 @@
 "use client";
 
-import { useRef, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { createBooking } from "@/lib/actions/bookings";
 
 export function NewBookingForm({ onClose }: { onClose: () => void }) {
   const formRef = useRef<HTMLFormElement>(null);
   const [pending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
 
   function submit(formData: FormData) {
+    setError(null);
     startTransition(async () => {
-      await createBooking(formData);
+      const result = await createBooking(formData);
+      if (result?.error) {
+        setError(result.error);
+        return;
+      }
       onClose();
     });
   }
@@ -31,6 +37,9 @@ export function NewBookingForm({ onClose }: { onClose: () => void }) {
           <Field label="Fee ($)" name="fee" type="number" placeholder="1800" />
           <Field label="Contact" name="contactName" placeholder="J. Reyes" required={false} />
           <Field label="Contact phone (optional)" name="contactPhone" type="tel" placeholder="(303) 555-0142" required={false} />
+          {error && (
+            <div className="rounded-lg border border-orange/30 bg-orange-soft px-3 py-2 text-[13px] text-orange">{error}</div>
+          )}
           <div className="mt-2 flex gap-2">
             <button
               type="button"
