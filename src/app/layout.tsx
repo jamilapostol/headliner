@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Spline_Sans_Mono } from "next/font/google";
+import { CookieConsentBanner } from "@/components/cookie-consent-banner";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -48,7 +49,10 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-full bg-canvas text-text antialiased">{children}</body>
+      <body className="min-h-full bg-canvas text-text antialiased">
+        {children}
+        <CookieConsentBanner />
+      </body>
     </html>
   );
 }
