@@ -13,7 +13,7 @@ function tiers(annual: boolean) {
       per: "forever",
       popular: false,
       cta: "Start free",
-      feats: ["10 active bookings", "Contacts CRM (100)", "Unified calendar", "1 user"],
+      feats: ["5 active bookings", "Contacts CRM (50)", "Unified calendar", "1 user"],
     },
     {
       name: "Pro Artist",

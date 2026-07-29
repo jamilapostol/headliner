@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { changePlan, type PlanChoice, type Cycle } from "@/lib/actions/billing";
 
 const TIERS: Array<{ key: PlanChoice; name: string; tagline: string; monthly: number; feats: string[]; popular?: boolean }> = [
-  { key: "free", name: "Free", tagline: "Test the waters — your first bookings on us.", monthly: 0, feats: ["10 active bookings", "Contacts CRM (100)", "Unified calendar", "1 user"] },
+  { key: "free", name: "Free", tagline: "Test the waters — your first bookings on us.", monthly: 0, feats: ["5 active bookings", "Contacts CRM (50)", "Unified calendar", "1 user"] },
   { key: "pro", name: "Pro Artist", tagline: "For working artists gigging every month.", monthly: 24, feats: ["Unlimited bookings", "Full CRM + reminders", "Merch inventory", "Financial hub", "Email campaigns (2k)"] },
   { key: "touring", name: "Touring Artist", tagline: "For artists living on the road.", monthly: 59, popular: true, feats: ["Everything in Pro", "Tour routing + day sheets", "Roadie AI (drafts, summaries)", "Contracts + e-sign", "3 team seats"] },
   { key: "team", name: "Management Team", tagline: "For managers running multiple artists.", monthly: 129, feats: ["Everything in Touring", "Multi-artist workspaces", "Role-based permissions", "Accountant exports", "10 team seats"] },
