@@ -10,7 +10,15 @@ const TIERS: Array<{ key: PlanChoice; name: string; tagline: string; monthly: nu
   { key: "team", name: "Management Team", tagline: "For managers running multiple artists.", monthly: 129, feats: ["Everything in Touring", "Multi-artist workspaces", "Role-based permissions", "Accountant exports", "10 team seats"] },
 ];
 
-export function BillingPlans({ currentPlan, stripeEnabled }: { currentPlan: string; stripeEnabled: boolean }) {
+export function BillingPlans({
+  currentPlan,
+  stripeEnabled,
+  cancelAtPeriodEnd,
+}: {
+  currentPlan: string;
+  stripeEnabled: boolean;
+  cancelAtPeriodEnd: boolean;
+}) {
   const [annual, setAnnual] = useState(false);
   const [pending, startTransition] = useTransition();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
@@ -67,8 +75,11 @@ export function BillingPlans({ currentPlan, stripeEnabled }: { currentPlan: stri
                 </div>
               )}
               {isCurrent && (
-                <div className="absolute -top-[11px] left-1/2 -translate-x-1/2 whitespace-nowrap rounded-[20px] bg-accent px-3 py-1 font-mono text-[10px] font-semibold tracking-[.1em] text-ink">
-                  CURRENT PLAN
+                <div
+                  className="absolute -top-[11px] left-1/2 -translate-x-1/2 whitespace-nowrap rounded-[20px] px-3 py-1 font-mono text-[10px] font-semibold tracking-[.1em] text-ink"
+                  style={{ background: cancelAtPeriodEnd ? "#e8983f" : "#3fe87a" }}
+                >
+                  {cancelAtPeriodEnd ? "DOWNGRADING SOON" : "CURRENT PLAN"}
                 </div>
               )}
               <div className="mb-1 text-[15px] font-semibold">{t.name}</div>
@@ -85,18 +96,32 @@ export function BillingPlans({ currentPlan, stripeEnabled }: { currentPlan: stri
                   </div>
                 ))}
               </div>
-              <button
-                disabled={isCurrent || pending}
-                onClick={() => pick(t.key)}
-                className="mt-auto cursor-pointer rounded-[9px] p-[11px] text-center text-[13.5px] font-semibold disabled:cursor-default disabled:opacity-70"
-                style={{
-                  background: isCurrent ? "transparent" : t.popular ? "#3fe87a" : "transparent",
-                  color: isCurrent ? "rgba(var(--fg-rgb),.5)" : t.popular ? "#0d110e" : "rgba(var(--fg-rgb),.85)",
-                  border: `1px solid ${isCurrent ? "rgba(var(--border-rgb),.12)" : t.popular ? "#3fe87a" : "rgba(var(--border-rgb),.18)"}`,
-                }}
-              >
-                {isCurrent ? "Current plan" : pending && loadingPlan === t.key ? "Redirecting…" : t.key === "free" ? "Downgrade" : "Choose " + t.name.split(" ")[0]}
-              </button>
+              {(() => {
+                const downgradeAlreadyScheduled = t.key === "free" && cancelAtPeriodEnd;
+                const disabled = isCurrent || pending || downgradeAlreadyScheduled;
+                return (
+                  <button
+                    disabled={disabled}
+                    onClick={() => pick(t.key)}
+                    className="mt-auto cursor-pointer rounded-[9px] p-[11px] text-center text-[13.5px] font-semibold disabled:cursor-default disabled:opacity-70"
+                    style={{
+                      background: isCurrent ? "transparent" : t.popular ? "#3fe87a" : "transparent",
+                      color: isCurrent ? "rgba(var(--fg-rgb),.5)" : t.popular ? "#0d110e" : "rgba(var(--fg-rgb),.85)",
+                      border: `1px solid ${isCurrent ? "rgba(var(--border-rgb),.12)" : t.popular ? "#3fe87a" : "rgba(var(--border-rgb),.18)"}`,
+                    }}
+                  >
+                    {isCurrent
+                      ? "Current plan"
+                      : downgradeAlreadyScheduled
+                        ? "Downgrade scheduled"
+                        : pending && loadingPlan === t.key
+                          ? "Redirecting…"
+                          : t.key === "free"
+                            ? "Downgrade"
+                            : "Choose " + t.name.split(" ")[0]}
+                  </button>
+                );
+              })()}
             </div>
           );
         })}

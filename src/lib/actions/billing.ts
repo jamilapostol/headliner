@@ -18,16 +18,25 @@ export async function changePlan(plan: PlanChoice, cycle: Cycle) {
     const workspace = await db.workspace.findUniqueOrThrow({ where: { id: session.workspaceId } });
 
     if (plan === "free") {
-      // Downgrading in-app must also stop the real subscription — otherwise
-      // Stripe keeps billing a card for a plan the workspace no longer has.
       if (workspace.stripeSubId && stripeEnabled && stripe) {
-        await stripe.subscriptions.cancel(workspace.stripeSubId).catch((err) => {
-          console.error("[billing] failed to cancel Stripe subscription on downgrade", err);
+        // Don't cut off access they already paid for — schedule the
+        // cancellation for the end of the current billing period instead
+        // of canceling immediately. The workspace stays on its current
+        // plan; customer.subscription.deleted flips it to free once the
+        // period actually ends.
+        await stripe.subscriptions.update(workspace.stripeSubId, { cancel_at_period_end: true }).catch((err) => {
+          console.error("[billing] failed to schedule Stripe cancellation", err);
         });
+        await db.workspace.update({ where: { id: workspace.id }, data: { cancelAtPeriodEnd: true } });
+        revalidatePath("/app", "layout");
+        redirect("/app/billing?downgrade_scheduled=1");
       }
+
+      // No real subscription to schedule against (mock mode, or already
+      // free) — nothing to wait out, so just flip the plan directly.
       await db.workspace.update({
         where: { id: workspace.id },
-        data: { plan: "free", billingCycle: cycle, trialEndsAt: null, stripeSubId: null, paymentPastDue: false },
+        data: { plan: "free", billingCycle: cycle, trialEndsAt: null, stripeSubId: null, paymentPastDue: false, cancelAtPeriodEnd: false },
       });
       revalidatePath("/app", "layout");
       redirect("/app/billing?updated=1");
@@ -68,5 +77,27 @@ export async function changePlan(plan: PlanChoice, cycle: Cycle) {
     });
     revalidatePath("/app", "layout");
     redirect("/app/billing?mock=1");
+  });
+}
+
+// Undoes a scheduled downgrade — lets someone who changed their mind keep
+// their current plan instead of having to re-subscribe from scratch after
+// it lapses.
+export async function resumeSubscription() {
+  return withErrorLog("resumeSubscription", async () => {
+    const session = await getSession();
+    if (!session) redirect("/login");
+
+    const workspace = await db.workspace.findUniqueOrThrow({ where: { id: session.workspaceId } });
+    if (!workspace.cancelAtPeriodEnd) return;
+
+    if (workspace.stripeSubId && stripeEnabled && stripe) {
+      await stripe.subscriptions.update(workspace.stripeSubId, { cancel_at_period_end: false }).catch((err) => {
+        console.error("[billing] failed to resume Stripe subscription", err);
+      });
+    }
+    await db.workspace.update({ where: { id: workspace.id }, data: { cancelAtPeriodEnd: false } });
+    revalidatePath("/app", "layout");
+    redirect("/app/billing?resumed=1");
   });
 }

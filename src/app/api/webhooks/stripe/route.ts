@@ -51,9 +51,18 @@ export async function POST(request: Request) {
       const workspaceId = sub.metadata?.workspaceId;
       const plan = sub.metadata?.plan;
       if (workspaceId && plan) {
+        const item = sub.items.data[0];
         await db.workspace.update({
           where: { id: workspaceId },
-          data: { plan: plan as "free" | "pro" | "touring" | "team", stripeSubId: sub.id },
+          data: {
+            plan: plan as "free" | "pro" | "touring" | "team",
+            stripeSubId: sub.id,
+            // Keeps the "downgrade scheduled for <date>" banner in sync
+            // regardless of what triggered the update — our own
+            // cancel_at_period_end call, or a change made in Stripe directly.
+            cancelAtPeriodEnd: sub.cancel_at_period_end,
+            currentPeriodEnd: item ? new Date(item.current_period_end * 1000) : null,
+          },
         });
       }
       break;
@@ -67,7 +76,7 @@ export async function POST(request: Request) {
       if (workspace) {
         await db.workspace.update({
           where: { id: workspace.id },
-          data: { plan: "free", stripeSubId: null, paymentPastDue: false },
+          data: { plan: "free", stripeSubId: null, paymentPastDue: false, cancelAtPeriodEnd: false, currentPeriodEnd: null },
         });
       }
       break;

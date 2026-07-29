@@ -60,6 +60,8 @@ model Workspace {
   stripeCustomerId String?
   stripeSubId      String?
   paymentPastDue   Boolean   @default(false) // set by the payment_failed webhook, cleared on next successful invoice
+  cancelAtPeriodEnd Boolean  @default(false) // downgrade-to-free is scheduled; stays on current plan until the period ends
+  currentPeriodEnd DateTime? // synced from Stripe — when the scheduled downgrade takes effect
   trialEndsAt      DateTime?
   addressLine1     String?
   addressLine2     String?
