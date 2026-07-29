@@ -95,6 +95,17 @@ model AdminAuditLog {
   @@index([targetType, targetId])
 }
 
+// Self-cleaning hit counter for anti-abuse rate limiting (login, signup,
+// password reset). Stale rows for a key are deleted on each check, so this
+// never grows beyond the currently-active window per key. See src/lib/rate-limit.ts.
+model RateLimitHit {
+  id        String   @id @default(cuid())
+  key       String
+  createdAt DateTime @default(now())
+
+  @@index([key, createdAt])
+}
+
 model Membership {
   id          String   @id @default(cuid())
   workspaceId String

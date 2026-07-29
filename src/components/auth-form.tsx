@@ -32,6 +32,11 @@ export function AuthForm({
           {state.error}
         </div>
       )}
+      {state.success && (
+        <div className="rounded-lg border border-accent/30 bg-accent-soft px-3 py-2 text-[13px] text-accent">
+          {state.success}
+        </div>
+      )}
 
       <button
         type="submit"
@@ -41,14 +46,19 @@ export function AuthForm({
         {pending ? "Please wait…" : mode === "signup" ? "Create account" : "Log in"}
       </button>
 
-      <div className="text-center text-[13px] text-muted">
+      <div className="flex flex-col items-center gap-2 text-center text-[13px] text-muted">
         {mode === "signup" ? (
           <>
             Already have an account? <Link href="/login" className="text-accent">Log in</Link>
           </>
         ) : (
           <>
-            New to HEADLINER? <Link href="/signup" className="text-accent">Start free</Link>
+            <span>
+              New to HEADLINER? <Link href="/signup" className="text-accent">Start free</Link>
+            </span>
+            <Link href="/forgot-password" className="text-muted hover:text-text">
+              Forgot your password?
+            </Link>
           </>
         )}
       </div>
@@ -56,7 +66,7 @@ export function AuthForm({
   );
 }
 
-function Field({
+export function Field({
   label,
   name,
   type,
