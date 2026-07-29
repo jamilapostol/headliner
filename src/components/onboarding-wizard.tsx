@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState, useTransition } from "react";
 import { completeOnboarding, type PlanChoice } from "@/lib/actions/onboarding";
 import { INTEGRATIONS } from "@/lib/integrations";
+import { TRIAL_DAYS } from "@/lib/trial";
 
 type Role = "solo" | "band" | "manager" | "crew";
 type Volume = "few" | "half" | "full";
@@ -210,7 +211,7 @@ export function OnboardingWizard() {
                 onClick={() => finish(rec.plan)}
                 className="block w-full rounded-[10px] bg-accent p-[13px] text-center text-[14.5px] font-semibold text-ink disabled:opacity-60"
               >
-                {pending ? "Setting up…" : "Start 14-day free trial"}
+                {pending ? "Setting up…" : `Start ${TRIAL_DAYS}-day free trial`}
               </button>
               <div className="mt-2.5 text-center text-[11.5px] text-text/40">No charge until your trial ends. Cancel in two clicks.</div>
             </div>

@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 import { withErrorLog } from "@/lib/action-error";
+import { TRIAL_MS } from "@/lib/trial";
 
 export type PlanChoice = "free" | "pro" | "touring" | "team";
 
@@ -13,7 +14,7 @@ export async function completeOnboarding(plan: PlanChoice, billingCycle: "monthl
     const session = await getSession();
     if (!session) redirect("/login");
 
-    const trialEndsAt = plan === "free" ? null : new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
+    const trialEndsAt = plan === "free" ? null : new Date(Date.now() + TRIAL_MS);
 
     await db.workspace.update({
       where: { id: session.workspaceId },

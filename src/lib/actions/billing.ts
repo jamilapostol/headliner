@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 import { stripe, stripeEnabled, PRICE_IDS } from "@/lib/stripe";
 import { withErrorLog } from "@/lib/action-error";
+import { TRIAL_DAYS, TRIAL_MS } from "@/lib/trial";
 
 export type PlanChoice = "free" | "pro" | "touring" | "team";
 export type Cycle = "monthly" | "annual";
@@ -60,7 +61,7 @@ export async function changePlan(plan: PlanChoice, cycle: Cycle) {
         mode: "subscription",
         customer: customerId,
         line_items: [{ price: priceId, quantity: 1 }],
-        subscription_data: { trial_period_days: 14, metadata: { workspaceId: workspace.id, plan } },
+        subscription_data: { trial_period_days: TRIAL_DAYS, metadata: { workspaceId: workspace.id, plan } },
         success_url: `${baseUrl}/app/billing?success=1`,
         cancel_url: `${baseUrl}/app/billing?canceled=1`,
       });
@@ -73,7 +74,7 @@ export async function changePlan(plan: PlanChoice, cycle: Cycle) {
     // subscription + trial directly so the app is fully usable locally.
     await db.workspace.update({
       where: { id: workspace.id },
-      data: { plan, billingCycle: cycle, trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000) },
+      data: { plan, billingCycle: cycle, trialEndsAt: new Date(Date.now() + TRIAL_MS) },
     });
     revalidatePath("/app", "layout");
     redirect("/app/billing?mock=1");
