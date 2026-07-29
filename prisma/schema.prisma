@@ -59,6 +59,7 @@ model Workspace {
   billingCycle     String   @default("monthly") // monthly | annual
   stripeCustomerId String?
   stripeSubId      String?
+  paymentPastDue   Boolean   @default(false) // set by the payment_failed webhook, cleared on next successful invoice
   trialEndsAt      DateTime?
   addressLine1     String?
   addressLine2     String?

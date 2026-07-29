@@ -2,8 +2,28 @@ import type Stripe from "stripe";
 import { db } from "@/lib/db";
 import { stripe, stripeEnabled } from "@/lib/stripe";
 
-// Handles subscription.updated (sync plan flags) and payment_failed
-// (grace banner) per the billing spec. No-op if Stripe isn't configured.
+function subId(sub: string | Stripe.Subscription): string {
+  return typeof sub === "string" ? sub : sub.id;
+}
+
+async function findWorkspaceForSub(sub: Stripe.Subscription) {
+  const workspaceId = sub.metadata?.workspaceId;
+  if (workspaceId) {
+    const byMetadata = await db.workspace.findUnique({ where: { id: workspaceId } });
+    if (byMetadata) return byMetadata;
+  }
+  return db.workspace.findFirst({ where: { stripeSubId: sub.id } });
+}
+
+async function findWorkspaceForInvoice(invoice: Stripe.Invoice) {
+  const subscription = invoice.parent?.subscription_details?.subscription;
+  if (!subscription) return null;
+  return db.workspace.findFirst({ where: { stripeSubId: subId(subscription) } });
+}
+
+// Handles subscription create/update/delete (sync plan + stripeSubId) and
+// invoice payment failed/succeeded (grace-period flag). No-op if Stripe
+// isn't configured.
 export async function POST(request: Request) {
   if (!stripeEnabled || !stripe) {
     return new Response("Stripe not configured", { status: 501 });
@@ -38,9 +58,36 @@ export async function POST(request: Request) {
       }
       break;
     }
+    case "customer.subscription.deleted": {
+      // Fires on cancellation from any source — our own changePlan() call,
+      // Stripe's customer portal, or Stripe auto-canceling after repeated
+      // payment failures. Sync the workspace back down to free either way.
+      const sub = event.data.object as Stripe.Subscription;
+      const workspace = await findWorkspaceForSub(sub);
+      if (workspace) {
+        await db.workspace.update({
+          where: { id: workspace.id },
+          data: { plan: "free", stripeSubId: null, paymentPastDue: false },
+        });
+      }
+      break;
+    }
     case "invoice.payment_failed": {
-      // A grace-period banner would be driven off of a workspace flag here;
-      // left as a no-op in the MVP scaffold.
+      const invoice = event.data.object as Stripe.Invoice;
+      const workspace = await findWorkspaceForInvoice(invoice);
+      if (workspace) {
+        await db.workspace.update({ where: { id: workspace.id }, data: { paymentPastDue: true } });
+      }
+      break;
+    }
+    case "invoice.payment_succeeded": {
+      // Clears the grace-period flag once a retried charge (or the next
+      // cycle's charge) goes through.
+      const invoice = event.data.object as Stripe.Invoice;
+      const workspace = await findWorkspaceForInvoice(invoice);
+      if (workspace?.paymentPastDue) {
+        await db.workspace.update({ where: { id: workspace.id }, data: { paymentPastDue: false } });
+      }
       break;
     }
     default:
