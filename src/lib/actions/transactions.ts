@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 import { withErrorLog, withErrorFallback } from "@/lib/action-error";
+import { MAX_IMPORT_ROWS } from "@/lib/import-limits";
 
 export async function createTransaction(formData: FormData) {
   return withErrorLog("createTransaction", async () => {
@@ -38,8 +39,9 @@ export async function importTransactions(rows: Record<string, string>[]) {
     const session = await getSession();
     if (!session) return { imported: 0, skipped: rows.length };
 
+    const capped = rows.slice(0, MAX_IMPORT_ROWS);
     const data = [];
-    for (const r of rows) {
+    for (const r of capped) {
       const category = (r.category ?? "").trim();
       const amountNum = Number(r.amount ?? "");
       const occurredAtRaw = (r.occurredAt ?? "").trim();

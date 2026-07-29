@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 import { withErrorLog, withErrorFallback } from "@/lib/action-error";
+import { MAX_IMPORT_ROWS } from "@/lib/import-limits";
 
 const CATEGORIES = ["Venues", "Promoters", "Festivals", "Media", "Sponsors"] as const;
 export type Category = (typeof CATEGORIES)[number];
@@ -62,8 +63,9 @@ export async function importContacts(rows: Record<string, string>[]) {
     const session = await getSession();
     if (!session) return { imported: 0, skipped: rows.length };
 
+    const capped = rows.slice(0, MAX_IMPORT_ROWS);
     const data = [];
-    for (const r of rows) {
+    for (const r of capped) {
       const name = (r.name ?? "").trim();
       if (!name) continue;
       const categoryRaw = (r.category ?? "").trim();

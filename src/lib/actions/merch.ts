@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { withErrorLog, withErrorState } from "@/lib/action-error";
+import { isAllowedImage } from "@/lib/file-validation";
 
 const GLYPH_COLORS = ["#3fe87a", "#e8e43f", "#e8983f", "#7ab8e8", "#c99df5", "#e87a9a"];
 
@@ -65,6 +66,7 @@ export async function uploadMerchImage(_prev: ActionState, formData: FormData): 
     if (!itemId) return { error: "Missing item." };
     if (!file || file.size === 0) return { error: "Choose an image first." };
     if (file.size > 5 * 1024 * 1024) return { error: "Image must be under 5MB." };
+    if (!isAllowedImage(file)) return { error: "Please upload a JPG, PNG, GIF, or WEBP image." };
 
     const item = await db.merchItem.findUnique({ where: { id: itemId } });
     if (!item || item.workspaceId !== session.workspaceId) return { error: "Item not found." };

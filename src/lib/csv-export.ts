@@ -1,7 +1,12 @@
 export function toCsv(rows: Array<Record<string, string | number>>, columns: Array<{ key: string; label: string }>): string {
   const escape = (v: string) => {
-    const s = String(v);
-    return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    let s = String(v);
+    // A cell starting with =, +, -, or @ is read as a formula by Excel/Sheets
+    // when the file is opened — data a customer entered (a contact's notes,
+    // a fan's name) shouldn't be able to execute code in their spreadsheet
+    // app. Prefixing with a tab neutralizes it while keeping the value visible.
+    if (/^[=+\-@]/.test(s)) s = `\t${s}`;
+    return /[",\r\n\t]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   };
   const header = columns.map((c) => escape(c.label)).join(",");
   const lines = rows.map((r) => columns.map((c) => escape(String(r[c.key] ?? ""))).join(","));

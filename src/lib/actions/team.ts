@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { INVITABLE_ROLES, TEAM_MANAGER_ROLES, SEAT_LIMITS } from "@/lib/roles";
 import { withErrorState } from "@/lib/action-error";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export type ActionState = { error?: string; success?: string };
 
@@ -30,6 +31,12 @@ export async function inviteTeamMember(_prev: ActionState, formData: FormData): 
     const role = String(formData.get("role") ?? "");
     if (!email) return { error: "Email is required." };
     if (!INVITABLE_ROLES.includes(role as (typeof INVITABLE_ROLES)[number])) return { error: "Invalid role." };
+
+    // Seat limits alone don't stop abuse — inviting then removing a member
+    // frees the seat immediately, so without this a workspace could blast
+    // invite emails to arbitrary addresses indefinitely.
+    const workspaceLimit = await checkRateLimit(`invite:workspace:${session.workspaceId}`, { max: 20, windowMs: 60 * 60 * 1000 });
+    if (!workspaceLimit.ok) return { error: "Too many invites sent recently. Please wait a bit and try again." };
 
     const workspace = await db.workspace.findUniqueOrThrow({ where: { id: session.workspaceId } });
     const seatCount = await db.membership.count({ where: { workspaceId: workspace.id } });

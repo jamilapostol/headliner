@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { withErrorLog, withErrorState } from "@/lib/action-error";
+import { isAllowedDocument } from "@/lib/file-validation";
 
 export type ActionState = { error?: string; success?: string };
 
@@ -56,6 +57,7 @@ export async function uploadContractDocument(_prev: ActionState, formData: FormD
     if (!contractId) return { error: "Missing contract." };
     if (!file || file.size === 0) return { error: "Choose a file first." };
     if (file.size > 20 * 1024 * 1024) return { error: "File must be under 20MB." };
+    if (!isAllowedDocument(file)) return { error: "Please upload a PDF, Word document, or image." };
 
     const contract = await requireOwnedContract(contractId, session.workspaceId);
     if (!contract) return { error: "Contract not found." };

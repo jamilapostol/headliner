@@ -6,6 +6,7 @@ import { getSession } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { withErrorState } from "@/lib/action-error";
+import { isAllowedImage } from "@/lib/file-validation";
 
 export type ActionState = { error?: string; success?: string };
 
@@ -81,6 +82,7 @@ export async function uploadAvatar(_prev: ActionState, formData: FormData): Prom
     const file = formData.get("file") as File | null;
     if (!file || file.size === 0) return { error: "Choose an image first." };
     if (file.size > 2 * 1024 * 1024) return { error: "Image must be under 2MB." };
+    if (!isAllowedImage(file)) return { error: "Please upload a JPG, PNG, GIF, or WEBP image." };
 
     const ext = file.name.split(".").pop() ?? "jpg";
     const path = `${session.userId}/avatar.${ext}`;
