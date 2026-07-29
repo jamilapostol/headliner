@@ -1,11 +1,19 @@
 import { db } from "@/lib/db";
 import { unsubscribeFan } from "@/lib/actions/unsubscribe";
+import { verifyFanToken } from "@/lib/unsubscribe-token";
 
-export default async function UnsubscribePage({ params }: { params: Promise<{ fanId: string }> }) {
+export default async function UnsubscribePage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ fanId: string }>;
+  searchParams: Promise<{ t?: string }>;
+}) {
   const { fanId } = await params;
+  const { t: token } = await searchParams;
   const fan = await db.fan.findUnique({ where: { id: fanId } });
 
-  if (!fan) {
+  if (!fan || !verifyFanToken(fanId, token)) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-canvas px-6 text-center text-text" data-theme="dark">
         <div className="text-[18px] font-semibold">Link not found</div>
@@ -31,7 +39,7 @@ export default async function UnsubscribePage({ params }: { params: Promise<{ fa
         <form
           action={async () => {
             "use server";
-            await unsubscribeFan(fanId);
+            await unsubscribeFan(fanId, token ?? "");
           }}
         >
           <button type="submit" className="w-full cursor-pointer rounded-[10px] bg-accent px-6 py-3 text-[14px] font-semibold text-ink">

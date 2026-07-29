@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 import { resendEnabled, sendEmail } from "@/lib/resend";
 import { withErrorLog, withErrorState } from "@/lib/action-error";
+import { signFanId } from "@/lib/unsubscribe-token";
 
 type FanTier = "VIP" | "Patron" | "Donor" | "Fan";
 
@@ -80,7 +81,7 @@ export async function sendCampaign(campaignId: string): Promise<{ error?: string
     let failed = 0;
     for (const fan of fans) {
       if (!fan.email) continue;
-      const footer = `\n\n—\nUnsubscribe: ${baseUrl}/unsubscribe/${fan.id}`;
+      const footer = `\n\n—\nUnsubscribe: ${baseUrl}/unsubscribe/${fan.id}?t=${signFanId(fan.id)}`;
       try {
         await sendEmail({ to: fan.email, subject: campaign.subject, text: campaign.body + footer });
         sent++;
