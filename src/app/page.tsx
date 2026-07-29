@@ -24,7 +24,7 @@ export default async function LandingPage() {
   }));
 
   return (
-    <div className="min-h-screen text-text" data-theme="dark">
+    <div className="min-h-screen bg-canvas text-text" data-theme="dark">
       {/* Hero, with concert photo as cover */}
       <div className="relative flex min-h-[620px] flex-col overflow-hidden sm:min-h-[720px]">
         <Image

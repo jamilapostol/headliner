@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export function LegalPage({ title, updated, children }: { title: string; updated: string; children: React.ReactNode }) {
   return (
-    <div className="min-h-screen px-4 py-12 text-text sm:px-10 sm:py-16" data-theme="dark">
+    <div className="min-h-screen bg-canvas px-4 py-12 text-text sm:px-10 sm:py-16" data-theme="dark">
       <div className="mx-auto max-w-[720px]">
         <Link href="/" className="mb-10 flex items-center gap-2.5">
           <Image src="/logo.svg" alt="HEADLINER" width={26} height={26} />

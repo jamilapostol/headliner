@@ -7,7 +7,7 @@ export default async function UnsubscribePage({ params }: { params: Promise<{ fa
 
   if (!fan) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center px-6 text-center text-text" data-theme="dark">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-canvas px-6 text-center text-text" data-theme="dark">
         <div className="text-[18px] font-semibold">Link not found</div>
         <div className="mt-1.5 text-[13.5px] text-white/55">This unsubscribe link isn&rsquo;t valid.</div>
       </div>
@@ -16,7 +16,7 @@ export default async function UnsubscribePage({ params }: { params: Promise<{ fa
 
   if (fan.unsubscribed) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center px-6 text-center text-text" data-theme="dark">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-canvas px-6 text-center text-text" data-theme="dark">
         <div className="text-[18px] font-semibold">You&rsquo;re unsubscribed</div>
         <div className="mt-1.5 text-[13.5px] text-white/55">{fan.email} won&rsquo;t receive further campaign emails.</div>
       </div>
@@ -24,7 +24,7 @@ export default async function UnsubscribePage({ params }: { params: Promise<{ fa
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center px-6 text-center text-text" data-theme="dark">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-canvas px-6 text-center text-text" data-theme="dark">
       <div className="w-full max-w-[380px]">
         <div className="mb-1.5 text-[18px] font-semibold">Unsubscribe {fan.email}?</div>
         <div className="mb-6 text-[13.5px] text-white/55">You&rsquo;ll stop receiving campaign emails from this artist. This doesn&rsquo;t affect anything else.</div>
