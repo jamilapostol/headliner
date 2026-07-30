@@ -5,6 +5,7 @@ import Link from "next/link";
 import { money } from "@/lib/format";
 import { planUnlocksAI } from "@/lib/ai";
 import { toggleAutomation, createCampaign, sendCampaign } from "@/lib/actions/campaigns";
+import { CAMPAIGN_RECIPIENT_CAP } from "@/lib/plan-limits";
 
 export type CampaignDTO = {
   id: string;
@@ -52,6 +53,8 @@ export function CampaignsView({
   const [audienceTier, setAudienceTier] = useState("all");
   const [, startTransition] = useTransition();
   const aiUnlocked = planUnlocksAI(plan);
+  const recipientCap = CAMPAIGN_RECIPIENT_CAP[plan] ?? Infinity;
+  const selectedAudienceCount = audienceCounts[audienceTier] ?? 0;
 
   const sentCampaigns = campaigns.filter((c) => c.status === "Sent");
 
@@ -220,6 +223,12 @@ export function CampaignsView({
                     </option>
                   ))}
                 </select>
+                {Number.isFinite(recipientCap) && selectedAudienceCount > recipientCap && (
+                  <span className="text-[11.5px] text-orange">
+                    Your plan sends up to {recipientCap.toLocaleString()} recipients per campaign — the first{" "}
+                    {recipientCap.toLocaleString()} of this audience will receive it.
+                  </span>
+                )}
               </label>
               <div className="mt-2 flex gap-2">
                 <button type="button" onClick={() => setShowNew(false)} className="flex-1 cursor-pointer rounded-[10px] border border-border py-2.5 text-[13.5px] text-text/70">

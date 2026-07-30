@@ -4,10 +4,24 @@ import { BillingPlans } from "@/components/billing-plans";
 import { resumeSubscription } from "@/lib/actions/billing";
 import { FEATURE_LABEL, MIN_PLAN } from "@/lib/plan-limits";
 
-export default async function BillingPage({ searchParams }: { searchParams: Promise<{ locked?: string }> }) {
+const REDIRECT_MESSAGE: Record<string, string> = {
+  success: "Your plan is now active.",
+  mock: "Plan updated — running in local mock-checkout mode, no real charge was made.",
+  updated: "Plan updated.",
+  canceled: "Checkout was canceled — your plan hasn't changed.",
+  resumed: "Your scheduled downgrade was canceled — you're keeping your current plan.",
+};
+
+export default async function BillingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ locked?: string; success?: string; mock?: string; updated?: string; canceled?: string; resumed?: string }>;
+}) {
   const { workspace } = await requireWorkspace();
-  const { locked } = await searchParams;
-  const lockedFeature = locked && locked in MIN_PLAN ? (locked as keyof typeof MIN_PLAN) : null;
+  const params = await searchParams;
+  const lockedFeature = params.locked && params.locked in MIN_PLAN ? (params.locked as keyof typeof MIN_PLAN) : null;
+  const redirectKey = (["success", "mock", "updated", "canceled", "resumed"] as const).find((k) => params[k]);
+  const redirectMessage = redirectKey ? REDIRECT_MESSAGE[redirectKey] : null;
 
   return (
     <div className="mx-auto max-w-[1100px] px-4 py-5 sm:px-8 sm:py-7">
@@ -17,6 +31,19 @@ export default async function BillingPage({ searchParams }: { searchParams: Prom
           ? `Trial active — ends ${workspace.trialEndsAt.toLocaleDateString("en-US", { month: "short", day: "numeric" })}.`
           : "Manage your subscription."}
       </div>
+
+      {redirectMessage && (
+        <div
+          className="mb-6 rounded-[10px] border px-4 py-3 text-[13px]"
+          style={
+            redirectKey === "canceled"
+              ? { borderColor: "rgba(var(--border-rgb),.15)", color: "rgba(var(--fg-rgb),.6)" }
+              : { borderColor: "rgba(63,232,122,.3)", background: "rgba(63,232,122,.07)", color: "rgba(var(--fg-rgb),.8)" }
+          }
+        >
+          {redirectMessage}
+        </div>
+      )}
 
       {lockedFeature && (
         <div className="mb-6 rounded-[10px] border border-orange/25 bg-orange-soft px-4 py-3 text-[13px] text-text/75">
