@@ -46,14 +46,16 @@ function tiers(annual: boolean) {
 }
 
 const MATRIX: Array<[string, string, string, string, string]> = [
-  ["Active bookings", "10", "∞", "∞", "∞"],
-  ["Contacts", "100", "∞", "∞", "∞"],
+  ["Active bookings", "5", "∞", "∞", "∞"],
+  ["Contacts", "50", "∞", "∞", "∞"],
   ["Merch inventory", "—", "✓", "✓", "✓"],
   ["Financial hub + P&L", "—", "✓", "✓", "✓"],
+  ["Email campaigns", "—", "2k/send", "∞", "∞"],
   ["Tour routing + day sheets", "—", "—", "✓", "✓"],
   ["Roadie AI", "—", "—", "✓", "✓"],
   ["Contracts + e-sign", "—", "—", "✓", "✓"],
   ["Team seats", "1", "1", "3", "10"],
+  ["CSV export", "—", "—", "—", "✓"],
   ["Multi-artist workspaces", "—", "—", "—", "✓"],
   ["Role-based permissions", "—", "—", "—", "✓"],
 ];
