@@ -125,7 +125,7 @@ export default async function LandingPage() {
 
       {/* Stage photo — full-bleed break between the lifestyle pitch and the feature list */}
       <div className="relative min-h-[300px] overflow-hidden sm:min-h-[420px]">
-        <Image src="/stage.png" alt="A packed crowd lit up in blue at a live show" fill sizes="100vw" className="object-cover object-center" />
+        <Image src="/drums.png" alt="A drum kit on stage at a live show" fill sizes="100vw" className="object-cover object-center" />
         <div className="absolute inset-0 bg-gradient-to-b from-canvas/40 via-transparent to-canvas" />
         <div className="absolute inset-0 bg-gradient-to-t from-canvas/10 via-transparent to-canvas/25" />
       </div>
