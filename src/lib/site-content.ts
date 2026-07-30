@@ -6,6 +6,7 @@ export type SiteContentField = {
   section: string;
   default: string;
   multiline?: boolean;
+  type?: "text" | "image";
 };
 
 // The default value for each key is the copy currently hardcoded on the
@@ -23,6 +24,7 @@ export const SITE_CONTENT_FIELDS: SiteContentField[] = [
   { key: "hero_cta_primary", section: "Hero", label: "Primary button", default: "Start free" },
   { key: "hero_cta_secondary", section: "Hero", label: "Secondary button", default: "Watch demo — 2 min" },
   { key: "hero_disclaimer", section: "Hero", label: "Fine print under buttons", default: "Free forever for your first 10 bookings. No card required." },
+  { key: "hero_image", section: "Hero", label: "Background photo", default: "/hero.png", type: "image" },
 
   { key: "retires_label", section: "Retires strip", label: "Label", default: "RETIRES" },
 
@@ -65,6 +67,9 @@ export const SITE_CONTENT_FIELDS: SiteContentField[] = [
     default: "Day sheets, hotel confirmations and merch counts synced to your phone — so tour day feels like the reward it's supposed to be, not another spreadsheet.",
     multiline: true,
   },
+
+  { key: "break_image", section: "Photo break", label: "Full-bleed photo", default: "/drums.png", type: "image" },
+  { key: "break_image_alt", section: "Photo break", label: "Alt text", default: "A drum kit on stage at a live show" },
 
   { key: "feature_1_title", section: "Features", label: "1 — title", default: "Booking pipeline" },
   { key: "feature_1_body", section: "Features", label: "1 — body", default: "Drag every hold from first email to fully paid. Never lose a room to a forgotten follow-up.", multiline: true },

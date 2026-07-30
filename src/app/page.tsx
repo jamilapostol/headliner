@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { getSiteContent } from "@/lib/site-content";
 import { LandingPricing } from "@/components/landing-pricing";
+import { db } from "@/lib/db";
 
 const REPLACES = ["Spreadsheets", "Notes app", "HubSpot", "Dropbox folders", "Group texts", "Sticky notes on the dash"];
 
@@ -23,6 +24,7 @@ const BENEFIT_META = [
 
 export default async function LandingPage() {
   const c = await getSiteContent();
+  const blocks = await db.landingBlock.findMany({ orderBy: { order: "asc" } });
 
   const features = FEATURE_META.map((meta, i) => ({
     ...meta,
@@ -41,7 +43,7 @@ export default async function LandingPage() {
       {/* Hero, with concert photo as cover */}
       <div className="relative flex min-h-[620px] flex-col overflow-hidden sm:min-h-[720px]">
         <Image
-          src="/hero.png"
+          src={c.hero_image}
           alt=""
           fill
           priority
@@ -125,7 +127,7 @@ export default async function LandingPage() {
 
       {/* Stage photo — full-bleed break between the lifestyle pitch and the feature list */}
       <div className="relative min-h-[300px] overflow-hidden sm:min-h-[420px]">
-        <Image src="/drums.png" alt="A drum kit on stage at a live show" fill sizes="100vw" className="object-cover object-center" />
+        <Image src={c.break_image} alt={c.break_image_alt} fill sizes="100vw" className="object-cover object-center" />
         <div className="absolute inset-0 bg-gradient-to-b from-canvas/40 via-transparent to-canvas" />
         <div className="absolute inset-0 bg-gradient-to-t from-canvas/10 via-transparent to-canvas/25" />
       </div>
@@ -142,6 +144,20 @@ export default async function LandingPage() {
           ))}
         </div>
       </div>
+
+      {/* Custom blocks — admin-added content between Features and Pricing */}
+      {blocks.map((b) =>
+        b.type === "text" ? (
+          <div key={b.id} className="mx-auto max-w-[720px] px-4 pb-[72px] text-center sm:px-10">
+            <h2 className="mb-2.5 text-[24px] tracking-[-.02em] sm:text-[30px]">{b.heading}</h2>
+            <p className="text-[14.5px] leading-[1.6] text-white/60 text-pretty sm:text-[15.5px]">{b.body}</p>
+          </div>
+        ) : (
+          <div key={b.id} className="relative min-h-[260px] overflow-hidden sm:min-h-[380px]">
+            {b.imageUrl && <Image src={b.imageUrl} alt={b.imageAlt ?? ""} fill sizes="100vw" className="object-cover object-center" />}
+          </div>
+        ),
+      )}
 
       <LandingPricing heading={c.pricing_heading} subheading={c.pricing_subheading} />
 

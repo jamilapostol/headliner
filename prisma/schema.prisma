@@ -53,23 +53,23 @@ enum TransactionKind {
 }
 
 model Workspace {
-  id               String   @id @default(cuid())
-  name             String
-  plan             Plan     @default(free)
-  billingCycle     String   @default("monthly") // monthly | annual
-  stripeCustomerId String?
-  stripeSubId      String?
-  paymentPastDue   Boolean   @default(false) // set by the payment_failed webhook, cleared on next successful invoice
-  cancelAtPeriodEnd Boolean  @default(false) // downgrade-to-free is scheduled; stays on current plan until the period ends
-  currentPeriodEnd DateTime? // synced from Stripe — when the scheduled downgrade takes effect
-  trialEndsAt      DateTime?
-  addressLine1     String?
-  addressLine2     String?
-  city             String?
-  state            String?
-  postalCode       String?
-  country          String?
-  createdAt        DateTime @default(now())
+  id                String    @id @default(cuid())
+  name              String
+  plan              Plan      @default(free)
+  billingCycle      String    @default("monthly") // monthly | annual
+  stripeCustomerId  String?
+  stripeSubId       String?
+  paymentPastDue    Boolean   @default(false) // set by the payment_failed webhook, cleared on next successful invoice
+  cancelAtPeriodEnd Boolean   @default(false) // downgrade-to-free is scheduled; stays on current plan until the period ends
+  currentPeriodEnd  DateTime? // synced from Stripe — when the scheduled downgrade takes effect
+  trialEndsAt       DateTime?
+  addressLine1      String?
+  addressLine2      String?
+  city              String?
+  state             String?
+  postalCode        String?
+  country           String?
+  createdAt         DateTime  @default(now())
 
   memberships  Membership[]
   contacts     Contact[]
@@ -110,13 +110,13 @@ model RateLimitHit {
 }
 
 model Membership {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   workspaceId String
   userId      String // Supabase auth.users.id
-  role        Role     @default(artist)
+  role        Role      @default(artist)
   invitedBy   String?
   acceptedAt  DateTime? // null while an invite is pending
-  createdAt   DateTime @default(now())
+  createdAt   DateTime  @default(now())
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
@@ -146,25 +146,25 @@ model Contact {
 }
 
 model Booking {
-  id          String       @id @default(cuid())
-  workspaceId String
-  contactId   String?
-  venue       String
-  city        String
-  date        DateTime
-  endDate     DateTime? // null for a single-day booking
-  stage       BookingStage @default(Lead)
-  fee         Int          @default(0) // cents
-  deposit     Int          @default(0) // cents
-  contactName String?
-  contactPhone String?
-  notes       String?
-  offerConfirmed   Boolean @default(false)
-  contractSigned   Boolean @default(false)
-  depositReceived  Boolean @default(false)
-  riderSent        Boolean @default(false)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id              String       @id @default(cuid())
+  workspaceId     String
+  contactId       String?
+  venue           String
+  city            String
+  date            DateTime
+  endDate         DateTime? // null for a single-day booking
+  stage           BookingStage @default(Lead)
+  fee             Int          @default(0) // cents
+  deposit         Int          @default(0) // cents
+  contactName     String?
+  contactPhone    String?
+  notes           String?
+  offerConfirmed  Boolean      @default(false)
+  contractSigned  Boolean      @default(false)
+  depositReceived Boolean      @default(false)
+  riderSent       Boolean      @default(false)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   contact   Contact?  @relation(fields: [contactId], references: [id])
@@ -174,12 +174,12 @@ model Booking {
 }
 
 model Tour {
-  id        String   @id @default(cuid())
+  id          String   @id @default(cuid())
   workspaceId String
-  name      String
-  startDate DateTime
-  endDate   DateTime
-  createdAt DateTime @default(now())
+  name        String
+  startDate   DateTime
+  endDate     DateTime
+  createdAt   DateTime @default(now())
 
   workspace Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   stops     TourStop[]
@@ -188,16 +188,16 @@ model Tour {
 }
 
 model TourStop {
-  id         String  @id @default(cuid())
-  tourId     String
-  bookingId  String? @unique
-  seq        Int
-  driveMiles Int?
-  hotel      String?
-  hotelConfNo String?
-  merchNote  String?
+  id           String  @id @default(cuid())
+  tourId       String
+  bookingId    String? @unique
+  seq          Int
+  driveMiles   Int?
+  hotel        String?
+  hotelConfNo  String?
+  merchNote    String?
   perDiemCents Int? // daily per diem budget, in cents
-  schedule   String // JSON-encoded array of { time, what, who }
+  schedule     String // JSON-encoded array of { time, what, who }
 
   tour    Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
   booking Booking? @relation(fields: [bookingId], references: [id])
@@ -206,16 +206,16 @@ model TourStop {
 }
 
 model MerchItem {
-  id          String  @id @default(cuid())
+  id          String   @id @default(cuid())
   workspaceId String
   name        String
   variant     String?
   price       Int // cents
   cogs        Int // cents
-  stock       Int     @default(0)
-  maxStock    Int     @default(1)
-  glyph       String  @default("M")
-  color       String  @default("#3fe87a")
+  stock       Int      @default(0)
+  maxStock    Int      @default(1)
+  glyph       String   @default("M")
+  color       String   @default("#3fe87a")
   imageUrl    String? // public URL in the "merch" storage bucket
   createdAt   DateTime @default(now())
 
@@ -232,18 +232,18 @@ enum ContractStatus {
 }
 
 model Contract {
-  id          String         @id @default(cuid())
-  workspaceId String
-  name        String
-  kind        String
+  id           String         @id @default(cuid())
+  workspaceId  String
+  name         String
+  kind         String
   counterparty String
-  value       String
-  status      ContractStatus @default(DRAFT)
-  signedDate  DateTime?
-  renewsAt    DateTime?
-  filePath    String? // path within the private "contracts" storage bucket
-  fileName    String? // original filename, for display
-  createdAt   DateTime       @default(now())
+  value        String
+  status       ContractStatus @default(DRAFT)
+  signedDate   DateTime?
+  renewsAt     DateTime?
+  filePath     String? // path within the private "contracts" storage bucket
+  fileName     String? // original filename, for display
+  createdAt    DateTime       @default(now())
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
@@ -251,12 +251,12 @@ model Contract {
 }
 
 model Task {
-  id          String    @id @default(cuid())
+  id          String   @id @default(cuid())
   workspaceId String
   title       String
   dueLabel    String
-  done        Boolean   @default(false)
-  createdAt   DateTime  @default(now())
+  done        Boolean  @default(false)
+  createdAt   DateTime @default(now())
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
@@ -264,14 +264,14 @@ model Task {
 }
 
 model Transaction {
-  id          String           @id @default(cuid())
+  id          String          @id @default(cuid())
   workspaceId String
   kind        TransactionKind
   category    String
   amount      Int // cents; expenses stored positive, kind marks sign
   source      String?
-  occurredAt  DateTime         @default(now())
-  createdAt   DateTime         @default(now())
+  occurredAt  DateTime        @default(now())
+  createdAt   DateTime        @default(now())
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
@@ -364,5 +364,21 @@ model Integration {
 model SiteContent {
   key       String   @id
   value     String
+  updatedAt DateTime @updatedAt
+}
+
+// Admin-addable sections on the public landing page, rendered in `order`
+// between the built-in Features and Pricing sections. type discriminates
+// which fields are used: "text" reads heading/body, "image" reads
+// imageUrl/imageAlt.
+model LandingBlock {
+  id        String   @id @default(cuid())
+  type      String
+  order     Int      @default(0)
+  heading   String?
+  body      String?
+  imageUrl  String?
+  imageAlt  String?
+  createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

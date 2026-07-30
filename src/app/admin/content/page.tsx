@@ -1,9 +1,10 @@
 import { db } from "@/lib/db";
 import { SITE_CONTENT_FIELDS } from "@/lib/site-content";
 import { SiteContentField } from "@/components/site-content-field";
+import { LandingBlocksAdmin } from "@/components/landing-blocks-admin";
 
 export default async function AdminContentPage() {
-  const rows = await db.siteContent.findMany();
+  const [rows, blocks] = await Promise.all([db.siteContent.findMany(), db.landingBlock.findMany({ orderBy: { order: "asc" } })]);
   const overrides = new Map(rows.map((r) => [r.key, r.value]));
 
   const sections = Array.from(new Set(SITE_CONTENT_FIELDS.map((f) => f.section)));
@@ -20,18 +21,26 @@ export default async function AdminContentPage() {
 
       <div className="flex flex-col gap-6">
         {sections.map((section) => (
-          <div key={section} className="rounded-card border border-border bg-surface px-5 py-1">
-            <div className="border-b border-text/[.06] py-3 text-[13px] font-semibold text-text/70">{section}</div>
-            {SITE_CONTENT_FIELDS.filter((f) => f.section === section).map((f) => (
-              <SiteContentField
-                key={f.key}
-                fieldKey={f.key}
-                label={f.label}
-                value={overrides.get(f.key) ?? f.default}
-                isOverridden={overrides.has(f.key)}
-                multiline={f.multiline}
-              />
-            ))}
+          <div key={section}>
+            <div className="rounded-card border border-border bg-surface px-5 py-1">
+              <div className="border-b border-text/[.06] py-3 text-[13px] font-semibold text-text/70">{section}</div>
+              {SITE_CONTENT_FIELDS.filter((f) => f.section === section).map((f) => (
+                <SiteContentField
+                  key={f.key}
+                  fieldKey={f.key}
+                  label={f.label}
+                  value={overrides.get(f.key) ?? f.default}
+                  isOverridden={overrides.has(f.key)}
+                  multiline={f.multiline}
+                  type={f.type}
+                />
+              ))}
+            </div>
+            {section === "Features" && (
+              <div className="mt-6">
+                <LandingBlocksAdmin blocks={blocks} />
+              </div>
+            )}
           </div>
         ))}
       </div>
