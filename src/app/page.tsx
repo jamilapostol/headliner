@@ -14,6 +14,13 @@ const FEATURE_META = [
   { glyph: "✳", color: "text-purple" },
 ] as const;
 
+const BENEFIT_META = [
+  { glyph: "♪", color: "text-accent" },
+  { glyph: "✓", color: "text-yellow" },
+  { glyph: "◆", color: "text-blue" },
+  { glyph: "☾", color: "text-purple" },
+] as const;
+
 export default async function LandingPage() {
   const c = await getSiteContent();
 
@@ -21,6 +28,12 @@ export default async function LandingPage() {
     ...meta,
     title: c[`feature_${i + 1}_title`],
     body: c[`feature_${i + 1}_body`],
+  }));
+
+  const benefits = BENEFIT_META.map((meta, i) => ({
+    ...meta,
+    title: c[`benefit_${i + 1}_title`],
+    body: c[`benefit_${i + 1}_body`],
   }));
 
   return (
@@ -86,6 +99,25 @@ export default async function LandingPage() {
               className="rounded-[20px] border border-white/[.09] px-3.5 py-1.5 text-[12.5px] text-white/50 line-through decoration-orange/60"
             >
               {r}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Benefits — the lifestyle payoff, ahead of the tactical feature list */}
+      <div className="mx-auto max-w-[1100px] px-4 pb-[72px] sm:px-10">
+        <div className="mx-auto mb-[42px] max-w-[640px] text-center">
+          <h2 className="mb-2.5 text-[26px] tracking-[-.02em] sm:text-[32px]">{c.benefits_heading}</h2>
+          <p className="text-[14.5px] leading-[1.55] text-white/55 sm:text-[15.5px]">{c.benefits_subheading}</p>
+        </div>
+        <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
+          {benefits.map((b) => (
+            <div key={b.title} className="flex gap-4 rounded-tile border border-border bg-surface px-6 py-[22px]">
+              <div className={`flex-none font-mono text-[20px] ${b.color}`}>{b.glyph}</div>
+              <div>
+                <div className="mb-[7px] text-[16px] font-semibold">{b.title}</div>
+                <div className="text-[13.5px] leading-[1.6] text-white/60 text-pretty">{b.body}</div>
+              </div>
             </div>
           ))}
         </div>

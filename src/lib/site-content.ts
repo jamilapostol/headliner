@@ -26,6 +26,46 @@ export const SITE_CONTENT_FIELDS: SiteContentField[] = [
 
   { key: "retires_label", section: "Retires strip", label: "Label", default: "RETIRES" },
 
+  { key: "benefits_heading", section: "Benefits", label: "Heading", default: "Run your career like the pro you already are" },
+  {
+    key: "benefits_subheading",
+    section: "Benefits",
+    label: "Subheading",
+    default: "This is what changes when the busywork disappears.",
+  },
+  { key: "benefit_1_title", section: "Benefits", label: "1 — title", default: "Tour like you've got a team behind you" },
+  {
+    key: "benefit_1_body",
+    section: "Benefits",
+    label: "1 — body",
+    default: "Booking, routing, contracts and settlements in one place — so a solo artist runs their career at the same level as an act with a full crew.",
+    multiline: true,
+  },
+  { key: "benefit_2_title", section: "Benefits", label: "2 — title", default: "Say yes to more shows" },
+  {
+    key: "benefit_2_body",
+    section: "Benefits",
+    label: "2 — body",
+    default: "No more holds lost to a forgotten follow-up. Every lead stays visible until it's booked, paid, or dead — nothing slips through a group text again.",
+    multiline: true,
+  },
+  { key: "benefit_3_title", section: "Benefits", label: "3 — title", default: "Never leave money on the table" },
+  {
+    key: "benefit_3_body",
+    section: "Benefits",
+    label: "3 — body",
+    default: "Every guarantee, deposit and settlement tracked by show. Know exactly what you're owed before you load out — not after tax season.",
+    multiline: true,
+  },
+  { key: "benefit_4_title", section: "Benefits", label: "4 — title", default: "Actually enjoy the road" },
+  {
+    key: "benefit_4_body",
+    section: "Benefits",
+    label: "4 — body",
+    default: "Day sheets, hotel confirmations and merch counts synced to your phone — so tour day feels like the reward it's supposed to be, not another spreadsheet.",
+    multiline: true,
+  },
+
   { key: "feature_1_title", section: "Features", label: "1 — title", default: "Booking pipeline" },
   { key: "feature_1_body", section: "Features", label: "1 — body", default: "Drag every hold from first email to fully paid. Never lose a room to a forgotten follow-up.", multiline: true },
   { key: "feature_2_title", section: "Features", label: "2 — title", default: "Tour manager" },
