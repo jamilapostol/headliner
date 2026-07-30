@@ -48,7 +48,7 @@ export const getSession = cache(async (): Promise<Session | null> => {
   if (!membership) return null;
 
   let impersonatedBy: { email: string } | undefined;
-  if (isAdminEmail(realEmail)) {
+  if (await isAdminEmail(realEmail)) {
     const targetWorkspaceId = (await cookies()).get(IMPERSONATION_COOKIE)?.value;
     if (targetWorkspaceId && targetWorkspaceId !== membership.workspaceId) {
       const targetMembership = await db.membership.findFirst({

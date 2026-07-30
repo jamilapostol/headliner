@@ -15,7 +15,7 @@ export type WorkspaceRow = {
   createdAt: string;
 };
 
-const PLANS = ["all", "free", "pro", "touring", "team"] as const;
+const PLANS = ["all", "free", "pro", "touring", "team", "beta"] as const;
 
 export function AdminWorkspacesTable({ workspaces }: { workspaces: WorkspaceRow[] }) {
   const [query, setQuery] = useState("");

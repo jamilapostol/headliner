@@ -28,6 +28,7 @@ enum Plan {
   pro
   touring
   team
+  beta // admin-granted, full Pro-tier access for early testers — not self-serve, not billed
 }
 
 enum BookingStage {
@@ -83,6 +84,28 @@ model Workspace {
   campaigns    Campaign[]
   automations  Automation[]
   integrations Integration[]
+}
+
+// Admin allowlist entries added from the admin panel, layered on top of the
+// ADMIN_EMAILS env var (which stays authoritative as a bootstrap list so
+// access can never be fully locked out by a bad DB state).
+model AdminUser {
+  email     String   @id
+  addedBy   String
+  createdAt DateTime @default(now())
+}
+
+// Shareable codes that grant the "beta" plan on redemption — how the beta
+// program stays invite-only instead of a self-serve signup option.
+// maxUses null = unlimited redemptions; active=false is a soft revoke that
+// keeps the row (and its usage count) around for the admin view.
+model BetaInvite {
+  code      String   @id
+  maxUses   Int?
+  usedCount Int      @default(0)
+  active    Boolean  @default(true)
+  createdBy String
+  createdAt DateTime @default(now())
 }
 
 model AdminAuditLog {

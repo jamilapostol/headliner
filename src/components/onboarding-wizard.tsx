@@ -1,10 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useTransition } from "react";
+import { useActionState, useState, useTransition } from "react";
 import { completeOnboarding, type PlanChoice } from "@/lib/actions/onboarding";
+import { redeemBetaInvite, type ActionState } from "@/lib/actions/beta-invites";
 import { INTEGRATIONS } from "@/lib/integrations";
 import { TRIAL_DAYS } from "@/lib/trial";
+
+const initialInviteState: ActionState = {};
 
 type Role = "solo" | "band" | "manager" | "crew";
 type Volume = "few" | "half" | "full";
@@ -59,6 +62,8 @@ export function OnboardingWizard() {
   const [volume, setVolume] = useState<Volume | null>(null);
   const [connected, setConnected] = useState<Record<string, boolean>>({});
   const [pending, startTransition] = useTransition();
+  const [showInvite, setShowInvite] = useState(false);
+  const [inviteState, inviteAction, invitePending] = useActionState(redeemBetaInvite, initialInviteState);
 
   const canNext = (step === 1 && role) || (step === 2 && volume) || step === 3;
 
@@ -79,8 +84,35 @@ export function OnboardingWizard() {
             <Image src="/logo.svg" alt="HEADLINER" width={26} height={26} />
             <span className="text-[14px] font-bold">HEADLINER</span>
           </div>
-          <div className="font-mono text-[11px] text-text/40">STEP {step} OF 4</div>
+          <div className="flex items-center gap-3">
+            <div className="font-mono text-[11px] text-text/40">STEP {step} OF 4</div>
+            <button onClick={() => setShowInvite((s) => !s)} className="cursor-pointer text-[11.5px] text-accent hover:text-accent/80">
+              Have an invite code?
+            </button>
+          </div>
         </div>
+
+        {showInvite && (
+          <form action={inviteAction} className="mb-7 flex flex-col gap-2 rounded-2xl border border-accent/30 bg-accent-soft p-4">
+            <div className="text-[12.5px] font-semibold">Redeem your beta invite</div>
+            <div className="flex gap-2">
+              <input
+                name="code"
+                placeholder="BETA-XXXXXXXX"
+                className="flex-1 rounded-[10px] border border-border bg-canvas px-3.5 py-2.5 font-mono text-[13px] uppercase text-text outline-none"
+              />
+              <button
+                type="submit"
+                disabled={invitePending}
+                className="cursor-pointer rounded-[10px] bg-accent px-4 py-2.5 text-[13px] font-semibold text-ink disabled:opacity-60"
+              >
+                {invitePending ? "Checking…" : "Redeem"}
+              </button>
+            </div>
+            {inviteState.error && <div className="text-[12px] text-orange">{inviteState.error}</div>}
+          </form>
+        )}
+
         <div className="mb-11 flex gap-1.5">
           {[1, 2, 3, 4].map((n) => (
             <div key={n} className="h-[3px] flex-1 rounded" style={{ background: n <= step ? "#3fe87a" : "rgba(var(--border-rgb),.1)" }} />

@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { fmtDateUTC } from "@/lib/format";
 
-const PLAN_LABEL: Record<string, string> = { free: "Free", pro: "Pro Artist", touring: "Touring Artist", team: "Management Team" };
+const PLAN_LABEL: Record<string, string> = { free: "Free", pro: "Pro Artist", touring: "Touring Artist", team: "Management Team", beta: "Beta tester" };
 
 export default async function AdminOverviewPage() {
   const [workspaces, planCounts, recentWorkspaces] = await Promise.all([
@@ -29,7 +29,7 @@ export default async function AdminOverviewPage() {
   return (
     <div className="max-w-[1000px]">
       <h1 className="mb-1 text-[22px] tracking-[-.02em]">Overview</h1>
-      <div className="mb-6 text-[13px] text-text/50">Admin-only — visible because your email is on the ADMIN_EMAILS allowlist.</div>
+      <div className="mb-6 text-[13px] text-text/50">Admin-only — visible because your email is on the admin allowlist.</div>
 
       <div className="mb-8 grid grid-cols-2 gap-3.5 lg:grid-cols-4">
         {stats.map((s) => (
@@ -43,7 +43,7 @@ export default async function AdminOverviewPage() {
       <div className="mb-8 rounded-card border border-border bg-surface px-5 py-[18px]">
         <div className="mb-3 text-[14.5px] font-semibold">Sign-ups by tier</div>
         <div className="flex flex-col gap-2.5">
-          {(["free", "pro", "touring", "team"] as const).map((plan) => {
+          {(["free", "pro", "touring", "team", "beta"] as const).map((plan) => {
             const count = countByPlan[plan] ?? 0;
             const pct = workspaces ? Math.round((count / workspaces) * 100) : 0;
             return (

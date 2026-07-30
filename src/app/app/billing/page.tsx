@@ -69,6 +69,12 @@ export default async function BillingPage({
         </div>
       )}
 
+      {workspace.plan === "beta" && (
+        <div className="mb-6 rounded-[10px] border border-accent/25 bg-accent/[.06] px-4 py-3 text-[13px] text-text/75">
+          You&rsquo;re on complimentary beta access with full Pro-tier features — no charge, no expiration date set by us.
+        </div>
+      )}
+
       <BillingPlans currentPlan={workspace.plan} stripeEnabled={stripeEnabled} cancelAtPeriodEnd={workspace.cancelAtPeriodEnd} />
     </div>
   );

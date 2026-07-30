@@ -22,7 +22,7 @@ export type ModelDef = {
   orderBy: Record<string, "asc" | "desc">;
 };
 
-const PLAN = ["free", "pro", "touring", "team"] as const;
+const PLAN = ["free", "pro", "touring", "team", "beta"] as const;
 const ROLE = ["artist", "manager", "agent", "tour_manager", "merch", "accountant", "assistant"] as const;
 const BOOKING_STAGE = ["Lead", "Contacted", "Negotiating", "Offer_Sent", "Confirmed", "Paid"] as const;
 const CONTACT_CATEGORY = ["Venues", "Promoters", "Festivals", "Media", "Sponsors"] as const;

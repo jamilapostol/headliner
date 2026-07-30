@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { adminUpdateWorkspacePlan } from "@/lib/actions/admin";
 
-const PLANS = ["free", "pro", "touring", "team"] as const;
+const PLANS = ["free", "pro", "touring", "team", "beta"] as const;
 const CYCLES = ["monthly", "annual"] as const;
 
 export function AdminPlanForm({ workspaceId, plan, billingCycle }: { workspaceId: string; plan: string; billingCycle: string }) {

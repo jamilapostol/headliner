@@ -26,7 +26,7 @@ function coerce(field: FieldDef, raw: FormDataEntryValue | null) {
 export async function adminUpdateWorkspacePlan(workspaceId: string, plan: string, billingCycle: string) {
   const session = await requireAdmin();
   const before = await db.workspace.findUnique({ where: { id: workspaceId }, select: { plan: true, billingCycle: true, name: true } });
-  await db.workspace.update({ where: { id: workspaceId }, data: { plan: plan as "free" | "pro" | "touring" | "team", billingCycle } });
+  await db.workspace.update({ where: { id: workspaceId }, data: { plan: plan as "free" | "pro" | "touring" | "team" | "beta", billingCycle } });
   await logAdminAction({
     adminEmail: session.email,
     action: "workspace.plan.update",
