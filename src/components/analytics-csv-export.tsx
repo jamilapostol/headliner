@@ -2,17 +2,20 @@
 
 import { ExportCsvButton } from "@/components/export-csv-button";
 import { toCsv, downloadCsv } from "@/lib/csv-export";
+import { planAtLeast } from "@/lib/plan-limits";
 
 export function AnalyticsCsvExport({
   stats,
   monthlyBars,
   bestCities,
   funnel,
+  plan,
 }: {
   stats: Array<{ label: string; value: string }>;
   monthlyBars: Array<{ label: string; performance: number; merch: number }>;
   bestCities: Array<[string, number]>;
   funnel: Array<{ label: string; n: number }>;
+  plan: string;
 }) {
   function exportCsv() {
     const sections = [
@@ -54,5 +57,5 @@ export function AnalyticsCsvExport({
     downloadCsv("analytics.csv", csv);
   }
 
-  return <ExportCsvButton onClick={exportCsv} />;
+  return <ExportCsvButton onClick={exportCsv} allowed={planAtLeast(plan, "team")} />;
 }

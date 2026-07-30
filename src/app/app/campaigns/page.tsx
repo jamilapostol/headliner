@@ -1,12 +1,15 @@
+import { redirect } from "next/navigation";
 import { requireWorkspace } from "@/lib/workspace";
 import { db } from "@/lib/db";
 import { resendEnabled } from "@/lib/resend";
+import { planAtLeast } from "@/lib/plan-limits";
 import { CampaignsView, type CampaignDTO, type AutomationDTO } from "@/components/campaigns-view";
 
 const FAN_TIERS = ["VIP", "Patron", "Donor", "Fan"] as const;
 
 export default async function CampaignsPage() {
   const { workspace } = await requireWorkspace();
+  if (!planAtLeast(workspace.plan, "pro")) redirect("/app/billing?locked=campaigns");
 
   const [campaigns, automations, subscribedFans, tierCounts] = await Promise.all([
     db.campaign.findMany({ where: { workspaceId: workspace.id }, orderBy: { createdAt: "desc" } }),

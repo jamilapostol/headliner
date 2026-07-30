@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { BookingsBoard, type BookingDTO } from "@/components/bookings-board";
 
 export default async function BookingsPage() {
-  const { user, workspace } = await requireWorkspace();
+  const { workspace } = await requireWorkspace();
   const bookings = await db.booking.findMany({
     where: { workspaceId: workspace.id },
     orderBy: { date: "asc" },
@@ -25,5 +25,5 @@ export default async function BookingsPage() {
     riderSent: b.riderSent,
   }));
 
-  return <BookingsBoard bookings={dtos} plan={workspace.plan} artistName={user.name} />;
+  return <BookingsBoard bookings={dtos} plan={workspace.plan} />;
 }

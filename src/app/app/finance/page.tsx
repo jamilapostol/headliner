@@ -1,5 +1,7 @@
+import { redirect } from "next/navigation";
 import { requireWorkspace } from "@/lib/workspace";
 import { db } from "@/lib/db";
+import { planAtLeast } from "@/lib/plan-limits";
 import { money, fmtDateUTC } from "@/lib/format";
 import { NewTransactionForm } from "@/components/new-transaction-form";
 import { CsvImportModal, type CsvColumn } from "@/components/csv-import-modal";
@@ -18,6 +20,7 @@ const SOURCE_COLORS = ["#3fe87a", "#e8e43f", "#7ab8e8", "#e8983f", "#c99df5", "#
 
 export default async function FinancePage() {
   const { workspace } = await requireWorkspace();
+  if (!planAtLeast(workspace.plan, "pro")) redirect("/app/billing?locked=finance");
   const year = new Date().getFullYear();
   const yearStart = new Date(year, 0, 1);
 
@@ -108,6 +111,7 @@ export default async function FinancePage() {
       </div>
 
       <FinanceCsvExport
+        plan={workspace.plan}
         transactions={transactions.map((t) => ({
           occurredAt: fmtDateUTC(t.occurredAt, { month: "short", day: "numeric", year: "numeric" }),
           kind: t.kind,

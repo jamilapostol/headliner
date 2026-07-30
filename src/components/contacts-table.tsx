@@ -5,6 +5,7 @@ import { createContact, updateContact, importContacts } from "@/lib/actions/cont
 import { CsvImportModal, type CsvColumn } from "@/components/csv-import-modal";
 import { ExportCsvButton } from "@/components/export-csv-button";
 import { toCsv, downloadCsv } from "@/lib/csv-export";
+import { planAtLeast } from "@/lib/plan-limits";
 
 const CONTACT_CSV_COLUMNS: CsvColumn[] = [
   { key: "name", label: "Name", required: true },
@@ -40,7 +41,7 @@ function daysAgoLabel(iso: string | null) {
   return { label: days <= 0 ? "today" : `${days}d ago`, stale: days > 5 };
 }
 
-export function ContactsTable({ contacts }: { contacts: ContactDTO[] }) {
+export function ContactsTable({ contacts, plan }: { contacts: ContactDTO[]; plan: string }) {
   const [query, setQuery] = useState("");
   const [cat, setCat] = useState("All");
   const [showNew, setShowNew] = useState(false);
@@ -232,7 +233,7 @@ export function ContactsTable({ contacts }: { contacts: ContactDTO[] }) {
       )}
 
       {open && <ContactDrawer key={open.id} contact={open} onClose={() => setOpenId(null)} />}
-      <ExportCsvButton onClick={exportCsv} />
+      <ExportCsvButton onClick={exportCsv} allowed={planAtLeast(plan, "team")} />
     </div>
   );
 }

@@ -6,6 +6,8 @@ import { getSession } from "@/lib/auth";
 import { resendEnabled, sendEmail } from "@/lib/resend";
 import { withErrorLog, withErrorState } from "@/lib/action-error";
 import { signFanId } from "@/lib/unsubscribe-token";
+import { CAMPAIGN_RECIPIENT_CAP } from "@/lib/plan-limits";
+import { requireMinPlan } from "@/lib/plan-limits-server";
 
 type FanTier = "VIP" | "Patron" | "Donor" | "Fan";
 
@@ -42,6 +44,8 @@ export async function createCampaign(formData: FormData) {
     const audienceTier = String(formData.get("audienceTier") ?? "all");
     if (!name || !subject || !body) return;
 
+    await requireMinPlan(session.workspaceId, "pro");
+
     const recipientCount = await db.fan.count({ where: audienceWhere(session.workspaceId, audienceTier) });
 
     await db.campaign.create({
@@ -70,9 +74,17 @@ export async function sendCampaign(campaignId: string): Promise<{ error?: string
 
     if (!resendEnabled) return { error: "No email provider connected. Add RESEND_API_KEY to send." };
 
-    const fans = await db.fan.findMany({
+    const workspace = await db.workspace.findUniqueOrThrow({ where: { id: session.workspaceId }, select: { plan: true } });
+    if (workspace.plan === "free") return { error: "Email campaigns require the Pro plan or higher." };
+
+    const allFans = await db.fan.findMany({
       where: audienceWhere(session.workspaceId, campaign.audienceTier ?? "all"),
     });
+    // Pro's "Email campaigns (2k)" cap — Touring/Team send to the full
+    // audience. Truncate rather than reject outright so a Pro workspace's
+    // campaign still goes out to as many fans as their plan allows.
+    const cap = CAMPAIGN_RECIPIENT_CAP[workspace.plan] ?? Infinity;
+    const fans = allFans.slice(0, cap);
 
     await db.campaign.update({ where: { id: campaignId }, data: { status: "Sending" } });
 

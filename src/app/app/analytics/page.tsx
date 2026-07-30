@@ -129,7 +129,13 @@ export default async function AnalyticsPage() {
         </div>
       </div>
 
-      <AnalyticsCsvExport stats={stats.map((s) => ({ label: s.label, value: s.value }))} monthlyBars={monthlyBars} bestCities={bestCities} funnel={funnel} />
+      <AnalyticsCsvExport
+        stats={stats.map((s) => ({ label: s.label, value: s.value }))}
+        monthlyBars={monthlyBars}
+        bestCities={bestCities}
+        funnel={funnel}
+        plan={workspace.plan}
+      />
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { ExportCsvButton } from "@/components/export-csv-button";
 import { toCsv, downloadCsv } from "@/lib/csv-export";
+import { planAtLeast } from "@/lib/plan-limits";
 
 export type TransactionDTO = {
   occurredAt: string;
@@ -11,7 +12,7 @@ export type TransactionDTO = {
   source: string | null;
 };
 
-export function FinanceCsvExport({ transactions }: { transactions: TransactionDTO[] }) {
+export function FinanceCsvExport({ transactions, plan }: { transactions: TransactionDTO[]; plan: string }) {
   function exportCsv() {
     const csv = toCsv(
       transactions.map((t) => ({
@@ -32,5 +33,5 @@ export function FinanceCsvExport({ transactions }: { transactions: TransactionDT
     downloadCsv("finance.csv", csv);
   }
 
-  return <ExportCsvButton onClick={exportCsv} />;
+  return <ExportCsvButton onClick={exportCsv} allowed={planAtLeast(plan, "team")} />;
 }

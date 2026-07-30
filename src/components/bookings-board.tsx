@@ -4,7 +4,8 @@ import { useState, useTransition } from "react";
 import { updateBookingStage, updateBookingDetails, toggleBookingChecklist, type Stage, type ChecklistField } from "@/lib/actions/bookings";
 import { money } from "@/lib/format";
 import { NewBookingForm } from "@/components/new-booking-form";
-import { draftFollowupEmail, planUnlocksAI } from "@/lib/ai";
+import { planUnlocksAI } from "@/lib/ai";
+import { generateFollowupDraft } from "@/lib/actions/ai";
 import { STAGES } from "@/lib/stages";
 
 export type BookingDTO = {
@@ -32,15 +33,28 @@ function fmtDateRange(date: string, endDate: string | null) {
   return `${fmtDate(date)}–${fmtDate(endDate)}`;
 }
 
-export function BookingsBoard({ bookings: bookingsProp, plan, artistName }: { bookings: BookingDTO[]; plan: string; artistName: string }) {
+export function BookingsBoard({ bookings: bookingsProp, plan }: { bookings: BookingDTO[]; plan: string }) {
   const [dragId, setDragId] = useState<string | null>(null);
   const [dragOverStage, setDragOverStage] = useState<Stage | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
   const [showNew, setShowNew] = useState(false);
   const [draft, setDraft] = useState<{ bookingId: string; text: string } | null>(null);
+  const [draftError, setDraftError] = useState<string | null>(null);
   const [stageOverride, setStageOverride] = useState<Record<string, Stage>>({});
   const [, startTransition] = useTransition();
   const aiUnlocked = planUnlocksAI(plan);
+
+  function runGenerateDraft(bookingId: string) {
+    setDraftError(null);
+    startTransition(async () => {
+      const result = await generateFollowupDraft(bookingId);
+      if (result?.error || !result?.text) {
+        setDraftError(result?.error ?? "Couldn't generate a draft. Try again.");
+        return;
+      }
+      setDraft({ bookingId, text: result.text });
+    });
+  }
 
   // Apply optimistic stage moves on top of the server data — a drag or a
   // stage-dropdown change should move the card instantly, not after the
@@ -229,12 +243,7 @@ export function BookingsBoard({ bookings: bookingsProp, plan, artistName }: { bo
                   <div className="mt-2.5 flex gap-2">
                     <div className="flex-1 cursor-pointer rounded-lg bg-accent py-2 text-center text-[12.5px] font-semibold text-ink">Send via Gmail</div>
                     <button
-                      onClick={() =>
-                        setDraft({
-                          bookingId: open.id,
-                          text: draftFollowupEmail({ contactName: open.contactName, venue: open.venue, city: open.city, date: open.date, artistName }),
-                        })
-                      }
+                      onClick={() => runGenerateDraft(open.id)}
                       className="cursor-pointer rounded-lg border border-text/15 px-3 py-2 text-[12.5px] text-text/70"
                     >
                       Redo
@@ -242,17 +251,15 @@ export function BookingsBoard({ bookings: bookingsProp, plan, artistName }: { bo
                   </div>
                 </>
               ) : (
-                <button
-                  onClick={() =>
-                    setDraft({
-                      bookingId: open.id,
-                      text: draftFollowupEmail({ contactName: open.contactName, venue: open.venue, city: open.city, date: open.date, artistName }),
-                    })
-                  }
-                  className="w-full cursor-pointer rounded-lg border border-accent/40 py-2.5 text-center text-[12.5px] font-semibold text-accent hover:bg-accent/10"
-                >
-                  Generate email draft
-                </button>
+                <>
+                  {draftError && <div className="mb-2 text-[12px] text-orange">{draftError}</div>}
+                  <button
+                    onClick={() => runGenerateDraft(open.id)}
+                    className="w-full cursor-pointer rounded-lg border border-accent/40 py-2.5 text-center text-[12.5px] font-semibold text-accent hover:bg-accent/10"
+                  >
+                    Generate email draft
+                  </button>
+                </>
               )}
             </div>
           ) : (

@@ -6,6 +6,7 @@ import { getSession } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { withErrorLog, withErrorState } from "@/lib/action-error";
 import { isAllowedImage } from "@/lib/file-validation";
+import { requireMinPlan } from "@/lib/plan-limits-server";
 
 const GLYPH_COLORS = ["#3fe87a", "#e8e43f", "#e8983f", "#7ab8e8", "#c99df5", "#e87a9a"];
 
@@ -24,6 +25,8 @@ export async function createMerchItem(formData: FormData) {
     const maxStock = Math.max(Number(formData.get("maxStock") ?? stock), stock, 1);
 
     if (!name || !price) return;
+
+    await requireMinPlan(session.workspaceId, "pro");
 
     await db.merchItem.create({
       data: {
@@ -95,6 +98,8 @@ export async function completeSale(cart: Array<{ itemId: string; qty: number }>)
 
     const items = cart.filter((c) => c.qty > 0);
     if (items.length === 0) return;
+
+    await requireMinPlan(session.workspaceId, "pro");
 
     const merchItems = await db.merchItem.findMany({
       where: { id: { in: items.map((c) => c.itemId) }, workspaceId: session.workspaceId },

@@ -6,6 +6,7 @@ import { getSession } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { withErrorLog, withErrorState } from "@/lib/action-error";
 import { isAllowedDocument } from "@/lib/file-validation";
+import { requireMinPlan } from "@/lib/plan-limits-server";
 
 export type ActionState = { error?: string; success?: string };
 
@@ -25,6 +26,8 @@ export async function createContract(formData: FormData) {
     const renewsAtRaw = String(formData.get("renewsAt") ?? "").trim();
 
     if (!name || !KINDS.includes(kind as (typeof KINDS)[number]) || !STATUSES.includes(status as (typeof STATUSES)[number])) return;
+
+    await requireMinPlan(session.workspaceId, "touring");
 
     await db.contract.create({
       data: {

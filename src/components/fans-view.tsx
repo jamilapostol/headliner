@@ -4,6 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { money } from "@/lib/format";
 import { planUnlocksAI } from "@/lib/ai";
+import { planAtLeast } from "@/lib/plan-limits";
 import { createFan, importFans } from "@/lib/actions/fans";
 import { CsvImportModal, type CsvColumn } from "@/components/csv-import-modal";
 import { ExportCsvButton } from "@/components/export-csv-button";
@@ -197,7 +198,7 @@ export function FansView({ fans, plan }: { fans: FanDTO[]; plan: string }) {
         </div>
       )}
 
-      <ExportCsvButton onClick={exportCsv} />
+      <ExportCsvButton onClick={exportCsv} allowed={planAtLeast(plan, "team")} />
     </div>
   );
 }

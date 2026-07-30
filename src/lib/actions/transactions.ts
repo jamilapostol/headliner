@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 import { withErrorLog, withErrorFallback } from "@/lib/action-error";
 import { MAX_IMPORT_ROWS } from "@/lib/import-limits";
+import { requireMinPlan } from "@/lib/plan-limits-server";
 
 export async function createTransaction(formData: FormData) {
   return withErrorLog("createTransaction", async () => {
@@ -18,6 +19,8 @@ export async function createTransaction(formData: FormData) {
     const occurredAt = String(formData.get("occurredAt") ?? "");
 
     if (!category || !amount || !occurredAt) return;
+
+    await requireMinPlan(session.workspaceId, "pro");
 
     await db.transaction.create({
       data: {
@@ -38,6 +41,8 @@ export async function importTransactions(rows: Record<string, string>[]) {
   return withErrorFallback("importTransactions", { imported: 0, skipped: rows.length }, async () => {
     const session = await getSession();
     if (!session) return { imported: 0, skipped: rows.length };
+
+    await requireMinPlan(session.workspaceId, "pro");
 
     const capped = rows.slice(0, MAX_IMPORT_ROWS);
     const data = [];

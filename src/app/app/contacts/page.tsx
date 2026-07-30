@@ -20,5 +20,5 @@ export default async function ContactsPage() {
     lastContactedAt: c.lastContactedAt ? c.lastContactedAt.toISOString() : null,
   }));
 
-  return <ContactsTable contacts={dtos} />;
+  return <ContactsTable contacts={dtos} plan={workspace.plan} />;
 }

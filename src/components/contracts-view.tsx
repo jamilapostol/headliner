@@ -1,9 +1,10 @@
 "use client";
 
-import { useActionState, useRef, useState, useTransition } from "react";
+import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
-import { planUnlocksAI, summarizeContract } from "@/lib/ai";
+import { planUnlocksAI, type ContractFact } from "@/lib/ai";
 import { createContract, uploadContractDocument, removeContractDocument, type ActionState } from "@/lib/actions/contracts";
+import { generateContractSummary } from "@/lib/actions/ai";
 
 export type ContractDTO = {
   id: string;
@@ -37,6 +38,18 @@ export function ContractsView({ contracts, plan }: { contracts: ContractDTO[]; p
   const selected = contracts.find((c) => c.id === selId) ?? contracts[0];
   const aiUnlocked = planUnlocksAI(plan);
   const renewals = contracts.filter((c) => c.renewsAt).sort((a, b) => new Date(a.renewsAt!).getTime() - new Date(b.renewsAt!).getTime());
+
+  const [summary, setSummary] = useState<{ contractId: string; facts: ContractFact[] } | null>(null);
+  useEffect(() => {
+    if (!aiUnlocked || !selected) return;
+    let cancelled = false;
+    generateContractSummary(selected.id).then((result) => {
+      if (!cancelled && result?.facts) setSummary({ contractId: selected.id, facts: result.facts });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [aiUnlocked, selected]);
 
   return (
     <div className="mx-auto max-w-[1100px] px-4 py-5 sm:px-8 sm:py-7">
@@ -94,14 +107,18 @@ export function ContractsView({ contracts, plan }: { contracts: ContractDTO[]; p
                   <span className="text-[12.5px] font-semibold text-accent">AI summary — {selected.name.split(" — ")[1] ?? selected.name}</span>
                 </div>
                 <div className="flex flex-col gap-2">
-                  {summarizeContract(selected.kind, selected.status, selected.value).map((f, i) => (
-                    <div key={i} className="flex gap-2.5 text-[12.5px] leading-snug">
-                      <span className="flex-none font-mono" style={{ color: f.flag === "✓" ? "#3fe87a" : "#e8983f" }}>
-                        {f.flag}
-                      </span>
-                      <span className="text-text/80">{f.text}</span>
-                    </div>
-                  ))}
+                  {summary && summary.contractId === selected.id ? (
+                    summary.facts.map((f, i) => (
+                      <div key={i} className="flex gap-2.5 text-[12.5px] leading-snug">
+                        <span className="flex-none font-mono" style={{ color: f.flag === "✓" ? "#3fe87a" : "#e8983f" }}>
+                          {f.flag}
+                        </span>
+                        <span className="text-text/80">{f.text}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-[12px] text-text/40">Loading summary…</div>
+                  )}
                 </div>
               </div>
             ) : (

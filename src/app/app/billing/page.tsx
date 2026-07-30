@@ -2,9 +2,12 @@ import { requireWorkspace } from "@/lib/workspace";
 import { stripeEnabled } from "@/lib/stripe";
 import { BillingPlans } from "@/components/billing-plans";
 import { resumeSubscription } from "@/lib/actions/billing";
+import { FEATURE_LABEL, MIN_PLAN } from "@/lib/plan-limits";
 
-export default async function BillingPage() {
+export default async function BillingPage({ searchParams }: { searchParams: Promise<{ locked?: string }> }) {
   const { workspace } = await requireWorkspace();
+  const { locked } = await searchParams;
+  const lockedFeature = locked && locked in MIN_PLAN ? (locked as keyof typeof MIN_PLAN) : null;
 
   return (
     <div className="mx-auto max-w-[1100px] px-4 py-5 sm:px-8 sm:py-7">
@@ -14,6 +17,13 @@ export default async function BillingPage() {
           ? `Trial active — ends ${workspace.trialEndsAt.toLocaleDateString("en-US", { month: "short", day: "numeric" })}.`
           : "Manage your subscription."}
       </div>
+
+      {lockedFeature && (
+        <div className="mb-6 rounded-[10px] border border-orange/25 bg-orange-soft px-4 py-3 text-[13px] text-text/75">
+          {FEATURE_LABEL[lockedFeature]} requires the <strong className="capitalize">{MIN_PLAN[lockedFeature]}</strong> plan or
+          higher — upgrade below to unlock it.
+        </div>
+      )}
 
       {workspace.cancelAtPeriodEnd && (
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-[10px] border border-orange/25 bg-orange-soft px-4 py-3 text-[13px] text-text/75">

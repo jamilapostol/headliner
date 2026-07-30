@@ -1,10 +1,13 @@
+import { redirect } from "next/navigation";
 import { requireWorkspace } from "@/lib/workspace";
 import { db } from "@/lib/db";
+import { planAtLeast } from "@/lib/plan-limits";
 import { MerchTable, type MerchItemDTO } from "@/components/merch-table";
 import { PointOfSale } from "@/components/point-of-sale";
 
 export default async function MerchPage() {
   const { workspace } = await requireWorkspace();
+  if (!planAtLeast(workspace.plan, "pro")) redirect("/app/billing?locked=merch");
 
   const [items, tour] = await Promise.all([
     db.merchItem.findMany({ where: { workspaceId: workspace.id }, orderBy: { name: "asc" } }),
