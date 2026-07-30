@@ -1,6 +1,8 @@
 import type Stripe from "stripe";
 import { db } from "@/lib/db";
 import { stripe, stripeEnabled } from "@/lib/stripe";
+import { logAdminAction } from "@/lib/audit";
+import { REFERRAL_REWARD_CENTS } from "@/lib/referral";
 
 function subId(sub: string | Stripe.Subscription): string {
   return typeof sub === "string" ? sub : sub.id;
@@ -96,6 +98,39 @@ export async function POST(request: Request) {
       const workspace = await findWorkspaceForInvoice(invoice);
       if (workspace?.paymentPastDue) {
         await db.workspace.update({ where: { id: workspace.id }, data: { paymentPastDue: false } });
+      }
+
+      // Referral reward: the first real payment from a referred workspace
+      // is what "getting someone to pay" means. referralRewardIssuedAt
+      // guards against granting it again on every renewal invoice.
+      if (workspace?.referredByWorkspaceId && !workspace.referralRewardIssuedAt) {
+        const referrer = await db.workspace.findUnique({ where: { id: workspace.referredByWorkspaceId } });
+        if (referrer) {
+          try {
+            let referrerCustomerId = referrer.stripeCustomerId;
+            if (!referrerCustomerId) {
+              const customer = await stripe.customers.create({ name: referrer.name, metadata: { workspaceId: referrer.id } });
+              referrerCustomerId = customer.id;
+              await db.workspace.update({ where: { id: referrer.id }, data: { stripeCustomerId: referrerCustomerId } });
+            }
+            await stripe.customers.createBalanceTransaction(referrerCustomerId, {
+              amount: -REFERRAL_REWARD_CENTS,
+              currency: "usd",
+              description: `Referral reward — ${workspace.name} became a paying customer`,
+            });
+          } catch (err) {
+            console.error("[stripe webhook] failed to issue referral balance credit", err);
+          }
+          await db.workspace.update({ where: { id: referrer.id }, data: { referralCreditsEarned: { increment: 1 } } });
+          await logAdminAction({
+            adminEmail: "stripe-webhook",
+            action: "referral.reward_issued",
+            targetType: "workspace",
+            targetId: referrer.id,
+            detail: `${workspace.name} converted to paid`,
+          });
+        }
+        await db.workspace.update({ where: { id: workspace.id }, data: { referralRewardIssuedAt: new Date() } });
       }
       break;
     }

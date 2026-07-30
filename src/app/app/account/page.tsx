@@ -6,13 +6,17 @@ import { AccountView } from "@/components/account-view";
 import { TeamSection, type MemberRow } from "@/components/team-section";
 import { IntegrationsPanel } from "@/components/integrations-panel";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { ReferFriendsSection } from "@/components/refer-friends-section";
+import { referralLink } from "@/lib/referral";
 
 export default async function AccountPage() {
   const { user, workspace } = await requireWorkspace();
 
-  const [memberships, integrations] = await Promise.all([
+  const [memberships, integrations, referredCount, convertedCount] = await Promise.all([
     db.membership.findMany({ where: { workspaceId: workspace.id }, orderBy: { createdAt: "asc" } }),
     db.integration.findMany({ where: { workspaceId: workspace.id } }),
+    db.workspace.count({ where: { referredByWorkspaceId: workspace.id } }),
+    db.workspace.count({ where: { referredByWorkspaceId: workspace.id, plan: { not: "free" } } }),
   ]);
   const connected = Object.fromEntries(integrations.map((i) => [i.key, i.connected]));
   const admin = createAdminClient();
@@ -49,6 +53,12 @@ export default async function AccountPage() {
           }}
         />
         <TeamSection members={members} canManage={canManage} seatLabel={`${memberships.length} / ${limit} seats`} />
+        <ReferFriendsSection
+          link={referralLink(workspace.id)}
+          referredCount={referredCount}
+          convertedCount={convertedCount}
+          creditsEarned={workspace.referralCreditsEarned}
+        />
         <IntegrationsPanel connected={connected} />
         <ThemeToggle />
       </div>

@@ -72,6 +72,17 @@ model Workspace {
   country           String?
   createdAt         DateTime  @default(now())
 
+  // Referral program. referredByWorkspaceId is a loose reference (not a
+  // Prisma relation) to the workspace whose invite link this one signed up
+  // through — set once at signup, never changed. referralRewardIssuedAt
+  // marks that this workspace's first paid conversion already triggered
+  // its referrer's reward, so the webhook can't double-grant it.
+  // referralCreditsEarned counts rewards *this* workspace has earned by
+  // referring others.
+  referredByWorkspaceId  String?
+  referralRewardIssuedAt DateTime?
+  referralCreditsEarned  Int       @default(0)
+
   memberships  Membership[]
   contacts     Contact[]
   bookings     Booking[]

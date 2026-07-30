@@ -3,7 +3,9 @@ import Link from "next/link";
 import { AuthForm } from "@/components/auth-form";
 import { signUp } from "@/lib/actions/auth";
 
-export default function SignupPage() {
+export default async function SignupPage({ searchParams }: { searchParams: Promise<{ ref?: string }> }) {
+  const { ref } = await searchParams;
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-canvas px-6 text-text" data-theme="dark">
       <div className="w-full max-w-[380px]">
@@ -15,7 +17,7 @@ export default function SignupPage() {
         <p className="mb-7 text-center text-[13.5px] text-muted">
           Your first 10 bookings are on us. No card required.
         </p>
-        <AuthForm mode="signup" action={signUp} />
+        <AuthForm mode="signup" action={signUp} referralCode={ref} />
       </div>
     </div>
   );

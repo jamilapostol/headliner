@@ -37,10 +37,14 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
     if (error) return { error: error.message };
     if (!data.user) return { error: "Could not create your account. Please try again." };
 
+    const refCode = String(formData.get("ref") ?? "").trim();
+    const referrer = refCode ? await db.workspace.findUnique({ where: { id: refCode }, select: { id: true } }) : null;
+
     await db.workspace.create({
       data: {
         name,
         plan: "free",
+        referredByWorkspaceId: referrer?.id,
         memberships: { create: { userId: data.user.id, role: "artist", acceptedAt: new Date() } },
       },
     });

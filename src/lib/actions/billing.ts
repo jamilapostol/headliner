@@ -7,9 +7,23 @@ import { getSession } from "@/lib/auth";
 import { stripe, stripeEnabled, PRICE_IDS } from "@/lib/stripe";
 import { withErrorLog } from "@/lib/action-error";
 import { TRIAL_DAYS, TRIAL_MS } from "@/lib/trial";
+import { REFEREE_COUPON_ID, REFEREE_DISCOUNT_PERCENT } from "@/lib/referral";
 
 export type PlanChoice = "free" | "pro" | "touring" | "team";
 export type Cycle = "monthly" | "annual";
+
+// Self-provisions the referral discount coupon in Stripe the first time
+// it's needed, same idea as the site-content storage bucket — no manual
+// dashboard setup required. Safe to call on every checkout.
+async function ensureReferralCoupon() {
+  if (!stripe) return;
+  try {
+    await stripe.coupons.create({ id: REFEREE_COUPON_ID, percent_off: REFEREE_DISCOUNT_PERCENT, duration: "once", name: "Referral — 10% off first month" });
+  } catch (err) {
+    const alreadyExists = err instanceof Error && "code" in err && (err as { code?: string }).code === "resource_already_exists";
+    if (!alreadyExists) throw err;
+  }
+}
 
 export async function changePlan(plan: PlanChoice, cycle: Cycle) {
   return withErrorLog("changePlan", async () => {
@@ -56,12 +70,19 @@ export async function changePlan(plan: PlanChoice, cycle: Cycle) {
         await db.workspace.update({ where: { id: workspace.id }, data: { stripeCustomerId: customerId } });
       }
 
+      // A referred workspace converting from free to its first paid plan
+      // gets the referee discount — this is the moment "they get someone
+      // to pay" refers to.
+      const applyRefereeDiscount = workspace.plan === "free" && !!workspace.referredByWorkspaceId;
+      if (applyRefereeDiscount) await ensureReferralCoupon();
+
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
       const checkoutSession = await stripe.checkout.sessions.create({
         mode: "subscription",
         customer: customerId,
         line_items: [{ price: priceId, quantity: 1 }],
         subscription_data: { trial_period_days: TRIAL_DAYS, metadata: { workspaceId: workspace.id, plan } },
+        discounts: applyRefereeDiscount ? [{ coupon: REFEREE_COUPON_ID }] : undefined,
         success_url: `${baseUrl}/app/billing?success=1`,
         cancel_url: `${baseUrl}/app/billing?canceled=1`,
       });

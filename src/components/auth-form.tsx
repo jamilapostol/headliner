@@ -7,14 +7,17 @@ import type { AuthState } from "@/lib/actions/auth";
 export function AuthForm({
   mode,
   action,
+  referralCode,
 }: {
   mode: "login" | "signup";
   action: (prev: AuthState, formData: FormData) => Promise<AuthState>;
+  referralCode?: string;
 }) {
   const [state, formAction, pending] = useActionState(action, {});
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
+      {mode === "signup" && referralCode && <input type="hidden" name="ref" value={referralCode} />}
       {mode === "signup" && (
         <Field label="Name" name="name" type="text" placeholder="Mara Voss" autoComplete="name" />
       )}
