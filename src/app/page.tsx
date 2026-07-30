@@ -123,8 +123,15 @@ export default async function LandingPage() {
         </div>
       </div>
 
+      {/* Stage photo — full-bleed break between the lifestyle pitch and the feature list */}
+      <div className="relative min-h-[300px] overflow-hidden sm:min-h-[420px]">
+        <Image src="/stage.png" alt="A packed crowd lit up in blue at a live show" fill sizes="100vw" className="object-cover object-center" />
+        <div className="absolute inset-0 bg-gradient-to-b from-canvas/40 via-transparent to-canvas" />
+        <div className="absolute inset-0 bg-gradient-to-t from-canvas/10 via-transparent to-canvas/25" />
+      </div>
+
       {/* Features */}
-      <div className="mx-auto max-w-[1100px] px-4 pb-[72px] sm:px-10">
+      <div className="mx-auto max-w-[1100px] px-4 pt-[60px] pb-[72px] sm:px-10">
         <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((f) => (
             <div key={f.title} className="rounded-tile border border-border bg-surface px-6 py-[22px]">
