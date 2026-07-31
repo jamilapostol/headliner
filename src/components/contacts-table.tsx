@@ -11,7 +11,7 @@ const CONTACT_CSV_COLUMNS: CsvColumn[] = [
   { key: "name", label: "Name", required: true },
   { key: "org", label: "Organization" },
   { key: "role", label: "Role" },
-  { key: "category", label: "Category", aliases: ["Venues, Promoters, Festivals, Media or Sponsors"] },
+  { key: "category", label: "Category", aliases: ["Venues, Promoters, Festivals, Media, Sponsors or Hosts"] },
   { key: "city", label: "City" },
   { key: "email", label: "Email" },
   { key: "phone", label: "Phone" },
@@ -32,7 +32,14 @@ export type ContactDTO = {
   lastContactedAt: string | null;
 };
 
-const CATS = ["All", "Venues", "Promoters", "Festivals", "Media", "Sponsors"];
+const CATS = ["All", "Venues", "Promoters", "Festivals", "Media", "Sponsors", "Hosts"];
+
+const SORTS = [
+  { key: "name", label: "Name" },
+  { key: "strength", label: "Strength" },
+  { key: "recent", label: "Last contact" },
+] as const;
+type SortKey = (typeof SORTS)[number]["key"];
 const AVATAR_COLORS = ["#3fe87a", "#e8e43f", "#7ab8e8", "#e8983f", "#c99df5"];
 
 function daysAgoLabel(iso: string | null) {
@@ -44,6 +51,7 @@ function daysAgoLabel(iso: string | null) {
 export function ContactsTable({ contacts, plan }: { contacts: ContactDTO[]; plan: string }) {
   const [query, setQuery] = useState("");
   const [cat, setCat] = useState("All");
+  const [sort, setSort] = useState<SortKey>("name");
   const [showNew, setShowNew] = useState(false);
   const [newContactError, setNewContactError] = useState<string | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
@@ -51,12 +59,18 @@ export function ContactsTable({ contacts, plan }: { contacts: ContactDTO[]; plan
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase();
-    return contacts.filter(
+    const rows = contacts.filter(
       (c) =>
         (cat === "All" || c.category === cat) &&
         (!q || `${c.name}${c.org ?? ""}${c.city ?? ""}${c.role ?? ""}`.toLowerCase().includes(q))
     );
-  }, [contacts, query, cat]);
+    const sorted = [...rows];
+    if (sort === "name") sorted.sort((a, b) => a.name.localeCompare(b.name));
+    if (sort === "strength") sorted.sort((a, b) => b.strength - a.strength);
+    if (sort === "recent")
+      sorted.sort((a, b) => (b.lastContactedAt ? new Date(b.lastContactedAt).getTime() : 0) - (a.lastContactedAt ? new Date(a.lastContactedAt).getTime() : 0));
+    return sorted;
+  }, [contacts, query, cat, sort]);
 
   const open = contacts.find((c) => c.id === openId) ?? null;
 
@@ -128,6 +142,17 @@ export function ContactsTable({ contacts, plan }: { contacts: ContactDTO[]; plan
             {c}
           </button>
         ))}
+        <select
+          value={sort}
+          onChange={(e) => setSort(e.target.value as SortKey)}
+          className="ml-auto rounded-lg border border-text/10 bg-surface px-3 py-2 text-[12.5px] text-text outline-none"
+        >
+          {SORTS.map((s) => (
+            <option key={s.key} value={s.key}>
+              Sort: {s.label}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="overflow-x-auto rounded-card border border-border bg-surface">

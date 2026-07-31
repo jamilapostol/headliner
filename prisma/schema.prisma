@@ -46,6 +46,7 @@ enum ContactCategory {
   Festivals
   Media
   Sponsors
+  Hosts
 }
 
 enum TransactionKind {

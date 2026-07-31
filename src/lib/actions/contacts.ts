@@ -7,7 +7,7 @@ import { withErrorLog, withErrorFallback, withErrorState } from "@/lib/action-er
 import { MAX_IMPORT_ROWS } from "@/lib/import-limits";
 import { CONTACT_LIMITS } from "@/lib/plan-limits";
 
-const CATEGORIES = ["Venues", "Promoters", "Festivals", "Media", "Sponsors"] as const;
+const CATEGORIES = ["Venues", "Promoters", "Festivals", "Media", "Sponsors", "Hosts"] as const;
 export type Category = (typeof CATEGORIES)[number];
 
 export async function createContact(formData: FormData): Promise<{ error?: string }> {

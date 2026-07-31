@@ -38,6 +38,36 @@ export async function createFan(formData: FormData) {
   });
 }
 
+export async function updateFan(
+  fanId: string,
+  fields: { name?: string; email?: string; phone?: string; tier?: string; lifetimeSpend?: number; notes?: string }
+) {
+  return withErrorLog("updateFan", async () => {
+    const session = await getSession();
+    if (!session) return;
+
+    const fan = await db.fan.findUnique({ where: { id: fanId } });
+    if (!fan || fan.workspaceId !== session.workspaceId) return;
+
+    if (fields.tier !== undefined && !TIERS.includes(fields.tier as (typeof TIERS)[number])) return;
+    if (fields.name !== undefined && !fields.name.trim()) return;
+
+    await db.fan.update({
+      where: { id: fanId },
+      data: {
+        ...(fields.name !== undefined ? { name: fields.name.trim() } : {}),
+        ...(fields.email !== undefined ? { email: fields.email || null } : {}),
+        ...(fields.phone !== undefined ? { phone: fields.phone || null } : {}),
+        ...(fields.tier !== undefined ? { tier: fields.tier as (typeof TIERS)[number] } : {}),
+        ...(fields.lifetimeSpend !== undefined ? { lifetimeSpend: Math.max(0, Math.round(fields.lifetimeSpend * 100)) } : {}),
+        ...(fields.notes !== undefined ? { notes: fields.notes || null } : {}),
+      },
+    });
+    revalidatePath("/app/fans");
+    revalidatePath("/app");
+  });
+}
+
 export async function importFans(rows: Record<string, string>[]) {
   return withErrorFallback("importFans", { imported: 0, skipped: rows.length }, async () => {
     const session = await getSession();
