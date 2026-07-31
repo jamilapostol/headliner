@@ -346,6 +346,7 @@ model Fan {
   name          String
   email         String?
   phone         String?
+  city          String?
   tier          FanTier  @default(Fan)
   tierNote      String?
   lifetimeSpend Int      @default(0) // cents

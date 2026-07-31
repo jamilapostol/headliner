@@ -11,6 +11,7 @@ export default async function FansPage() {
     name: f.name,
     email: f.email,
     phone: f.phone,
+    city: f.city,
     tier: f.tier,
     tierNote: f.tierNote,
     lifetimeSpend: f.lifetimeSpend,

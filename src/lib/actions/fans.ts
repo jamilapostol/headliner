@@ -16,6 +16,7 @@ export async function createFan(formData: FormData) {
     const name = String(formData.get("name") ?? "").trim();
     const email = String(formData.get("email") ?? "").trim();
     const phone = String(formData.get("phone") ?? "").trim();
+    const city = String(formData.get("city") ?? "").trim();
     const tier = String(formData.get("tier") ?? "Fan");
     const lifetimeSpend = Number(formData.get("lifetimeSpend") ?? 0);
     const notes = String(formData.get("notes") ?? "").trim();
@@ -28,6 +29,7 @@ export async function createFan(formData: FormData) {
         name,
         email,
         phone,
+        city,
         tier: tier as (typeof TIERS)[number],
         lifetimeSpend: Math.round(lifetimeSpend * 100),
         showsAttended: 0,
@@ -40,7 +42,7 @@ export async function createFan(formData: FormData) {
 
 export async function updateFan(
   fanId: string,
-  fields: { name?: string; email?: string; phone?: string; tier?: string; lifetimeSpend?: number; notes?: string }
+  fields: { name?: string; email?: string; phone?: string; city?: string; tier?: string; lifetimeSpend?: number; notes?: string }
 ) {
   return withErrorLog("updateFan", async () => {
     const session = await getSession();
@@ -58,6 +60,7 @@ export async function updateFan(
         ...(fields.name !== undefined ? { name: fields.name.trim() } : {}),
         ...(fields.email !== undefined ? { email: fields.email || null } : {}),
         ...(fields.phone !== undefined ? { phone: fields.phone || null } : {}),
+        ...(fields.city !== undefined ? { city: fields.city || null } : {}),
         ...(fields.tier !== undefined ? { tier: fields.tier as (typeof TIERS)[number] } : {}),
         ...(fields.lifetimeSpend !== undefined ? { lifetimeSpend: Math.max(0, Math.round(fields.lifetimeSpend * 100)) } : {}),
         ...(fields.notes !== undefined ? { notes: fields.notes || null } : {}),
@@ -87,6 +90,7 @@ export async function importFans(rows: Record<string, string>[]) {
         name,
         email: (r.email ?? "").trim() || null,
         phone: (r.phone ?? "").trim() || null,
+        city: (r.city ?? "").trim() || null,
         tier,
         lifetimeSpend: Math.round(lifetimeSpend * 100),
         showsAttended,
