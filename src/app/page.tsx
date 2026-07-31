@@ -13,6 +13,7 @@ const FEATURE_META = [
   { glyph: "▣", color: "text-orange" },
   { glyph: "$", color: "text-accent" },
   { glyph: "✳", color: "text-purple" },
+  { glyph: "♥", color: "text-yellow" },
 ] as const;
 
 const BENEFIT_META = [
