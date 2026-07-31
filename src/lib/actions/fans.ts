@@ -15,6 +15,7 @@ export async function createFan(formData: FormData) {
 
     const name = String(formData.get("name") ?? "").trim();
     const email = String(formData.get("email") ?? "").trim();
+    const phone = String(formData.get("phone") ?? "").trim();
     const tier = String(formData.get("tier") ?? "Fan");
     const lifetimeSpend = Number(formData.get("lifetimeSpend") ?? 0);
     const notes = String(formData.get("notes") ?? "").trim();
@@ -26,6 +27,7 @@ export async function createFan(formData: FormData) {
         workspaceId: session.workspaceId,
         name,
         email,
+        phone,
         tier: tier as (typeof TIERS)[number],
         lifetimeSpend: Math.round(lifetimeSpend * 100),
         showsAttended: 0,
@@ -54,6 +56,7 @@ export async function importFans(rows: Record<string, string>[]) {
         workspaceId: session.workspaceId,
         name,
         email: (r.email ?? "").trim() || null,
+        phone: (r.phone ?? "").trim() || null,
         tier,
         lifetimeSpend: Math.round(lifetimeSpend * 100),
         showsAttended,

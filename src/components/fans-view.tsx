@@ -13,6 +13,7 @@ import { toCsv, downloadCsv } from "@/lib/csv-export";
 const FAN_CSV_COLUMNS: CsvColumn[] = [
   { key: "name", label: "Name", required: true },
   { key: "email", label: "Email" },
+  { key: "phone", label: "Phone" },
   { key: "tier", label: "Tier", aliases: ["VIP, Patron, Donor or Fan"] },
   { key: "lifetimeSpend", label: "Lifetime spend ($)", aliases: ["lifetime spend"] },
   { key: "showsAttended", label: "Shows attended", aliases: ["shows attended"] },
@@ -23,6 +24,7 @@ export type FanDTO = {
   id: string;
   name: string;
   email: string | null;
+  phone: string | null;
   tier: "VIP" | "Patron" | "Donor" | "Fan";
   tierNote: string | null;
   lifetimeSpend: number;
@@ -49,6 +51,7 @@ export function FansView({ fans, plan }: { fans: FanDTO[]; plan: string }) {
       filtered.map((f) => ({
         name: f.name,
         email: f.email ?? "",
+        phone: f.phone ?? "",
         tier: f.tier,
         tierNote: f.tierNote ?? "",
         lifetimeSpend: (f.lifetimeSpend / 100).toFixed(2),
@@ -59,6 +62,7 @@ export function FansView({ fans, plan }: { fans: FanDTO[]; plan: string }) {
       [
         { key: "name", label: "Name" },
         { key: "email", label: "Email" },
+        { key: "phone", label: "Phone" },
         { key: "tier", label: "Tier" },
         { key: "tierNote", label: "Tier Note" },
         { key: "lifetimeSpend", label: "Lifetime Spend ($)" },
@@ -104,9 +108,10 @@ export function FansView({ fans, plan }: { fans: FanDTO[]; plan: string }) {
       </div>
 
       <div className="overflow-x-auto rounded-card border border-border bg-surface">
-        <div className="min-w-[640px]">
-          <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1.1fr] gap-3 border-b border-border px-[18px] py-[11px] font-mono text-[10.5px] tracking-[.1em] text-text/40">
+        <div className="min-w-[760px]">
+          <div className="grid grid-cols-[2fr_1.1fr_1fr_1fr_1fr_1.1fr] gap-3 border-b border-border px-[18px] py-[11px] font-mono text-[10.5px] tracking-[.1em] text-text/40">
             <div>FAN</div>
+            <div>PHONE</div>
             <div>LIFETIME SPEND</div>
             <div>SHOWS</div>
             <div>LAST SEEN</div>
@@ -115,7 +120,7 @@ export function FansView({ fans, plan }: { fans: FanDTO[]; plan: string }) {
           {filtered.map((f, i) => {
             const initials = f.name.split(" ").map((w) => w[0]).join("");
             return (
-              <div key={f.id} className="grid grid-cols-[2fr_1fr_1fr_1fr_1.1fr] items-center gap-3 border-b border-text/[.05] px-[18px] py-3 hover:bg-text/[.03]">
+              <div key={f.id} className="grid grid-cols-[2fr_1.1fr_1fr_1fr_1fr_1.1fr] items-center gap-3 border-b border-text/[.05] px-[18px] py-3 hover:bg-text/[.03]">
                 <div className="flex items-center gap-2.5">
                   <div className="grid h-7 w-7 flex-none place-items-center rounded-full text-[11px] font-bold text-ink" style={{ background: AVATAR_COLORS[i % AVATAR_COLORS.length] }}>
                     {initials}
@@ -128,6 +133,7 @@ export function FansView({ fans, plan }: { fans: FanDTO[]; plan: string }) {
                     </div>
                   </div>
                 </div>
+                <div className="font-mono text-[12px] text-text/60">{f.phone ?? "—"}</div>
                 <div className="font-mono text-[12.5px] text-accent">{money(f.lifetimeSpend)}</div>
                 <div className="font-mono text-[12.5px]">{f.showsAttended}</div>
                 <div className="text-[12px] text-text/60">{f.lastSeenLabel ?? "—"}</div>
@@ -173,6 +179,7 @@ export function FansView({ fans, plan }: { fans: FanDTO[]; plan: string }) {
             >
               <F label="Name" name="name" placeholder="Dana Okafor" />
               <F label="Email" name="email" placeholder="dana@example.com" type="email" />
+              <F label="Phone" name="phone" placeholder="(555) 123-4567" type="tel" />
               <label className="flex flex-col gap-1.5">
                 <span className="text-[12px] font-medium text-text/50">Tier</span>
                 <select name="tier" defaultValue="Fan" className="rounded-[10px] border border-border bg-surface-nested px-3.5 py-2.5 text-[13.5px] text-text outline-none">

@@ -324,6 +324,7 @@ model Fan {
   workspaceId   String
   name          String
   email         String?
+  phone         String?
   tier          FanTier  @default(Fan)
   tierNote      String?
   lifetimeSpend Int      @default(0) // cents
