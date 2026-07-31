@@ -87,6 +87,7 @@ model Workspace {
   contacts     Contact[]
   bookings     Booking[]
   transactions Transaction[]
+  liabilities  Liability[]
   tasks        Task[]
   tours        Tour[]
   merchItems   MerchItem[]
@@ -308,8 +309,23 @@ model Transaction {
   category    String
   amount      Int // cents; expenses stored positive, kind marks sign
   source      String?
+  receiptUrl  String? // public URL in the "receipts" storage bucket
   occurredAt  DateTime        @default(now())
   createdAt   DateTime        @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+}
+
+// Manual liabilities entry for the Finance balance sheet — this app has no
+// bank/loan integration, so debts are simply self-reported.
+model Liability {
+  id          String   @id @default(cuid())
+  workspaceId String
+  name        String
+  amount      Int // cents
+  createdAt   DateTime @default(now())
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 

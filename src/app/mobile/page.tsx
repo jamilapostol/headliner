@@ -56,7 +56,7 @@ export default async function MobilePage() {
   const dayStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
   const dayEnd = new Date(dayStart.getTime() + 86400000);
 
-  const [todaysExpenses, allExpenses] = await Promise.all([
+  const [todaysExpenses, allExpenses, recentExpenses] = await Promise.all([
     db.transaction.aggregate({
       where: { workspaceId: workspace.id, kind: "expense", category: "Tour expenses", occurredAt: { gte: dayStart, lt: dayEnd } },
       _sum: { amount: true },
@@ -65,6 +65,11 @@ export default async function MobilePage() {
       where: { workspaceId: workspace.id, kind: "expense", category: "Tour expenses" },
       _sum: { amount: true },
       _count: true,
+    }),
+    db.transaction.findMany({
+      where: { workspaceId: workspace.id, kind: "expense", category: "Tour expenses" },
+      orderBy: { occurredAt: "desc" },
+      take: 10,
     }),
   ]);
 
@@ -79,6 +84,13 @@ export default async function MobilePage() {
       perDiemTotal={perDiemTotal}
       tourExpensesTotal={allExpenses._sum.amount ?? 0}
       receiptCount={allExpenses._count}
+      recentExpenses={recentExpenses.map((t) => ({
+        id: t.id,
+        amount: t.amount,
+        source: t.source,
+        occurredAt: t.occurredAt.toISOString(),
+        receiptUrl: t.receiptUrl,
+      }))}
     />
   );
 }

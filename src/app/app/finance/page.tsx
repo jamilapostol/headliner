@@ -8,6 +8,7 @@ import { CsvImportModal, type CsvColumn } from "@/components/csv-import-modal";
 import { importTransactions } from "@/lib/actions/transactions";
 import { FinanceCsvExport } from "@/components/finance-csv-export";
 import { TransactionsList } from "@/components/transactions-list";
+import { LiabilitiesList } from "@/components/liabilities-list";
 
 const TRANSACTION_CSV_COLUMNS: CsvColumn[] = [
   { key: "kind", label: "Type (income/expense)", aliases: ["type"] },
@@ -25,10 +26,11 @@ export default async function FinancePage() {
   const year = new Date().getFullYear();
   const yearStart = new Date(year, 0, 1);
 
-  const [allTransactions, outstanding, merchItems] = await Promise.all([
+  const [allTransactions, outstanding, merchItems, liabilities] = await Promise.all([
     db.transaction.findMany({ where: { workspaceId: workspace.id }, orderBy: { occurredAt: "desc" } }),
     db.booking.findMany({ where: { workspaceId: workspace.id, stage: "Confirmed" }, orderBy: { date: "asc" } }),
     db.merchItem.findMany({ where: { workspaceId: workspace.id } }),
+    db.liability.findMany({ where: { workspaceId: workspace.id }, orderBy: { createdAt: "desc" } }),
   ]);
 
   const transactions = allTransactions.filter((t) => t.occurredAt >= yearStart);
@@ -44,7 +46,7 @@ export default async function FinancePage() {
   const receivable = outstanding.reduce((a, b) => a + Math.max(0, b.fee - (b.depositReceived ? b.deposit : 0)), 0);
   const merchInventoryValue = merchItems.reduce((a, m) => a + m.stock * m.cogs, 0);
   const totalAssets = cash + receivable + merchInventoryValue;
-  const totalLiabilities = 0;
+  const totalLiabilities = liabilities.reduce((a, l) => a + l.amount, 0);
   const equity = totalAssets - totalLiabilities;
 
   const bySource = new Map<string, number>();
@@ -134,7 +136,13 @@ export default async function FinancePage() {
             <Row label="Merch inventory (at cost)" value={money(merchInventoryValue)} />
             <Row label="Total assets" value={money(totalAssets)} weight="font-semibold" />
             <div className="mt-3 mb-1.5 font-mono text-[10px] tracking-[.1em] text-text/40">LIABILITIES</div>
-            <Row label="None tracked" value={money(totalLiabilities)} />
+            <LiabilitiesList liabilities={liabilities.map((l) => ({ id: l.id, name: l.name, amount: l.amount }))} />
+            {totalLiabilities > 0 && (
+              <div className="mt-1.5 flex justify-between border-t border-text/[.05] pt-[7px] text-[13px]">
+                <span className="text-text/65 font-semibold">Total liabilities</span>
+                <span className="font-mono font-semibold text-orange">{money(totalLiabilities)}</span>
+              </div>
+            )}
             <div className="mt-3 flex justify-between border-t border-text/10 py-[9px] text-[13px]">
               <span className="font-semibold text-text/80">Equity</span>
               <span className="font-mono font-bold text-accent">{money(equity)}</span>
@@ -152,6 +160,7 @@ export default async function FinancePage() {
             amount: t.amount,
             source: t.source,
             occurredAt: t.occurredAt.toISOString(),
+            receiptUrl: t.receiptUrl,
           }))}
         />
       </div>
