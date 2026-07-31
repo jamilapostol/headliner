@@ -73,7 +73,12 @@ export function MobileDayView({
           <Image src="/logo.svg" alt="HEADLINER" width={24} height={24} />
           <span className="text-[14px] font-bold">Show day</span>
         </div>
-        <div className="font-mono text-[11px] text-text/45">{todayLabel}</div>
+        <div className="flex items-center gap-3">
+          <div className="font-mono text-[11px] text-text/45">{todayLabel}</div>
+          <Link href="/app" className="rounded-lg border border-text/15 px-2.5 py-1 text-[11.5px] font-medium text-text/70 active:bg-text/[.06]">
+            Exit
+          </Link>
+        </div>
       </div>
 
       {nextShow ? (

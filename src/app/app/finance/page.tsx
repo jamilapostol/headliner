@@ -7,6 +7,7 @@ import { NewTransactionForm } from "@/components/new-transaction-form";
 import { CsvImportModal, type CsvColumn } from "@/components/csv-import-modal";
 import { importTransactions } from "@/lib/actions/transactions";
 import { FinanceCsvExport } from "@/components/finance-csv-export";
+import { TransactionsList } from "@/components/transactions-list";
 
 const TRANSACTION_CSV_COLUMNS: CsvColumn[] = [
   { key: "kind", label: "Type (income/expense)", aliases: ["type"] },
@@ -24,13 +25,27 @@ export default async function FinancePage() {
   const year = new Date().getFullYear();
   const yearStart = new Date(year, 0, 1);
 
-  const [transactions, outstanding] = await Promise.all([
-    db.transaction.findMany({ where: { workspaceId: workspace.id, occurredAt: { gte: yearStart } }, orderBy: { occurredAt: "desc" } }),
+  const [allTransactions, outstanding, merchItems] = await Promise.all([
+    db.transaction.findMany({ where: { workspaceId: workspace.id }, orderBy: { occurredAt: "desc" } }),
     db.booking.findMany({ where: { workspaceId: workspace.id, stage: "Confirmed" }, orderBy: { date: "asc" } }),
+    db.merchItem.findMany({ where: { workspaceId: workspace.id } }),
   ]);
+
+  const transactions = allTransactions.filter((t) => t.occurredAt >= yearStart);
 
   const income = transactions.filter((t) => t.kind === "income");
   const expenses = transactions.filter((t) => t.kind === "expense");
+
+  // Balance sheet — a simplified approximation from the data this app
+  // actually tracks (no bank-balance, liabilities, or double-entry
+  // ledger), not a formal accountant's balance sheet. Cash is all-time,
+  // not YTD, since it's a running balance rather than a period figure.
+  const cash = allTransactions.reduce((a, t) => a + (t.kind === "income" ? t.amount : -t.amount), 0);
+  const receivable = outstanding.reduce((a, b) => a + Math.max(0, b.fee - (b.depositReceived ? b.deposit : 0)), 0);
+  const merchInventoryValue = merchItems.reduce((a, m) => a + m.stock * m.cogs, 0);
+  const totalAssets = cash + receivable + merchInventoryValue;
+  const totalLiabilities = 0;
+  const equity = totalAssets - totalLiabilities;
 
   const bySource = new Map<string, number>();
   for (const t of income) bySource.set(t.category, (bySource.get(t.category) ?? 0) + t.amount);
@@ -107,7 +122,38 @@ export default async function FinancePage() {
               </div>
             ))}
           </div>
+
+          <div className="rounded-card border border-border bg-surface px-5 py-[18px]">
+            <div className="mb-1 text-[14.5px] font-semibold">Balance sheet</div>
+            <div className="mb-3 text-[11px] text-text/40">
+              A simplified snapshot from your logged transactions, outstanding fees and merch stock — not a formal accountant&rsquo;s statement.
+            </div>
+            <div className="mb-1.5 font-mono text-[10px] tracking-[.1em] text-text/40">ASSETS</div>
+            <Row label="Cash (all-time net)" value={money(cash)} />
+            <Row label="Accounts receivable" value={money(receivable)} />
+            <Row label="Merch inventory (at cost)" value={money(merchInventoryValue)} />
+            <Row label="Total assets" value={money(totalAssets)} weight="font-semibold" />
+            <div className="mt-3 mb-1.5 font-mono text-[10px] tracking-[.1em] text-text/40">LIABILITIES</div>
+            <Row label="None tracked" value={money(totalLiabilities)} />
+            <div className="mt-3 flex justify-between border-t border-text/10 py-[9px] text-[13px]">
+              <span className="font-semibold text-text/80">Equity</span>
+              <span className="font-mono font-bold text-accent">{money(equity)}</span>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <div className="mt-3.5">
+        <TransactionsList
+          transactions={transactions.map((t) => ({
+            id: t.id,
+            kind: t.kind,
+            category: t.category,
+            amount: t.amount,
+            source: t.source,
+            occurredAt: t.occurredAt.toISOString(),
+          }))}
+        />
       </div>
 
       <FinanceCsvExport
@@ -120,6 +166,15 @@ export default async function FinancePage() {
           source: t.source,
         }))}
       />
+    </div>
+  );
+}
+
+function Row({ label, value, weight = "font-normal" }: { label: string; value: string; weight?: string }) {
+  return (
+    <div className="flex justify-between border-b border-text/[.05] py-[7px] text-[13px]">
+      <span className="text-text/65">{label}</span>
+      <span className={`font-mono ${weight}`}>{value}</span>
     </div>
   );
 }

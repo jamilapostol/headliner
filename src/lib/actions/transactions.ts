@@ -37,6 +37,49 @@ export async function createTransaction(formData: FormData) {
   });
 }
 
+export async function updateTransaction(id: string, formData: FormData) {
+  return withErrorLog("updateTransaction", async () => {
+    const session = await getSession();
+    if (!session) return;
+
+    const existing = await db.transaction.findUnique({ where: { id } });
+    if (!existing || existing.workspaceId !== session.workspaceId) return;
+
+    const kind = String(formData.get("kind") ?? "income") === "expense" ? "expense" : "income";
+    const category = String(formData.get("category") ?? "").trim();
+    const amount = Number(formData.get("amount") ?? 0);
+    const source = String(formData.get("source") ?? "").trim();
+    const occurredAt = String(formData.get("occurredAt") ?? "");
+
+    if (!category || !amount || !occurredAt) return;
+
+    await requireMinPlan(session.workspaceId, "pro");
+
+    await db.transaction.update({
+      where: { id },
+      data: { kind, category, amount: Math.round(amount * 100), source, occurredAt: new Date(occurredAt) },
+    });
+    revalidatePath("/app/finance");
+    revalidatePath("/app");
+  });
+}
+
+export async function deleteTransaction(id: string) {
+  return withErrorLog("deleteTransaction", async () => {
+    const session = await getSession();
+    if (!session) return;
+
+    const existing = await db.transaction.findUnique({ where: { id } });
+    if (!existing || existing.workspaceId !== session.workspaceId) return;
+
+    await requireMinPlan(session.workspaceId, "pro");
+
+    await db.transaction.delete({ where: { id } });
+    revalidatePath("/app/finance");
+    revalidatePath("/app");
+  });
+}
+
 export async function importTransactions(rows: Record<string, string>[]) {
   return withErrorFallback("importTransactions", { imported: 0, skipped: rows.length }, async () => {
     const session = await getSession();
