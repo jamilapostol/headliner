@@ -18,7 +18,30 @@ export async function updateBookingStage(bookingId: string, stage: Stage) {
     const booking = await db.booking.findUnique({ where: { id: bookingId } });
     if (!booking || booking.workspaceId !== session.workspaceId) return;
 
-    await db.booking.update({ where: { id: bookingId }, data: { stage } });
+    // Moving a booking into "Paid" is the real-world signal that the fee
+    // was actually collected — auto-log it as revenue right here instead
+    // of relying on someone to separately remember to add a transaction.
+    // feeTransactionId makes this idempotent: re-entering "Paid" (or
+    // toggling back and forth) never logs the same fee twice.
+    const justPaid = stage === "Paid" && booking.stage !== "Paid" && !booking.feeTransactionId && booking.fee > 0;
+
+    if (justPaid) {
+      const transaction = await db.transaction.create({
+        data: {
+          workspaceId: session.workspaceId,
+          kind: "income",
+          category: "Performance fees",
+          amount: booking.fee,
+          source: booking.venue,
+          occurredAt: booking.date,
+        },
+      });
+      await db.booking.update({ where: { id: bookingId }, data: { stage, feeTransactionId: transaction.id } });
+      revalidatePath("/app/finance");
+    } else {
+      await db.booking.update({ where: { id: bookingId }, data: { stage } });
+    }
+
     revalidatePath("/app/bookings");
     revalidatePath("/app");
     revalidatePath("/app/calendar");

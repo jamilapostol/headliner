@@ -180,25 +180,29 @@ model Contact {
 }
 
 model Booking {
-  id              String       @id @default(cuid())
-  workspaceId     String
-  contactId       String?
-  venue           String
-  city            String
-  date            DateTime
-  endDate         DateTime? // null for a single-day booking
-  stage           BookingStage @default(Lead)
-  fee             Int          @default(0) // cents
-  deposit         Int          @default(0) // cents
-  contactName     String?
-  contactPhone    String?
-  notes           String?
-  offerConfirmed  Boolean      @default(false)
-  contractSigned  Boolean      @default(false)
-  depositReceived Boolean      @default(false)
-  riderSent       Boolean      @default(false)
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
+  id               String       @id @default(cuid())
+  workspaceId      String
+  contactId        String?
+  venue            String
+  city             String
+  date             DateTime
+  endDate          DateTime? // null for a single-day booking
+  stage            BookingStage @default(Lead)
+  fee              Int          @default(0) // cents
+  deposit          Int          @default(0) // cents
+  contactName      String?
+  contactPhone     String?
+  notes            String?
+  offerConfirmed   Boolean      @default(false)
+  contractSigned   Boolean      @default(false)
+  depositReceived  Boolean      @default(false)
+  riderSent        Boolean      @default(false)
+  // Set the first time this booking's stage becomes "Paid" — points at the
+  // income Transaction auto-created for its fee, so re-saving the stage
+  // (or dragging back and forth) can't log the same revenue twice.
+  feeTransactionId String?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   contact   Contact?  @relation(fields: [contactId], references: [id])
