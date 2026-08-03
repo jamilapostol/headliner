@@ -44,6 +44,42 @@ export async function createContract(formData: FormData) {
   });
 }
 
+export async function updateContract(contractId: string, formData: FormData) {
+  return withErrorLog("updateContract", async () => {
+    const session = await getSession();
+    if (!session) return;
+
+    const contract = await requireOwnedContract(contractId, session.workspaceId);
+    if (!contract) return;
+
+    const name = String(formData.get("name") ?? "").trim();
+    const kind = String(formData.get("kind") ?? "");
+    const counterparty = String(formData.get("counterparty") ?? "").trim();
+    const value = String(formData.get("value") ?? "").trim();
+    const status = String(formData.get("status") ?? "");
+    const signedDateRaw = String(formData.get("signedDate") ?? "").trim();
+    const renewsAtRaw = String(formData.get("renewsAt") ?? "").trim();
+
+    if (!name || !KINDS.includes(kind as (typeof KINDS)[number]) || !STATUSES.includes(status as (typeof STATUSES)[number])) return;
+
+    await requireMinPlan(session.workspaceId, "touring");
+
+    await db.contract.update({
+      where: { id: contractId },
+      data: {
+        name,
+        kind,
+        counterparty,
+        value,
+        status: status as (typeof STATUSES)[number],
+        signedDate: signedDateRaw ? new Date(signedDateRaw) : null,
+        renewsAt: renewsAtRaw ? new Date(renewsAtRaw) : null,
+      },
+    });
+    revalidatePath("/app/contracts");
+  });
+}
+
 async function requireOwnedContract(contractId: string, workspaceId: string) {
   const contract = await db.contract.findUnique({ where: { id: contractId } });
   if (!contract || contract.workspaceId !== workspaceId) return null;

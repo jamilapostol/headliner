@@ -17,6 +17,7 @@ export default async function ContractsPage() {
     value: c.value,
     status: c.status,
     date: c.signedDate ? c.signedDate.toLocaleDateString("en-US", { month: "short", day: "2-digit", timeZone: "UTC" }) : null,
+    signedDate: c.signedDate ? c.signedDate.toISOString() : null,
     renewsAt: c.renewsAt ? c.renewsAt.toISOString() : null,
     fileName: c.fileName,
   }));
