@@ -38,8 +38,11 @@ export function AppSidebar({ userName, plan, avatarUrl }: { userName: string; pl
 
   return (
     <>
-      {/* Mobile top bar */}
-      <div className="flex flex-none items-center justify-between border-b border-border bg-sidebar px-4 py-3 md:hidden">
+      {/* Mobile top bar — sticky rather than relying on the parent's scroll
+          containment, since h-screen can misbehave on mobile Safari
+          (dynamic toolbar) and let the whole page scroll natively instead
+          of just the content area. */}
+      <div className="sticky top-0 z-30 flex flex-none items-center justify-between border-b border-border bg-sidebar px-4 py-3 md:hidden">
         <button onClick={() => setOpen(true)} className="cursor-pointer p-1 text-[20px] text-text" aria-label="Open menu">
           ☰
         </button>
