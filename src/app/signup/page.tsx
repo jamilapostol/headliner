@@ -15,7 +15,7 @@ export default async function SignupPage({ searchParams }: { searchParams: Promi
         </Link>
         <h1 className="mb-1 text-center text-[26px] font-semibold tracking-tight">Start free</h1>
         <p className="mb-7 text-center text-[13.5px] text-muted">
-          Your first 10 bookings are on us. No card required.
+          Your first 5 bookings are on us. No card required.
         </p>
         <AuthForm mode="signup" action={signUp} referralCode={ref} />
       </div>

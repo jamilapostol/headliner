@@ -23,7 +23,7 @@ export const SITE_CONTENT_FIELDS: SiteContentField[] = [
   },
   { key: "hero_cta_primary", section: "Hero", label: "Primary button", default: "Start free" },
   { key: "hero_cta_secondary", section: "Hero", label: "Secondary button", default: "Watch demo — 2 min" },
-  { key: "hero_disclaimer", section: "Hero", label: "Fine print under buttons", default: "Free forever for your first 10 bookings. No card required." },
+  { key: "hero_disclaimer", section: "Hero", label: "Fine print under buttons", default: "Free forever for your first 5 bookings. No card required." },
   { key: "hero_image", section: "Hero", label: "Background photo", default: "/hero.png", type: "image" },
 
   { key: "retires_label", section: "Retires strip", label: "Label", default: "RETIRES" },
