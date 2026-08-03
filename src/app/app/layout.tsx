@@ -7,7 +7,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const { user, workspace, impersonatedBy } = await requireWorkspace();
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-canvas">
+    <div className="flex h-dvh flex-col overflow-hidden bg-canvas">
       {impersonatedBy && <ImpersonationBanner adminEmail={impersonatedBy.email} workspaceName={workspace.name} />}
       {workspace.paymentPastDue && <PastDueBanner />}
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden md:flex-row">

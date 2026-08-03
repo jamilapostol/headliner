@@ -38,11 +38,12 @@ export function AppSidebar({ userName, plan, avatarUrl }: { userName: string; pl
 
   return (
     <>
-      {/* Mobile top bar — sticky rather than relying on the parent's scroll
-          containment, since h-screen can misbehave on mobile Safari
-          (dynamic toolbar) and let the whole page scroll natively instead
-          of just the content area. */}
-      <div className="sticky top-0 z-30 flex flex-none items-center justify-between border-b border-border bg-sidebar px-4 py-3 md:hidden">
+      {/* Mobile top bar — pinned with `fixed` to the viewport rather than
+          `sticky`/scroll containment, since mobile Safari's dynamic toolbar
+          makes h-screen/scroll-container-based approaches unreliable.
+          `fixed` always stays put regardless of what actually scrolls, at
+          the cost of needing the spacer div below to reserve its height. */}
+      <div className="fixed inset-x-0 top-0 z-30 flex h-14 items-center justify-between border-b border-border bg-sidebar px-4 md:hidden">
         <button onClick={() => setOpen(true)} className="cursor-pointer p-1 text-[20px] text-text" aria-label="Open menu">
           ☰
         </button>
@@ -52,6 +53,9 @@ export function AppSidebar({ userName, plan, avatarUrl }: { userName: string; pl
         </div>
         {avatarSm}
       </div>
+      {/* Reserves the fixed bar's height in normal flow so page content
+          doesn't render underneath it. */}
+      <div className="h-14 flex-none md:hidden" aria-hidden />
 
       {/* Mobile drawer backdrop */}
       {open && <div className="animate-tp-fade fixed inset-0 z-30 bg-black/60 md:hidden" onClick={() => setOpen(false)} />}
