@@ -177,6 +177,9 @@ export default async function LandingPage() {
           <Link href="/terms" className="hover:text-white/60">
             Terms of Service
           </Link>
+          <a href={`mailto:${c.footer_support_email}`} className="hover:text-white/60">
+            {c.footer_support_email}
+          </a>
         </div>
       </div>
     </div>
