@@ -1,20 +1,20 @@
 import { LegalPage, H2, P, Ul } from "@/components/legal-page";
 
-export const metadata = { title: "Terms of Service — HEADLINER" };
+export const metadata = { title: "Terms of Service — HEADLINE." };
 
 export default function TermsPage() {
   return (
     <LegalPage title="Terms of Service" updated="July 28, 2026">
       <P>
-        These Terms of Service (“Terms”) govern your access to and use of HEADLINER (the “Service”), operated by [Company Legal Name]
-        (“HEADLINER,” “we,” “us”). By creating an account or using the Service, you agree to these Terms. If you’re using
-        HEADLINER on behalf of a band, label, or management company, you’re agreeing on that organization’s behalf, and you
+        These Terms of Service (“Terms”) govern your access to and use of HEADLINE. (the “Service”), operated by [Company Legal Name]
+        (“HEADLINE.,” “we,” “us”). By creating an account or using the Service, you agree to these Terms. If you’re using
+        HEADLINE. on behalf of a band, label, or management company, you’re agreeing on that organization’s behalf, and you
         confirm you have the authority to do so.
       </P>
 
-      <H2>1. What HEADLINER is</H2>
+      <H2>1. What HEADLINE. is</H2>
       <P>
-        HEADLINER is a workspace for touring musicians and the people who work with them — booking pipeline, contacts,
+        HEADLINE. is a workspace for touring musicians and the people who work with them — booking pipeline, contacts,
         calendar, tour routing, merch inventory, contracts, financial tracking, fan management, and related tools
         (collectively, the “Service”). Some features are described elsewhere on our site and in-app; those descriptions are
         part of these Terms.
@@ -22,7 +22,7 @@ export default function TermsPage() {
 
       <H2>2. Accounts</H2>
       <P>
-        You need an account to use HEADLINER. You’re responsible for the accuracy of the information you provide, for
+        You need an account to use HEADLINE. You’re responsible for the accuracy of the information you provide, for
         keeping your login credentials confidential, and for all activity that happens under your account. Tell us right
         away if you suspect unauthorized access.
       </P>
@@ -34,7 +34,7 @@ export default function TermsPage() {
 
       <H2>3. Plans, billing, and cancellation</H2>
       <P>
-        HEADLINER offers a free plan and paid subscription plans (currently Pro Artist, Touring Artist, and Management
+        HEADLINE. offers a free plan and paid subscription plans (currently Pro Artist, Touring Artist, and Management
         Team), billed monthly or annually as selected at checkout. Paid subscriptions are processed by Stripe; we don’t
         store your full payment card details ourselves.
       </P>
@@ -46,7 +46,7 @@ export default function TermsPage() {
       </Ul>
 
       <H2>4. Acceptable use</H2>
-      <P>You agree not to use HEADLINER to:</P>
+      <P>You agree not to use HEADLINE. to:</P>
       <Ul>
         <li>Violate any law, or the rights of any third party (including venues, promoters, or other artists);</li>
         <li>Upload content you don’t have the right to upload, or that infringes someone else’s intellectual property;</li>
@@ -58,7 +58,7 @@ export default function TermsPage() {
 
       <H2>5. Your content and data</H2>
       <P>
-        You own the data you put into HEADLINER — your bookings, contacts, contracts, financial records, and everything
+        You own the data you put into HEADLINE. — your bookings, contacts, contracts, financial records, and everything
         else. We don’t claim ownership over it. You grant us a limited license to host, process, and display that data
         solely to operate and improve the Service for you. You can export most of your data at any time using the
         Export CSV feature available on the Contacts, Fans, Finance, and Analytics tabs.
@@ -66,8 +66,8 @@ export default function TermsPage() {
 
       <H2>6. Third-party integrations</H2>
       <P>
-        HEADLINER allows you to connect third-party services (for example Gmail, Google Calendar, Stripe, Square, Spotify
-        for Artists, or Bandsintown). Connecting a service authorizes HEADLINER to exchange the data necessary for that
+        HEADLINE. allows you to connect third-party services (for example Gmail, Google Calendar, Stripe, Square, Spotify
+        for Artists, or Bandsintown). Connecting a service authorizes HEADLINE. to exchange the data necessary for that
         integration to function. Your use of those third-party services is also governed by their own terms — we aren’t
         responsible for how they handle your data once shared. You can disconnect an integration at any time from Settings.
       </P>
@@ -83,14 +83,14 @@ export default function TermsPage() {
 
       <H2>8. Intellectual property</H2>
       <P>
-        HEADLINER, its logo, and the software behind the Service are owned by us and protected by intellectual property
+        HEADLINE., its logo, and the software behind the Service are owned by us and protected by intellectual property
         law. These Terms don’t grant you any rights to our trademarks or branding beyond what’s needed to use the Service
         normally.
       </P>
 
       <H2>9. Termination</H2>
       <P>
-        You can stop using HEADLINER and delete your account at any time. We may suspend or terminate your access if you
+        You can stop using HEADLINE. and delete your account at any time. We may suspend or terminate your access if you
         violate these Terms, if required by law, or if we discontinue the Service — in the latter case, we’ll give you
         reasonable advance notice and a chance to export your data where practical.
       </P>
@@ -98,14 +98,14 @@ export default function TermsPage() {
       <H2>10. Disclaimers</H2>
       <P>
         The Service is provided “as is.” We don’t guarantee it will be uninterrupted, error-free, or that it will meet
-        every requirement of your specific tour, venue, or business. HEADLINER is a tool to help you run your business —
+        every requirement of your specific tour, venue, or business. HEADLINE. is a tool to help you run your business —
         it’s not a substitute for legal, tax, or financial advice, and we’re not responsible for decisions you make based
         on data or AI-generated content in the app.
       </P>
 
       <H2>11. Limitation of liability</H2>
       <P>
-        To the extent permitted by law, HEADLINER and its team aren’t liable for indirect, incidental, or consequential
+        To the extent permitted by law, HEADLINE. and its team aren’t liable for indirect, incidental, or consequential
         damages arising from your use of the Service, including lost bookings, lost revenue, or data loss. Our total
         liability for any claim relating to the Service is limited to the amount you paid us in the twelve months before
         the claim arose.
@@ -114,7 +114,7 @@ export default function TermsPage() {
       <H2>12. Changes to these Terms</H2>
       <P>
         We may update these Terms from time to time. If a change is material, we’ll notify you by email or in-app before
-        it takes effect. Continuing to use HEADLINER after a change takes effect means you accept the updated Terms.
+        it takes effect. Continuing to use HEADLINE. after a change takes effect means you accept the updated Terms.
       </P>
 
       <H2>13. Governing law</H2>
@@ -123,8 +123,8 @@ export default function TermsPage() {
       <H2>14. Contact</H2>
       <P>
         Questions about these Terms? Reach us at{" "}
-        <a href="mailto:legal@headliner.app" className="text-accent">
-          legal@headliner.app
+        <a href="mailto:legal@headline.world" className="text-accent">
+          legal@headline.world
         </a>
         .
       </P>

@@ -1,4 +1,4 @@
-// HEADLINER — data model
+// HEADLINE. — data model
 // Postgres via Supabase. Auth is owned by Supabase (the auth.users table,
 // not modeled here) — Membership.userId stores that auth user's id as a
 // plain string; there's no local User table or password storage.

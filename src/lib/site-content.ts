@@ -103,7 +103,7 @@ export const SITE_CONTENT_FIELDS: SiteContentField[] = [
 
   { key: "footer_heading", section: "Footer", label: "Heading", default: "The van is packed. Is your business?" },
   { key: "footer_subheading", section: "Footer", label: "Subheading", default: "Set up your first tour in under ten minutes." },
-  { key: "footer_copyright", section: "Footer", label: "Copyright line", default: "© 2026 HEADLINER · By musicians, for musicians" },
+  { key: "footer_copyright", section: "Footer", label: "Copyright line", default: "© 2026 HEADLINE. · By musicians, for musicians" },
 ];
 
 export async function getSiteContent(): Promise<Record<string, string>> {

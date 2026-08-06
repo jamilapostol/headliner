@@ -57,7 +57,7 @@ export function AuthForm({
         ) : (
           <>
             <span>
-              New to HEADLINER? <Link href="/signup" className="text-accent">Start free</Link>
+              New to HEADLINE.? <Link href="/signup" className="text-accent">Start free</Link>
             </span>
             <Link href="/forgot-password" className="text-muted hover:text-text">
               Forgot your password?

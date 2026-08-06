@@ -6,8 +6,8 @@ export function LegalPage({ title, updated, children }: { title: string; updated
     <div className="min-h-screen bg-canvas px-4 py-12 text-text sm:px-10 sm:py-16" data-theme="dark">
       <div className="mx-auto max-w-[720px]">
         <Link href="/" className="mb-10 flex items-center gap-2.5">
-          <Image src="/logo.svg" alt="HEADLINER" width={26} height={26} />
-          <span className="text-[14px] font-bold">HEADLINER</span>
+          <Image src="/logo.svg" alt="HEADLINE." width={26} height={26} />
+          <span className="text-[14px] font-bold">HEADLINE.</span>
         </Link>
 
         <h1 className="mb-2 text-[30px] tracking-[-.02em] sm:text-[36px]">{title}</h1>
@@ -17,7 +17,7 @@ export function LegalPage({ title, updated, children }: { title: string; updated
 
         <div className="mt-14 border-t border-border pt-6 text-[12.5px] text-white/40">
           <Link href="/" className="text-accent">
-            ← Back to HEADLINER
+            ← Back to HEADLINE.
           </Link>
         </div>
       </div>

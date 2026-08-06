@@ -48,8 +48,8 @@ export function AppSidebar({ userName, plan, avatarUrl }: { userName: string; pl
           ☰
         </button>
         <div className="flex items-center gap-2">
-          <Image src="/logo.svg" alt="HEADLINER" width={24} height={24} />
-          <span className="text-[15px] font-bold tracking-[-.02em]">HEADLINER</span>
+          <Image src="/logo.svg" alt="HEADLINE." width={24} height={24} />
+          <span className="text-[15px] font-bold tracking-[-.02em]">HEADLINE.</span>
         </div>
         {avatarSm}
       </div>
@@ -65,8 +65,8 @@ export function AppSidebar({ userName, plan, avatarUrl }: { userName: string; pl
         className={`fixed inset-y-0 left-0 z-40 flex w-[240px] flex-none -translate-x-full flex-col border-r border-border bg-sidebar transition-transform duration-200 md:static md:z-auto md:w-[216px] md:translate-x-0 ${open ? "translate-x-0" : ""}`}
       >
         <div className="hidden items-center gap-2.5 px-[18px] pt-5 pb-4 md:flex">
-          <Image src="/logo.svg" alt="HEADLINER" width={30} height={30} />
-          <div className="text-[16px] font-bold tracking-[-.02em]">HEADLINER</div>
+          <Image src="/logo.svg" alt="HEADLINE." width={30} height={30} />
+          <div className="text-[16px] font-bold tracking-[-.02em]">HEADLINE.</div>
         </div>
         <div className="flex flex-col gap-0.5 overflow-y-auto px-3 pt-4 md:pt-0">
           {NAV_ITEMS.map((nv) => {

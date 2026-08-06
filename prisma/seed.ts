@@ -12,7 +12,7 @@ const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
 
-const DEMO_EMAIL = "jamil@headliner.demo";
+const DEMO_EMAIL = "jamil@headline.demo";
 const DEMO_PASSWORD = "password123";
 
 async function main() {
@@ -102,7 +102,7 @@ async function main() {
     { kind: "expense", category: "Merch COGS", amount: 492000, source: "Printing + fulfillment", occurredAt: new Date("2026-06-20") },
     { kind: "income", category: "Performance fees", amount: 610000, source: "July dates", occurredAt: new Date("2026-07-05") },
     { kind: "income", category: "Merchandise", amount: 205000, source: "Merch table + online", occurredAt: new Date("2026-07-10") },
-    { kind: "expense", category: "Fees & software", amount: 118000, source: "HEADLINER + tools", occurredAt: new Date("2026-07-01") },
+    { kind: "expense", category: "Fees & software", amount: 118000, source: "HEADLINE. + tools", occurredAt: new Date("2026-07-01") },
   ];
   for (const t of transactions) {
     await db.transaction.create({ data: { ...t, workspaceId: workspace.id } });
@@ -246,7 +246,7 @@ async function main() {
   });
   console.log("Seeded 5 tasks");
 
-  console.log("\nDemo login: jamil@headliner.demo / password123");
+  console.log("\nDemo login: jamil@headline.demo / password123");
 }
 
 function daysAgo(n: number) {

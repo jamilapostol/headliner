@@ -103,7 +103,7 @@ export function MobileDayView({
     >
       <div className="mb-1 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Image src="/logo.svg" alt="HEADLINER" width={24} height={24} />
+          <Image src="/logo.svg" alt="HEADLINE." width={24} height={24} />
           <span className="text-[14px] font-bold">Show day</span>
         </div>
         <div className="flex items-center gap-3">
