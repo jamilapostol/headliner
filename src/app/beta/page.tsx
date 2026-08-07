@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { BENEFITS, FEATURES } from "@/lib/landing-content";
+import { PhotoBleedHero, PhotoBleedBand, RoadPhotoStrip, HERO_PHOTO, SOUNDCHECK_PHOTO, CROWD_PHOTO } from "@/components/marketing-photos";
 
 export const metadata: Metadata = {
   title: "HEADLINE. — Join the Beta",
@@ -74,18 +75,8 @@ export default function BetaPage() {
         </div>
       </section>
 
-      {/* hero photo, full bleed, fades into canvas */}
-      <div className="relative mt-2 h-[46vh] max-h-[560px] min-h-[280px] w-full overflow-hidden">
-        <Image src="/landing-hero.jpg" alt="Fireworks over the stage at a HEADLINE. artist's show" fill sizes="100vw" className="object-cover brightness-[.88] saturate-[1.05]" priority />
-        <div className="absolute inset-x-0 bottom-0 h-[55%] bg-gradient-to-b from-transparent to-canvas" />
-      </div>
-
-      {/* soundcheck accent band */}
-      <div className="relative h-[30vh] max-h-[380px] min-h-[200px] w-full overflow-hidden">
-        <Image src="/landing-soundcheck.jpg" alt="Mic stand at soundcheck, crowd in the distance" fill sizes="100vw" className="object-cover brightness-[.85] saturate-[1.05]" />
-        <div className="absolute inset-x-0 top-0 h-[45%] bg-gradient-to-t from-transparent to-canvas" />
-        <div className="absolute inset-x-0 bottom-0 h-[45%] bg-gradient-to-b from-transparent to-canvas" />
-      </div>
+      <PhotoBleedHero {...HERO_PHOTO} />
+      <PhotoBleedBand {...SOUNDCHECK_PHOTO} />
 
       {/* benefits */}
       <section id="benefits" className="px-6 py-16">
@@ -130,27 +121,11 @@ export default function BetaPage() {
       <section className="px-6 py-14">
         <div className="mx-auto max-w-[980px]">
           <div className="mb-5 text-center font-mono text-[11px] tracking-[.16em] text-accent">ON THE ROAD</div>
-          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
-            {[
-              { src: "/landing-bus.jpg", alt: "Tour bus on the road" },
-              { src: "/landing-backstage.jpg", alt: "Flight cases backstage before load-in" },
-              { src: "/landing-stagegear.jpg", alt: "Stage gear silhouetted before a show" },
-            ].map((p) => (
-              <div key={p.src} className="relative aspect-[4/5] overflow-hidden rounded-tile border border-border">
-                <Image src={p.src} alt={p.alt} fill sizes="(max-width: 640px) 100vw, 33vw" className="object-cover brightness-[.9] saturate-[1.05]" />
-                <div className="absolute inset-0" style={{ backgroundImage: "linear-gradient(180deg, transparent 55%, rgba(13,17,14,.55))" }} />
-              </div>
-            ))}
-          </div>
+          <RoadPhotoStrip />
         </div>
       </section>
 
-      {/* crowd accent band */}
-      <div className="relative h-[30vh] max-h-[380px] min-h-[200px] w-full overflow-hidden">
-        <Image src="/landing-crowd.jpg" alt="Confetti over the crowd at a show" fill sizes="100vw" className="object-cover brightness-[.85] saturate-[1.05]" />
-        <div className="absolute inset-x-0 top-0 h-[45%] bg-gradient-to-t from-transparent to-canvas" />
-        <div className="absolute inset-x-0 bottom-0 h-[45%] bg-gradient-to-b from-transparent to-canvas" />
-      </div>
+      <PhotoBleedBand {...CROWD_PHOTO} />
 
       {/* how to redeem — steps */}
       <section id="steps" className="px-6 py-16">

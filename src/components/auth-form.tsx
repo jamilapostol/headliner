@@ -19,7 +19,7 @@ export function AuthForm({
     <form action={formAction} className="flex flex-col gap-4">
       {mode === "signup" && referralCode && <input type="hidden" name="ref" value={referralCode} />}
       {mode === "signup" && (
-        <Field label="Name" name="name" type="text" placeholder="Mara Voss" autoComplete="name" />
+        <Field label="Name" name="name" type="text" placeholder="Your name" autoComplete="name" />
       )}
       <Field label="Email" name="email" type="email" placeholder="you@band.com" autoComplete="email" />
       <Field

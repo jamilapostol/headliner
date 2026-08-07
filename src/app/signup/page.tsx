@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { AuthForm } from "@/components/auth-form";
+import { ClosePageButton } from "@/components/close-page-button";
 import { signUp } from "@/lib/actions/auth";
 
 export default async function SignupPage({ searchParams }: { searchParams: Promise<{ ref?: string }> }) {
@@ -8,6 +9,7 @@ export default async function SignupPage({ searchParams }: { searchParams: Promi
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-canvas px-6 text-text" data-theme="dark">
+      <ClosePageButton />
       <div className="w-full max-w-[380px]">
         <Link href="/" className="mb-8 flex items-center justify-center gap-2.5">
           <Image src="/logo.svg" alt="HEADLINE." width={28} height={28} />
