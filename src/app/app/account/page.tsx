@@ -12,13 +12,11 @@ import { referralLink } from "@/lib/referral";
 export default async function AccountPage() {
   const { user, workspace } = await requireWorkspace();
 
-  const [memberships, integrations, referredCount, convertedCount] = await Promise.all([
+  const [memberships, referredCount, convertedCount] = await Promise.all([
     db.membership.findMany({ where: { workspaceId: workspace.id }, orderBy: { createdAt: "asc" } }),
-    db.integration.findMany({ where: { workspaceId: workspace.id } }),
     db.workspace.count({ where: { referredByWorkspaceId: workspace.id } }),
     db.workspace.count({ where: { referredByWorkspaceId: workspace.id, plan: { not: "free" } } }),
   ]);
-  const connected = Object.fromEntries(integrations.map((i) => [i.key, i.connected]));
   const admin = createAdminClient();
   const members: MemberRow[] = await Promise.all(
     memberships.map(async (m) => {
@@ -59,7 +57,7 @@ export default async function AccountPage() {
           convertedCount={convertedCount}
           creditsEarned={workspace.referralCreditsEarned}
         />
-        <IntegrationsPanel connected={connected} />
+        <IntegrationsPanel />
         <ThemeToggle />
       </div>
     </div>

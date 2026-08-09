@@ -4,7 +4,6 @@ import Image from "next/image";
 import { useActionState, useState, useTransition } from "react";
 import { completeOnboarding, type PlanChoice } from "@/lib/actions/onboarding";
 import { redeemBetaInvite, type ActionState } from "@/lib/actions/beta-invites";
-import { INTEGRATIONS } from "@/lib/integrations";
 import { TRIAL_DAYS } from "@/lib/trial";
 
 const initialInviteState: ActionState = {};
@@ -60,12 +59,11 @@ export function OnboardingWizard() {
   const [step, setStep] = useState(1);
   const [role, setRole] = useState<Role | null>(null);
   const [volume, setVolume] = useState<Volume | null>(null);
-  const [connected, setConnected] = useState<Record<string, boolean>>({});
   const [pending, startTransition] = useTransition();
   const [showInvite, setShowInvite] = useState(false);
   const [inviteState, inviteAction, invitePending] = useActionState(redeemBetaInvite, initialInviteState);
 
-  const canNext = (step === 1 && role) || (step === 2 && volume) || step === 3;
+  const canNext = (step === 1 && role) || (step === 2 && volume);
 
   const recKey: "light" | "heavy" | "team" = role === "manager" ? "team" : volume === "full" || volume === "half" ? "heavy" : "light";
   const rec = RECS[recKey];
@@ -85,7 +83,7 @@ export function OnboardingWizard() {
             <span className="text-[14px] font-bold">HEADLINE.WORLD</span>
           </div>
           <div className="flex items-center gap-3">
-            <div className="font-mono text-[11px] text-text/40">STEP {step} OF 4</div>
+            <div className="font-mono text-[11px] text-text/40">STEP {step} OF 3</div>
             <button onClick={() => setShowInvite((s) => !s)} className="cursor-pointer text-[11.5px] text-accent hover:text-accent/80">
               Have an invite code?
             </button>
@@ -114,7 +112,7 @@ export function OnboardingWizard() {
         )}
 
         <div className="mb-11 flex gap-1.5">
-          {[1, 2, 3, 4].map((n) => (
+          {[1, 2, 3].map((n) => (
             <div key={n} className="h-[3px] flex-1 rounded" style={{ background: n <= step ? "#3fe87a" : "rgba(var(--border-rgb),.1)" }} />
           ))}
         </div>
@@ -176,41 +174,6 @@ export function OnboardingWizard() {
 
         {step === 3 && (
           <>
-            <h1 className="mb-2 text-[30px] tracking-[-.02em]">Bring your world in</h1>
-            <p className="mb-7 text-[14.5px] text-text/55">
-              Connect what you already use — we&apos;ll import contacts, shows and sales. All optional.
-            </p>
-            <div className="grid grid-cols-2 gap-2.5">
-              {INTEGRATIONS.map((ig) => {
-                const on = !!connected[ig.key];
-                return (
-                  <div
-                    key={ig.key}
-                    onClick={() => setConnected((c) => ({ ...c, [ig.key]: !on }))}
-                    className={`flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3.5 hover:border-accent/50 ${
-                      on ? "border-accent/50 bg-accent-soft" : "border-border bg-surface"
-                    }`}
-                  >
-                    <div
-                      className="grid h-8 w-8 flex-none place-items-center rounded-lg font-mono text-[12px] font-bold text-ink"
-                      style={{ background: ig.chipBg }}
-                    >
-                      {ig.chip}
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-[13.5px] font-semibold">{ig.label}</div>
-                      <div className="text-[11px] text-text/45">{ig.sub}</div>
-                    </div>
-                    <div className={`font-mono text-[12px] ${on ? "text-accent" : "text-text/40"}`}>{on ? "CONNECTED" : "CONNECT"}</div>
-                  </div>
-                );
-              })}
-            </div>
-          </>
-        )}
-
-        {step === 4 && (
-          <>
             <h1 className="mb-2 text-[30px] tracking-[-.02em]">Your roadie recommends</h1>
             <p className="mb-7 text-[14.5px] text-text/55">{rec.reason}</p>
             <div className="relative mb-3.5 rounded-2xl border border-accent/45 bg-accent-soft p-6">
@@ -253,7 +216,7 @@ export function OnboardingWizard() {
           </>
         )}
 
-        {step < 4 && (
+        {step < 3 && (
           <div className="mt-9 flex justify-between">
             <div
               onClick={() => step > 1 && setStep(step - 1)}

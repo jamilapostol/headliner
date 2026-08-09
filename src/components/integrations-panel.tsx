@@ -1,57 +1,39 @@
-"use client";
-
-import { useState, useTransition } from "react";
 import { INTEGRATIONS } from "@/lib/integrations";
-import { toggleIntegration } from "@/lib/actions/integrations";
 
-export function IntegrationsPanel({ connected }: { connected: Record<string, boolean> }) {
-  const [optimistic, setOptimistic] = useState<{ key: string; value: boolean } | null>(null);
-  const [, startTransition] = useTransition();
-
-  function toggle(key: string) {
-    if (optimistic) return; // one in-flight toggle at a time — avoids races from rapid clicks
-    const next = !(connected[key] ?? false);
-    setOptimistic({ key, value: next });
-    startTransition(async () => {
-      try {
-        await toggleIntegration(key);
-      } finally {
-        setOptimistic(null);
-      }
-    });
-  }
-
+// Honest roadmap panel — no OAuth exists for these yet, so nothing here
+// pretends to connect. When an integration ships, its tile becomes a real
+// connect flow and this copy goes away.
+export function IntegrationsPanel() {
   return (
     <section className="rounded-card border border-border bg-surface p-5">
       <div className="mb-1 text-[13.5px] font-semibold">Integrations</div>
-      <div className="mb-4 text-[12px] text-text/45">Connect what you use — imports contacts, shows and sales. All optional.</div>
+      <div className="mb-4 text-[12px] text-text/45">
+        On the roadmap — these aren&apos;t live yet, and we&apos;d rather say so than show you a connect button that doesn&apos;t connect.
+        Want one of these first? Tell us at{" "}
+        <a href="mailto:support@headline.world" className="text-accent hover:underline">
+          support@headline.world
+        </a>
+        .
+      </div>
       <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-        {INTEGRATIONS.map((ig) => {
-          const isPending = optimistic?.key === ig.key;
-          const on = isPending ? optimistic!.value : !!connected[ig.key];
-          return (
-            <button
-              key={ig.key}
-              type="button"
-              onClick={() => toggle(ig.key)}
-              disabled={optimistic !== null}
-              className={`flex items-center gap-3 rounded-xl border px-4 py-3.5 text-left transition-colors hover:border-accent/50 disabled:cursor-default ${
-                on ? "border-accent/50 bg-accent-soft" : "border-text/[.08] bg-surface-nested"
-              } ${optimistic && !isPending ? "opacity-50" : "cursor-pointer"}`}
+        {INTEGRATIONS.map((ig) => (
+          <div
+            key={ig.key}
+            className="flex items-center gap-3 rounded-xl border border-text/[.08] bg-surface-nested px-4 py-3.5"
+          >
+            <div
+              className="grid h-8 w-8 flex-none place-items-center rounded-lg font-mono text-[12px] font-bold text-ink opacity-70"
+              style={{ background: ig.chipBg }}
             >
-              <div className="grid h-8 w-8 flex-none place-items-center rounded-lg font-mono text-[12px] font-bold text-ink" style={{ background: ig.chipBg }}>
-                {ig.chip}
-              </div>
-              <div className="flex-1">
-                <div className="text-[13.5px] font-semibold">{ig.label}</div>
-                <div className="text-[11px] text-text/45">{ig.sub}</div>
-              </div>
-              <div className={`font-mono text-[12px] ${on ? "text-accent" : "text-text/40"}`}>
-                {isPending ? "…" : on ? "CONNECTED" : "CONNECT"}
-              </div>
-            </button>
-          );
-        })}
+              {ig.chip}
+            </div>
+            <div className="flex-1">
+              <div className="text-[13.5px] font-semibold">{ig.label}</div>
+              <div className="text-[11px] text-text/45">{ig.sub}</div>
+            </div>
+            <div className="rounded-full border border-border px-2.5 py-1 font-mono text-[10px] tracking-[.08em] text-text/45">SOON</div>
+          </div>
+        ))}
       </div>
     </section>
   );
