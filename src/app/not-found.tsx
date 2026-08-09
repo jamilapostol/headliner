@@ -8,7 +8,7 @@ export default function NotFound() {
         <Image src="/logo.svg" alt="HEADLINE.WORLD" width={28} height={28} />
         <span className="text-[15px] font-bold">HEADLINE.WORLD</span>
       </Link>
-      <div className="mb-2 font-mono text-[13px] tracking-[.1em] text-text/40">404</div>
+      <div className="mb-2 font-sans text-[13px] tracking-[.1em] text-text/40">404</div>
       <h1 className="mb-2 text-[26px] font-semibold tracking-tight">Page not found</h1>
       <p className="mb-7 max-w-[380px] text-[13.5px] text-muted">
         That page doesn&rsquo;t exist, or it moved somewhere we haven&rsquo;t mapped yet.

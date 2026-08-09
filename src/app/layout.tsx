@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Space_Grotesk, Spline_Sans_Mono } from "next/font/google";
+import { Space_Grotesk, Inter } from "next/font/google";
 import { CookieConsentBanner } from "@/components/cookie-consent-banner";
 import "./globals.css";
 
@@ -9,10 +9,10 @@ const spaceGrotesk = Space_Grotesk({
   weight: ["400", "500", "600", "700"],
 });
 
-const splineMono = Spline_Sans_Mono({
-  variable: "--font-spline-mono",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -41,7 +41,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${splineMono.variable} h-full`} suppressHydrationWarning>
+    <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable} h-full`} suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{

@@ -24,10 +24,12 @@ export default function LandingPage() {
       {/* header */}
       <header className="sticky top-0 z-20 border-b border-border bg-canvas/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-[980px] items-center justify-between px-6 py-3.5">
-          <div className="flex items-center gap-2.5">
-            <Image src="/logo.svg" alt="HEADLINE.WORLD" width={26} height={26} />
-            <span className="text-[15px] font-bold tracking-[-.01em]">HEADLINE.WORLD</span>
-            <span className="hidden whitespace-nowrap font-mono text-[11px] tracking-[.04em] text-muted/70 sm:inline">— Book it. Run it. Own it.</span>
+          <div className="flex flex-col items-start gap-0.5">
+            <div className="flex items-center gap-2.5">
+              <Image src="/logo.svg" alt="HEADLINE.WORLD" width={26} height={26} />
+              <span className="text-[15px] font-bold tracking-[-.01em]">HEADLINE.WORLD</span>
+            </div>
+            <span className="hidden text-[10.5px] tracking-[.04em] text-muted/70 sm:block">— Book it. Run it. Own it.</span>
           </div>
           <Link href="/signup" className="rounded-card bg-accent px-4.5 py-2.5 text-[14px] font-semibold text-ink">
             Start free
@@ -38,7 +40,7 @@ export default function LandingPage() {
       {/* hero */}
       <section className="px-6 pb-14 pt-16 text-center sm:pt-20">
         <div className="mx-auto max-w-[760px]">
-          <div className="mb-3.5 font-mono text-[11px] tracking-[.16em] text-accent">FOR INDEPENDENT TOURING MUSICIANS</div>
+          <div className="mb-3.5 font-sans text-[11px] tracking-[.16em] text-accent">FOR INDEPENDENT TOURING MUSICIANS</div>
           <h1 className="mb-4.5 text-[32px] leading-[1.1] tracking-[-.03em] text-balance sm:text-[46px]">
             Run your business
             <br />
@@ -55,7 +57,7 @@ export default function LandingPage() {
               Keep reading ↓
             </a>
           </div>
-          <div className="font-mono text-[11.5px] text-muted/70">Free forever for your first 5 bookings · No card required</div>
+          <div className="font-sans text-[11.5px] text-muted/70">Free forever for your first 5 bookings · No card required</div>
         </div>
       </section>
 
@@ -66,7 +68,7 @@ export default function LandingPage() {
       <section id="benefits" className="px-6 py-16">
         <div className="mx-auto max-w-[980px]">
           <div className="mx-auto mb-8.5 max-w-[540px] text-center">
-            <div className="mb-2.5 font-mono text-[11px] tracking-[.16em] text-accent">HOW IT FEELS</div>
+            <div className="mb-2.5 font-sans text-[11px] tracking-[.16em] text-accent">HOW IT FEELS</div>
             <h2 className="mb-2.5 text-[26px] tracking-[-.02em] text-balance sm:text-[30px]">Less noise in your head. More room for the music.</h2>
             <p className="text-[15px] text-muted">This isn&apos;t just about the admin getting done. It&apos;s about what&apos;s left over when it is.</p>
           </div>
@@ -89,14 +91,14 @@ export default function LandingPage() {
       <section className="border-y border-border bg-surface-nested px-6 py-16">
         <div className="mx-auto max-w-[980px]">
           <div className="mx-auto mb-8.5 max-w-[540px] text-center">
-            <div className="mb-2.5 font-mono text-[11px] tracking-[.16em] text-accent">WHAT&apos;S ACTUALLY IN IT</div>
+            <div className="mb-2.5 font-sans text-[11px] tracking-[.16em] text-accent">WHAT&apos;S ACTUALLY IN IT</div>
             <h2 className="mb-2.5 text-[26px] tracking-[-.02em] sm:text-[30px]">One workspace. Every part of the job.</h2>
             <p className="text-[15px] text-muted">The felt part above comes from what&apos;s built underneath.</p>
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {FEATURES.map((f) => (
               <div key={f.title} className="rounded-card border border-border bg-surface px-5.5 py-5">
-                <div className="mb-2.5 font-mono text-[15px] text-accent">{f.glyph}</div>
+                <div className="mb-2.5 font-sans text-[15px] text-accent">{f.glyph}</div>
                 <h3 className="mb-1.5 text-[14px] font-semibold">{f.title}</h3>
                 <p className="text-[12.5px] leading-[1.6] text-muted">{f.body}</p>
               </div>
@@ -108,7 +110,7 @@ export default function LandingPage() {
       {/* on the road strip */}
       <section className="px-6 py-14">
         <div className="mx-auto max-w-[980px]">
-          <div className="mb-5 text-center font-mono text-[11px] tracking-[.16em] text-accent">ON THE ROAD</div>
+          <div className="mb-5 text-center font-sans text-[11px] tracking-[.16em] text-accent">ON THE ROAD</div>
           <RoadPhotoStrip />
         </div>
       </section>
@@ -119,7 +121,7 @@ export default function LandingPage() {
       <section className="px-6 py-16">
         <div className="mx-auto max-w-[980px]">
           <div className="mb-9 text-left">
-            <div className="mb-2.5 font-mono text-[11px] tracking-[.16em] text-accent">WHY THIS EXISTS</div>
+            <div className="mb-2.5 font-sans text-[11px] tracking-[.16em] text-accent">WHY THIS EXISTS</div>
             <h2 className="text-[26px] tracking-[-.02em] sm:text-[30px]">I built this because I lived it.</h2>
           </div>
           <div className="grid grid-cols-1 items-start gap-9 sm:grid-cols-[260px_1fr]">
@@ -143,7 +145,7 @@ export default function LandingPage() {
               <p className="mb-5.5 text-[16px] leading-[1.75] text-muted">If you&apos;re doing the same thing right now — HEADLINE.WORLD is here to make it easier for you to tour the world, stay organized, and worry free.</p>
               <div className="text-[14px]">
                 Jamil Apostol
-                <span className="block font-mono text-[11px] text-muted/70">Founder, HEADLINE.WORLD</span>
+                <span className="block font-sans text-[11px] text-muted/70">Founder, HEADLINE.WORLD</span>
               </div>
             </div>
           </div>
@@ -160,7 +162,7 @@ export default function LandingPage() {
           {FAQS.map((f) => (
             <div key={f.q} className="border-b border-border py-5.5">
               <h3 className="mb-2.5 flex gap-2.5 text-[16px] font-semibold">
-                <span className="flex-none font-mono text-[14px] text-accent">Q.</span>
+                <span className="flex-none font-sans text-[14px] text-accent">Q.</span>
                 {f.q}
               </h3>
               <p className="pl-6 text-[14.5px] leading-[1.65] text-muted">{f.a}</p>
@@ -185,7 +187,7 @@ export default function LandingPage() {
       <section className="px-6 pb-14">
         <div className="mx-auto max-w-[760px]">
           <div className="rounded-tile border border-border bg-surface px-7.5 py-6.5">
-            <div className="mb-2.5 font-mono text-[11px] tracking-[.16em] text-accent">HOW TO GET IN</div>
+            <div className="mb-2.5 font-sans text-[11px] tracking-[.16em] text-accent">HOW TO GET IN</div>
             <p className="text-[15px] leading-[1.65] text-text">
               HEADLINE.WORLD is invite-only right now. We let people in through invite codes in small batches while we&apos;re still a small team. If you don&apos;t have a code yet, request one below and we&apos;ll follow up when a batch opens.
             </p>
@@ -201,11 +203,11 @@ export default function LandingPage() {
           <a href="mailto:support@headline.world?subject=Beta%20access%20request" className="inline-block rounded-tile bg-accent px-8 py-4 text-[16px] font-semibold text-ink">
             Start free
           </a>
-          <div className="mt-4 font-mono text-[11.5px] text-muted/70">No card required · support@headline.world</div>
+          <div className="mt-4 font-sans text-[11.5px] text-muted/70">No card required · support@headline.world</div>
         </div>
       </section>
 
-      <footer className="pb-12 text-center font-mono text-[10.5px] text-muted/70">
+      <footer className="pb-12 text-center font-sans text-[10.5px] text-muted/70">
         © 2026 HEADLINE.WORLD · By musicians, for musicians ·{" "}
         <a href="https://headline.world" className="underline">
           headline.world

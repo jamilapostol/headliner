@@ -55,10 +55,12 @@ export default async function LandingPage() {
 
         {/* Nav */}
         <div className="relative mx-auto flex w-full max-w-[1100px] items-center gap-4 px-4 py-[18px] sm:gap-7 sm:px-10">
-          <div className="flex items-center gap-2.5">
-            <Image src="/logo.svg" alt="HEADLINE.WORLD" width={28} height={28} />
-            <div className="text-[15px] font-bold">HEADLINE.WORLD</div>
-            <span className="hidden whitespace-nowrap font-mono text-[11px] tracking-[.04em] text-white/40 lg:inline">— Book it. Run it. Own it.</span>
+          <div className="flex flex-col items-start gap-0.5">
+            <div className="flex items-center gap-2.5">
+              <Image src="/logo.svg" alt="HEADLINE.WORLD" width={28} height={28} />
+              <div className="text-[15px] font-bold">HEADLINE.WORLD</div>
+            </div>
+            <span className="hidden text-[10.5px] tracking-[.04em] text-white/40 sm:block">— Book it. Run it. Own it.</span>
           </div>
           <div className="ml-auto flex items-center gap-3 text-[13px] text-white/60 sm:gap-5">
             <span className="hidden cursor-pointer hover:text-text sm:inline">Features</span>
@@ -70,7 +72,7 @@ export default async function LandingPage() {
         </div>
 
         <div className="relative mx-auto mt-auto max-w-[820px] px-4 pt-12 pb-14 text-center sm:px-10 sm:pt-[72px]">
-          <div className="mb-[22px] inline-block rounded-[20px] border border-yellow/30 px-3.5 py-[5px] font-mono text-[11px] tracking-[.14em] text-yellow">
+          <div className="mb-[22px] inline-block rounded-[20px] border border-yellow/30 px-3.5 py-[5px] font-sans text-[11px] tracking-[.14em] text-yellow">
             {c.hero_eyebrow}
           </div>
           <h1 className="mb-[18px] text-[34px] leading-[1.1] tracking-[-.03em] text-balance sm:text-[52px] sm:leading-[1.08]">
@@ -95,7 +97,7 @@ export default async function LandingPage() {
 
       {/* Retires strip */}
       <div className="mx-auto max-w-[900px] px-4 pb-16 text-center sm:px-10">
-        <div className="mb-3.5 font-mono text-[11px] tracking-[.14em] text-white/35">{c.retires_label}</div>
+        <div className="mb-3.5 font-sans text-[11px] tracking-[.14em] text-white/35">{c.retires_label}</div>
         <div className="flex flex-wrap justify-center gap-2.5">
           {REPLACES.map((r) => (
             <div
@@ -117,7 +119,7 @@ export default async function LandingPage() {
         <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
           {benefits.map((b) => (
             <div key={b.title} className="flex gap-4 rounded-tile border border-border bg-surface px-6 py-[22px]">
-              <div className={`flex-none font-mono text-[20px] ${b.color}`}>{b.glyph}</div>
+              <div className={`flex-none font-sans text-[20px] ${b.color}`}>{b.glyph}</div>
               <div>
                 <div className="mb-[7px] text-[16px] font-semibold">{b.title}</div>
                 <div className="text-[13.5px] leading-[1.6] text-white/60 text-pretty">{b.body}</div>
@@ -139,7 +141,7 @@ export default async function LandingPage() {
         <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((f) => (
             <div key={f.title} className="rounded-tile border border-border bg-surface px-6 py-[22px]">
-              <div className={`mb-3 font-mono text-[15px] ${f.color}`}>{f.glyph}</div>
+              <div className={`mb-3 font-sans text-[15px] ${f.color}`}>{f.glyph}</div>
               <div className="mb-[7px] text-[15.5px] font-semibold">{f.title}</div>
               <div className="text-[13px] leading-[1.55] text-white/55 text-pretty">{f.body}</div>
             </div>
@@ -170,8 +172,8 @@ export default async function LandingPage() {
         <Link href="/signup" className="inline-block rounded-[10px] bg-accent px-7 py-[13px] text-[15px] font-semibold text-canvas">
           {c.hero_cta_primary}
         </Link>
-        <div className="mt-10 font-mono text-[11px] text-white/30">{c.footer_copyright}</div>
-        <div className="mt-2.5 flex items-center justify-center gap-4 font-mono text-[11px] text-white/30">
+        <div className="mt-10 font-sans text-[11px] text-white/30">{c.footer_copyright}</div>
+        <div className="mt-2.5 flex items-center justify-center gap-4 font-sans text-[11px] text-white/30">
           <Link href="/privacy" className="hover:text-white/60">
             Privacy Policy
           </Link>
