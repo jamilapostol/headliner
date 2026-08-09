@@ -8,16 +8,19 @@ export function AuthForm({
   mode,
   action,
   referralCode,
+  next,
 }: {
   mode: "login" | "signup";
   action: (prev: AuthState, formData: FormData) => Promise<AuthState>;
   referralCode?: string;
+  next?: string;
 }) {
   const [state, formAction, pending] = useActionState(action, {});
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
       {mode === "signup" && referralCode && <input type="hidden" name="ref" value={referralCode} />}
+      {next && <input type="hidden" name="next" value={next} />}
       {mode === "signup" && (
         <Field label="Name" name="name" type="text" placeholder="Your name" autoComplete="name" />
       )}

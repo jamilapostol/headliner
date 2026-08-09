@@ -24,7 +24,7 @@ export async function isAdminEmail(email: string) {
 // already verified access.
 export async function requireAdmin() {
   const session = await getSession();
-  if (!session) redirect("/login");
+  if (!session) redirect("/login?next=/admin");
   if (!(await isAdminEmail(session.email))) notFound();
   return session;
 }

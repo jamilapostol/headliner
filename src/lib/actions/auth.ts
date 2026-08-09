@@ -76,7 +76,11 @@ export async function logIn(_prev: AuthState, formData: FormData): Promise<AuthS
     const { error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) return { error: "Invalid email or password." };
-    redirect("/app");
+
+    // Honor a ?next= destination (e.g. /admin bounced them here), but only
+    // same-site paths — "//evil.com" would be treated as protocol-relative.
+    const next = String(formData.get("next") ?? "");
+    redirect(next.startsWith("/") && !next.startsWith("//") ? next : "/app");
   });
 }
 
