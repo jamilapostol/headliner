@@ -1,12 +1,12 @@
 import { LegalPage, H2, P, Ul } from "@/components/legal-page";
 
-export const metadata = { title: "Privacy Policy — HEADLINE." };
+export const metadata = { title: "Privacy Policy — HEADLINE.WORLD" };
 
 export default function PrivacyPage() {
   return (
     <LegalPage title="Privacy Policy" updated="July 28, 2026">
       <P>
-        This Privacy Policy explains what information HEADLINE. collects, how we use it, and the choices you have. It
+        This Privacy Policy explains what information HEADLINE.WORLD collects, how we use it, and the choices you have. It
         applies to everyone who uses the Service — artists, managers, and anyone else on a workspace.
       </P>
 
@@ -42,7 +42,7 @@ export default function PrivacyPage() {
       <P>We don’t sell your personal information, and we don’t use your business data to train models for other customers.</P>
 
       <H2>3. Who we share it with</H2>
-      <P>We share data only where it’s needed to run HEADLINE.:</P>
+      <P>We share data only where it’s needed to run HEADLINE.WORLD:</P>
       <Ul>
         <li><strong>Supabase</strong> — hosts our database, handles authentication, and stores uploaded files (contracts, avatars, merch photos).</li>
         <li><strong>Stripe</strong> — processes subscription payments and merch point-of-sale transactions.</li>
@@ -74,11 +74,11 @@ export default function PrivacyPage() {
       </P>
 
       <H2>7. Children’s privacy</H2>
-      <P>HEADLINE. is intended for people running a touring business and isn’t directed at children. We don’t knowingly collect data from anyone under 16.</P>
+      <P>HEADLINE.WORLD is intended for people running a touring business and isn’t directed at children. We don’t knowingly collect data from anyone under 16.</P>
 
       <H2>8. International users</H2>
       <P>
-        HEADLINE. is operated from [Company Country]. If you use the Service from elsewhere, your data will be transferred
+        HEADLINE.WORLD is operated from [Company Country]. If you use the Service from elsewhere, your data will be transferred
         to and processed in that country, which may have different data protection laws than where you live.
       </P>
 

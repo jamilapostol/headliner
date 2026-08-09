@@ -4,7 +4,7 @@
 // throwing, so campaigns stay usable as drafts without an email provider.
 export const resendEnabled = !!process.env.RESEND_API_KEY;
 
-const FROM = process.env.RESEND_FROM_EMAIL || "HEADLINE. <onboarding@resend.dev>";
+const FROM = process.env.RESEND_FROM_EMAIL || "HEADLINE.WORLD <onboarding@resend.dev>";
 const REPLY_TO = process.env.RESEND_REPLY_TO_EMAIL || "support@headline.world";
 
 export async function sendEmail({ to, subject, text }: { to: string; subject: string; text: string }) {

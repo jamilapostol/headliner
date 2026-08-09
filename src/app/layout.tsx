@@ -16,8 +16,8 @@ const splineMono = Spline_Sans_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "HEADLINE.",
-  description: "Your whole career. One soundboard.",
+  title: "HEADLINE.WORLD",
+  description: "Book it. Run it. Own it.",
   manifest: "/manifest.json",
   icons: {
     icon: "/icon-512.png",
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "HEADLINE.",
+    title: "HEADLINE.WORLD",
   },
 };
 

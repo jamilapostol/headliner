@@ -6,7 +6,7 @@ import { BENEFITS, FEATURES } from "@/lib/landing-content";
 import { PhotoBleedHero, PhotoBleedBand, RoadPhotoStrip, HERO_PHOTO, SOUNDCHECK_PHOTO, CROWD_PHOTO } from "@/components/marketing-photos";
 
 export const metadata: Metadata = {
-  title: "HEADLINE. — Run Your Business Like You Run a Soundcheck",
+  title: "HEADLINE.WORLD — Run Your Business Like You Run a Soundcheck",
   description: "Bookings, routing, contracts, merch and money — all in one place, so the only thing you're managing from the green room is the set.",
 };
 
@@ -25,8 +25,9 @@ export default function LandingPage() {
       <header className="sticky top-0 z-20 border-b border-border bg-canvas/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-[980px] items-center justify-between px-6 py-3.5">
           <div className="flex items-center gap-2.5">
-            <Image src="/logo.svg" alt="HEADLINE." width={26} height={26} />
-            <span className="text-[15px] font-bold tracking-[-.01em]">HEADLINE.</span>
+            <Image src="/logo.svg" alt="HEADLINE.WORLD" width={26} height={26} />
+            <span className="text-[15px] font-bold tracking-[-.01em]">HEADLINE.WORLD</span>
+            <span className="hidden whitespace-nowrap font-mono text-[11px] tracking-[.04em] text-muted/70 sm:inline">— Book it. Run it. Own it.</span>
           </div>
           <Link href="/signup" className="rounded-card bg-accent px-4.5 py-2.5 text-[14px] font-semibold text-ink">
             Start free
@@ -137,12 +138,12 @@ export default function LandingPage() {
               </p>
               <p className="mb-4.5 text-[16px] leading-[1.75] text-muted">I looked for something built for how touring actually works, and I couldn&apos;t find it. So I built it myself.</p>
               <p className="mb-4.5 text-[16px] leading-[1.75] text-muted">
-                HEADLINE. exists because I lived this exact mess for over a decade, out on the road, trying to run a career and a business at the same time with nothing built for either.
+                HEADLINE.WORLD exists because I lived this exact mess for over a decade, out on the road, trying to run a career and a business at the same time with nothing built for either.
               </p>
-              <p className="mb-5.5 text-[16px] leading-[1.75] text-muted">If you&apos;re doing the same thing right now — HEADLINE. is here to make it easier for you to tour the world, stay organized, and worry free.</p>
+              <p className="mb-5.5 text-[16px] leading-[1.75] text-muted">If you&apos;re doing the same thing right now — HEADLINE.WORLD is here to make it easier for you to tour the world, stay organized, and worry free.</p>
               <div className="text-[14px]">
                 Jamil Apostol
-                <span className="block font-mono text-[11px] text-muted/70">Founder, HEADLINE.</span>
+                <span className="block font-mono text-[11px] text-muted/70">Founder, HEADLINE.WORLD</span>
               </div>
             </div>
           </div>
@@ -186,7 +187,7 @@ export default function LandingPage() {
           <div className="rounded-tile border border-border bg-surface px-7.5 py-6.5">
             <div className="mb-2.5 font-mono text-[11px] tracking-[.16em] text-accent">HOW TO GET IN</div>
             <p className="text-[15px] leading-[1.65] text-text">
-              HEADLINE. is invite-only right now. We let people in through invite codes in small batches while we&apos;re still a small team. If you don&apos;t have a code yet, request one below and we&apos;ll follow up when a batch opens.
+              HEADLINE.WORLD is invite-only right now. We let people in through invite codes in small batches while we&apos;re still a small team. If you don&apos;t have a code yet, request one below and we&apos;ll follow up when a batch opens.
             </p>
           </div>
         </div>
@@ -205,7 +206,7 @@ export default function LandingPage() {
       </section>
 
       <footer className="pb-12 text-center font-mono text-[10.5px] text-muted/70">
-        © 2026 HEADLINE. · By musicians, for musicians ·{" "}
+        © 2026 HEADLINE.WORLD · By musicians, for musicians ·{" "}
         <a href="https://headline.world" className="underline">
           headline.world
         </a>

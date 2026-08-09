@@ -48,6 +48,6 @@ export function RoadPhotoStrip() {
   );
 }
 
-export const HERO_PHOTO: Band = { src: "/landing-hero.jpg", alt: "Fireworks over the stage at a HEADLINE. artist's show", position: "50% 38%", priority: true };
+export const HERO_PHOTO: Band = { src: "/landing-hero.jpg", alt: "Fireworks over the stage at a HEADLINE.WORLD artist's show", position: "50% 38%", priority: true };
 export const SOUNDCHECK_PHOTO: Band = { src: "/landing-soundcheck.jpg", alt: "Mic stand at soundcheck, crowd in the distance", position: "72% 38%" };
 export const CROWD_PHOTO: Band = { src: "/landing-crowd.jpg", alt: "Confetti over the crowd at a show", position: "50% 68%" };

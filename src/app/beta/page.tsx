@@ -5,8 +5,8 @@ import { BENEFITS, FEATURES } from "@/lib/landing-content";
 import { PhotoBleedHero, PhotoBleedBand, RoadPhotoStrip, HERO_PHOTO, SOUNDCHECK_PHOTO, CROWD_PHOTO } from "@/components/marketing-photos";
 
 export const metadata: Metadata = {
-  title: "HEADLINE. — Join the Beta",
-  description: "HEADLINE. is invite-only right now. Here's what you get, and how to redeem your invite code.",
+  title: "HEADLINE.WORLD — Join the Beta",
+  description: "HEADLINE.WORLD is invite-only right now. Here's what you get, and how to redeem your invite code.",
 };
 
 const STEPS = [
@@ -44,8 +44,9 @@ export default function BetaPage() {
       <header className="sticky top-0 z-20 border-b border-border bg-canvas/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-[980px] items-center justify-between px-6 py-3.5">
           <div className="flex items-center gap-2.5">
-            <Image src="/logo.svg" alt="HEADLINE." width={26} height={26} />
-            <span className="text-[15px] font-bold tracking-[-.01em]">HEADLINE.</span>
+            <Image src="/logo.svg" alt="HEADLINE.WORLD" width={26} height={26} />
+            <span className="text-[15px] font-bold tracking-[-.01em]">HEADLINE.WORLD</span>
+            <span className="hidden whitespace-nowrap font-mono text-[11px] tracking-[.04em] text-muted/70 sm:inline">— Book it. Run it. Own it.</span>
           </div>
           <a href="#steps" className="rounded-card bg-accent px-4.5 py-2.5 text-[14px] font-semibold text-ink">
             I have a code
@@ -61,7 +62,7 @@ export default function BetaPage() {
             You&apos;re invited to run your <span className="text-accent">whole career</span> from one place.
           </h1>
           <p className="mx-auto mb-7 max-w-[560px] text-[17px] text-muted text-balance">
-            HEADLINE. is in a small, invite-only beta right now. If someone gave you a code, you&apos;re a few minutes from full access — free, no card, nothing to cancel.
+            HEADLINE.WORLD is in a small, invite-only beta right now. If someone gave you a code, you&apos;re a few minutes from full access — free, no card, nothing to cancel.
           </p>
           <div className="mb-3.5 flex flex-wrap items-center justify-center gap-3">
             <a href="#steps" className="rounded-tile bg-accent px-8 py-4 text-[16px] font-semibold text-ink">
@@ -176,7 +177,7 @@ export default function BetaPage() {
       </section>
 
       <footer className="pb-12 text-center font-mono text-[10.5px] text-muted/70">
-        © 2026 HEADLINE. · By musicians, for musicians ·{" "}
+        © 2026 HEADLINE.WORLD · By musicians, for musicians ·{" "}
         <a href="https://headline.world" className="underline">
           headline.world
         </a>

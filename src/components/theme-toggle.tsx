@@ -33,7 +33,7 @@ export function ThemeToggle() {
   return (
     <div className="rounded-card border border-border bg-surface px-5 py-[18px]">
       <div className="mb-1 text-[14.5px] font-semibold">Appearance</div>
-      <div className="mb-4 text-[12.5px] text-text/50">Choose how HEADLINE. looks on this device.</div>
+      <div className="mb-4 text-[12.5px] text-text/50">Choose how HEADLINE.WORLD looks on this device.</div>
       <div className="flex gap-2">
         {(
           [

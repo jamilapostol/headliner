@@ -81,8 +81,8 @@ export function OnboardingWizard() {
       <div className="w-full max-w-[640px] box-border px-8 pt-9 pb-[60px]">
         <div className="mb-9 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <Image src="/logo.svg" alt="HEADLINE." width={26} height={26} />
-            <span className="text-[14px] font-bold">HEADLINE.</span>
+            <Image src="/logo.svg" alt="HEADLINE.WORLD" width={26} height={26} />
+            <span className="text-[14px] font-bold">HEADLINE.WORLD</span>
           </div>
           <div className="flex items-center gap-3">
             <div className="font-mono text-[11px] text-text/40">STEP {step} OF 4</div>
@@ -122,7 +122,7 @@ export function OnboardingWizard() {
         {step === 1 && (
           <>
             <h1 className="mb-2 text-[30px] tracking-[-.02em]">Who&apos;s running this show?</h1>
-            <p className="mb-7 text-[14.5px] text-text/55">We&apos;ll shape HEADLINE. around how you work.</p>
+            <p className="mb-7 text-[14.5px] text-text/55">We&apos;ll shape HEADLINE.WORLD around how you work.</p>
             <div className="flex flex-col gap-2.5">
               {ROLES.map((r) => {
                 const c = radioClasses(role === r.key);

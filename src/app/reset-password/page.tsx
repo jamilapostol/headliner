@@ -15,8 +15,8 @@ export default async function ResetPasswordPage() {
       <ClosePageButton />
       <div className="w-full max-w-[380px]">
         <Link href="/" className="mb-8 flex items-center justify-center gap-2.5">
-          <Image src="/logo.svg" alt="HEADLINE." width={28} height={28} />
-          <span className="text-[15px] font-bold">HEADLINE.</span>
+          <Image src="/logo.svg" alt="HEADLINE.WORLD" width={28} height={28} />
+          <span className="text-[15px] font-bold">HEADLINE.WORLD</span>
         </Link>
         {user ? (
           <>
