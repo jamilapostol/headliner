@@ -2,6 +2,10 @@ import { requireWorkspace } from "@/lib/workspace";
 import { db } from "@/lib/db";
 import { BookingsBoard, type BookingDTO } from "@/components/bookings-board";
 
+// Roadie AI drafts (server action invoked from this route) can take longer
+// than the default serverless limit.
+export const maxDuration = 60;
+
 export default async function BookingsPage() {
   const { workspace } = await requireWorkspace();
   const bookings = await db.booking.findMany({

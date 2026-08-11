@@ -4,6 +4,10 @@ import { db } from "@/lib/db";
 import { planAtLeast } from "@/lib/plan-limits";
 import { ContractsView, type ContractDTO } from "@/components/contracts-view";
 
+// Roadie AI contract review (server action invoked from this route) downloads
+// and analyzes the uploaded document — allow more than the default limit.
+export const maxDuration = 60;
+
 export default async function ContractsPage() {
   const { workspace } = await requireWorkspace();
   if (!planAtLeast(workspace.plan, "touring")) redirect("/app/billing?locked=contracts");

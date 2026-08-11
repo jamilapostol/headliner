@@ -1,7 +1,7 @@
-// Roadie AI — deterministic, template-based "AI" for the MVP so these
-// features work end-to-end without an external LLM key. Swap the bodies of
-// these two functions for real Claude calls behind /api/ai when ready; the
-// call sites (bookings drawer, contracts panel) don't need to change.
+// Roadie AI fallbacks — deterministic templates used only when
+// ANTHROPIC_API_KEY is unset (see src/lib/claude.ts). With a key configured,
+// src/lib/actions/ai.ts makes real Claude calls instead and these are never
+// rendered to users.
 
 export function planUnlocksAI(plan: string) {
   return plan === "touring" || plan === "team";
