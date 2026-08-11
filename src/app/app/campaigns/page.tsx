@@ -5,6 +5,9 @@ import { resendEnabled } from "@/lib/resend";
 import { planAtLeast } from "@/lib/plan-limits";
 import { CampaignsView, type CampaignDTO, type AutomationDTO } from "@/components/campaigns-view";
 
+// Campaign sends fan out ~100 emails per HTTP call; give the action headroom.
+export const maxDuration = 60;
+
 const FAN_TIERS = ["VIP", "Patron", "Donor", "Fan"] as const;
 
 export default async function CampaignsPage() {
@@ -26,6 +29,7 @@ export default async function CampaignsPage() {
     id: c.id,
     name: c.name,
     subject: c.subject,
+    body: c.body,
     audienceTier: c.audienceTier,
     status: c.status,
     recipientCount: c.recipientCount,

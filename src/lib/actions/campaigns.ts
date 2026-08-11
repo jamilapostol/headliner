@@ -3,26 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth";
-import { resendEnabled, sendEmail } from "@/lib/resend";
+import { resendEnabled, sendEmail, sendEmailBatch, type OutgoingEmail } from "@/lib/resend";
 import { withErrorLog, withErrorState } from "@/lib/action-error";
 import { signFanId } from "@/lib/unsubscribe-token";
 import { CAMPAIGN_RECIPIENT_CAP } from "@/lib/plan-limits";
 import { requireMinPlan } from "@/lib/plan-limits-server";
 
 type FanTier = "VIP" | "Patron" | "Donor" | "Fan";
-
-export async function toggleAutomation(automationId: string) {
-  return withErrorLog("toggleAutomation", async () => {
-    const session = await getSession();
-    if (!session) return;
-
-    const automation = await db.automation.findUnique({ where: { id: automationId } });
-    if (!automation || automation.workspaceId !== session.workspaceId) return;
-
-    await db.automation.update({ where: { id: automationId }, data: { enabled: !automation.enabled } });
-    revalidatePath("/app/campaigns");
-  });
-}
 
 function audienceWhere(workspaceId: string, audienceTier: string) {
   return {
@@ -31,6 +18,11 @@ function audienceWhere(workspaceId: string, audienceTier: string) {
     email: { not: null },
     ...(audienceTier !== "all" ? { tier: audienceTier as FanTier } : {}),
   };
+}
+
+function unsubscribeFooter(fanId: string) {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  return `\n\n—\nUnsubscribe: ${baseUrl}/unsubscribe/${fanId}?t=${signFanId(fanId)}`;
 }
 
 export async function createCampaign(formData: FormData) {
@@ -63,6 +55,76 @@ export async function createCampaign(formData: FormData) {
   });
 }
 
+export async function updateCampaign(formData: FormData): Promise<{ error?: string }> {
+  return withErrorState("updateCampaign", async () => {
+    const session = await getSession();
+    if (!session) return { error: "Not signed in." };
+
+    const id = String(formData.get("id") ?? "");
+    const campaign = await db.campaign.findUnique({ where: { id } });
+    if (!campaign || campaign.workspaceId !== session.workspaceId) return { error: "Campaign not found." };
+    if (campaign.status !== "Draft") return { error: "Only drafts can be edited." };
+
+    const name = String(formData.get("name") ?? "").trim();
+    const subject = String(formData.get("subject") ?? "").trim();
+    const body = String(formData.get("body") ?? "").trim();
+    const audienceTier = String(formData.get("audienceTier") ?? "all");
+    if (!name || !subject || !body) return { error: "All fields are required." };
+
+    const recipientCount = await db.fan.count({ where: audienceWhere(session.workspaceId, audienceTier) });
+
+    await db.campaign.update({
+      where: { id },
+      data: {
+        name,
+        subject,
+        body,
+        audienceTier: audienceTier !== "all" ? (audienceTier as FanTier) : null,
+        recipientCount,
+      },
+    });
+    revalidatePath("/app/campaigns");
+    return {};
+  });
+}
+
+export async function deleteCampaign(campaignId: string): Promise<{ error?: string }> {
+  return withErrorState("deleteCampaign", async () => {
+    const session = await getSession();
+    if (!session) return { error: "Not signed in." };
+
+    const campaign = await db.campaign.findUnique({ where: { id: campaignId } });
+    if (!campaign || campaign.workspaceId !== session.workspaceId) return { error: "Campaign not found." };
+    if (campaign.status === "Sent" || campaign.status === "Sending") {
+      return { error: "Sent campaigns are part of your history and can't be deleted." };
+    }
+
+    await db.campaign.delete({ where: { id: campaignId } });
+    revalidatePath("/app/campaigns");
+    return {};
+  });
+}
+
+// Sends the campaign to the signed-in user only — proof of what fans will
+// receive (including a sample unsubscribe footer) before the real send.
+export async function sendTestCampaign(campaignId: string): Promise<{ error?: string; success?: string }> {
+  return withErrorState("sendTestCampaign", async () => {
+    const session = await getSession();
+    if (!session) return { error: "Not signed in." };
+    if (!resendEnabled) return { error: "No email provider connected. Add RESEND_API_KEY to send." };
+
+    const campaign = await db.campaign.findUnique({ where: { id: campaignId } });
+    if (!campaign || campaign.workspaceId !== session.workspaceId) return { error: "Campaign not found." };
+
+    await sendEmail({
+      to: session.email,
+      subject: `[Test] ${campaign.subject}`,
+      text: `${campaign.body}\n\n—\n(Test send — fans will get a working unsubscribe link here.)`,
+    });
+    return { success: `Test sent to ${session.email}` };
+  });
+}
+
 export async function sendCampaign(campaignId: string): Promise<{ error?: string; sent?: number }> {
   return withErrorState("sendCampaign", async () => {
     const session = await getSession();
@@ -85,29 +147,27 @@ export async function sendCampaign(campaignId: string): Promise<{ error?: string
     // campaign still goes out to as many fans as their plan allows.
     const cap = CAMPAIGN_RECIPIENT_CAP[workspace.plan] ?? Infinity;
     const fans = allFans.slice(0, cap);
+    if (fans.length === 0) return { error: "No subscribed fans with an email in this audience." };
 
     await db.campaign.update({ where: { id: campaignId }, data: { status: "Sending" } });
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-    let sent = 0;
-    let failed = 0;
-    for (const fan of fans) {
-      if (!fan.email) continue;
-      const footer = `\n\n—\nUnsubscribe: ${baseUrl}/unsubscribe/${fan.id}?t=${signFanId(fan.id)}`;
-      try {
-        await sendEmail({ to: fan.email, subject: campaign.subject, text: campaign.body + footer });
-        sent++;
-      } catch {
-        failed++;
-      }
-    }
+    const messages: OutgoingEmail[] = fans
+      .filter((f) => f.email)
+      .map((fan) => ({
+        to: fan.email as string,
+        subject: campaign.subject,
+        text: campaign.body + unsubscribeFooter(fan.id),
+      }));
+
+    const { sent, failed } = await sendEmailBatch(messages);
 
     await db.campaign.update({
       where: { id: campaignId },
-      data: { status: failed > 0 && sent === 0 ? "Failed" : "Sent", sentAt: new Date(), recipientCount: sent },
+      data: { status: sent === 0 && failed > 0 ? "Failed" : "Sent", sentAt: new Date(), recipientCount: sent },
     });
 
     revalidatePath("/app/campaigns");
+    if (sent === 0) return { error: "Sending failed — check the server logs and your Resend dashboard." };
     return { sent };
   });
 }
