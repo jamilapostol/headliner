@@ -55,23 +55,18 @@ const STEPS = [
   },
   {
     n: "2",
-    title: "Create your free account",
-    body: "Head to sign-up and create an account with your email. No card required — this step is the same whether or not you have a code yet.",
+    title: "Enter it on the sign-up page",
+    body: "Your code is the first field on the form — type it exactly as given, alongside your name, email and password. Registration is closed without one.",
   },
   {
     n: "3",
-    title: "Click \"Have an invite code?\"",
-    body: "Once you're in the setup wizard, you'll see this link at the top of every step. Click it to reveal the redemption box.",
+    title: "Confirm your email",
+    body: "We'll send a confirmation link the moment you sign up. Click it, then log in.",
   },
   {
     n: "4",
-    title: "Enter your code and redeem",
-    body: "Type in your BETA- code exactly as given and hit Redeem. It's checked instantly against our records.",
-  },
-  {
-    n: "5",
     title: "You're in — full access, on us",
-    body: "Redeeming a valid code unlocks full Pro-tier access for as long as you're in the beta. No billing, nothing to cancel later.",
+    body: "A valid code unlocks full access for as long as you're in the beta. No card, no billing, nothing to cancel later.",
   },
 ];
 
@@ -205,7 +200,7 @@ export default async function BetaPage() {
         <div className="mx-auto max-w-[720px]">
           <div className="mb-9 text-center">
             <div className="mb-2.5 font-sans text-[11px] tracking-[.16em] text-accent">HOW TO JOIN</div>
-            <h2 className="text-[26px] tracking-[-.02em] sm:text-[30px]">Redeeming your invite code takes about two minutes.</h2>
+            <h2 className="text-[26px] tracking-[-.02em] sm:text-[30px]">Claiming your invite takes about two minutes.</h2>
           </div>
           <div className="flex flex-col gap-3">
             {STEPS.map((s) => (
@@ -226,9 +221,9 @@ export default async function BetaPage() {
 
           <div className="mt-9 text-center">
             <Link href="/signup" className="inline-block rounded-tile bg-accent px-8 py-4 text-[16px] font-semibold text-ink">
-              Create your free account
+              Claim your invite
             </Link>
-            <div className="mt-3 font-sans text-[11.5px] text-muted/70">Then look for &quot;Have an invite code?&quot; in setup</div>
+            <div className="mt-3 font-sans text-[11.5px] text-muted/70">Your BETA- code is the first field on the form</div>
           </div>
         </div>
       </section>
@@ -253,7 +248,7 @@ export default async function BetaPage() {
         <h2 className="mb-2.5 text-[22px] tracking-[-.02em] sm:text-[28px]">The van is packed. Is your business?</h2>
         <p className="mb-6 text-[14px] text-muted">Set up your first tour in under ten minutes.</p>
         <a href="#steps" className="inline-block rounded-tile bg-accent px-8 py-4 text-[16px] font-semibold text-ink">
-          Redeem your invite code
+          Claim your invite
         </a>
       </section>
 

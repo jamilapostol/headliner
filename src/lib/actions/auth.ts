@@ -15,6 +15,7 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
     const name = String(formData.get("name") ?? "").trim();
     const email = String(formData.get("email") ?? "").trim().toLowerCase();
     const password = String(formData.get("password") ?? "");
+    const code = String(formData.get("code") ?? "").trim().toUpperCase();
 
     if (!name || !email || !password) {
       return { error: "All fields are required." };
@@ -27,6 +28,23 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
     const ipLimit = await checkRateLimit(`signup:ip:${ip}`, { max: 8, windowMs: 60 * 60 * 1000 });
     if (!ipLimit.ok) return { error: TOO_MANY_ATTEMPTS };
 
+    // Invite gate. Registration is closed during the private beta: without a
+    // valid code we stop here, before touching Supabase Auth — so a bot
+    // guessing codes can never create an auth user, only burn rate limit.
+    // A separate per-IP budget on *code guesses* is much tighter than the
+    // signup budget, since a legitimate person types their code correctly
+    // on the first or second try.
+    if (!code) return { error: "HEADLINE.WORLD is invite-only right now. Enter your invite code to continue." };
+
+    const guessLimit = await checkRateLimit(`signup:code:${ip}`, { max: 5, windowMs: 60 * 60 * 1000 });
+    if (!guessLimit.ok) return { error: TOO_MANY_ATTEMPTS };
+
+    const invite = await db.betaInvite.findUnique({ where: { code } });
+    if (!invite || !invite.active) return { error: "That invite code isn't valid." };
+    if (invite.maxUses !== null && invite.usedCount >= invite.maxUses) {
+      return { error: "That invite code has already been fully redeemed." };
+    }
+
     const supabase = await createClient();
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -37,17 +55,40 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
     if (error) return { error: error.message };
     if (!data.user) return { error: "Could not create your account. Please try again." };
 
+    const userId = data.user.id;
     const refCode = String(formData.get("ref") ?? "").trim();
     const referrer = refCode ? await db.workspace.findUnique({ where: { id: refCode }, select: { id: true } }) : null;
 
-    await db.workspace.create({
-      data: {
-        name,
-        plan: "free",
-        referredByWorkspaceId: referrer?.id,
-        memberships: { create: { userId: data.user.id, role: "artist", acceptedAt: new Date() } },
-      },
-    });
+    // Consume the invite and provision the workspace together — a crash
+    // between the two would either burn a use with no workspace or hand out
+    // a beta workspace for free. The conditional increment (active + under
+    // maxUses) makes the check-then-use race-safe: two requests redeeming the
+    // last seat at once means the loser's update matches no rows and throws,
+    // rolling the whole transaction back.
+    try {
+      await db.$transaction(async (tx) => {
+        const claimed = await tx.betaInvite.updateMany({
+          where: {
+            code,
+            active: true,
+            ...(invite.maxUses !== null ? { usedCount: { lt: invite.maxUses } } : {}),
+          },
+          data: { usedCount: { increment: 1 } },
+        });
+        if (claimed.count === 0) throw new Error("invite no longer available");
+
+        await tx.workspace.create({
+          data: {
+            name,
+            plan: "beta",
+            referredByWorkspaceId: referrer?.id,
+            memberships: { create: { userId, role: "artist", acceptedAt: new Date() } },
+          },
+        });
+      });
+    } catch {
+      return { error: "That invite code was just fully redeemed. Ask us for a new one." };
+    }
 
     if (!data.session) {
       // Email confirmation is required by the Supabase project — no session

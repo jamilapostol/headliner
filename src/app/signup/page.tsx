@@ -3,8 +3,10 @@ import { AuthForm } from "@/components/auth-form";
 import { ClosePageButton } from "@/components/close-page-button";
 import { signUp } from "@/lib/actions/auth";
 
-export default async function SignupPage({ searchParams }: { searchParams: Promise<{ ref?: string }> }) {
-  const { ref } = await searchParams;
+export default async function SignupPage({ searchParams }: { searchParams: Promise<{ ref?: string; code?: string }> }) {
+  // ?code= lets an invite link prefill the field, so someone who got a code
+  // by DM doesn't have to retype it.
+  const { ref, code } = await searchParams;
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-canvas px-6 text-text" data-theme="dark">
@@ -13,11 +15,11 @@ export default async function SignupPage({ searchParams }: { searchParams: Promi
         <div className="mb-8 flex justify-center">
           <BrandLockup size={28} centered href="/" />
         </div>
-        <h1 className="mb-1 text-center text-[26px] font-semibold tracking-tight">Start free</h1>
+        <h1 className="mb-1 text-center text-[26px] font-semibold tracking-tight">Claim your invite</h1>
         <p className="mb-7 text-center text-[13.5px] text-muted">
-          Your first 5 bookings are on us. No card required.
+          Private beta — full access, no card required.
         </p>
-        <AuthForm mode="signup" action={signUp} referralCode={ref} />
+        <AuthForm mode="signup" action={signUp} referralCode={ref} inviteCode={code} />
       </div>
     </div>
   );

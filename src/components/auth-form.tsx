@@ -8,11 +8,13 @@ export function AuthForm({
   mode,
   action,
   referralCode,
+  inviteCode,
   next,
 }: {
   mode: "login" | "signup";
   action: (prev: AuthState, formData: FormData) => Promise<AuthState>;
   referralCode?: string;
+  inviteCode?: string;
   next?: string;
 }) {
   const [state, formAction, pending] = useActionState(action, {});
@@ -22,7 +24,18 @@ export function AuthForm({
       {mode === "signup" && referralCode && <input type="hidden" name="ref" value={referralCode} />}
       {next && <input type="hidden" name="next" value={next} />}
       {mode === "signup" && (
-        <Field label="Name" name="name" type="text" placeholder="Your name" autoComplete="name" />
+        <>
+          <Field
+            label="Invite code"
+            name="code"
+            type="text"
+            placeholder="BETA-XXXXXXXX"
+            autoComplete="off"
+            defaultValue={inviteCode}
+            hint="HEADLINE.WORLD is invite-only during the beta."
+          />
+          <Field label="Name" name="name" type="text" placeholder="Your name" autoComplete="name" />
+        </>
       )}
       <Field label="Email" name="email" type="email" placeholder="you@band.com" autoComplete="email" />
       <Field
@@ -78,12 +91,16 @@ export function Field({
   type,
   placeholder,
   autoComplete,
+  defaultValue,
+  hint,
 }: {
   label: string;
   name: string;
   type: string;
   placeholder: string;
   autoComplete: string;
+  defaultValue?: string;
+  hint?: string;
 }) {
   return (
     <label className="flex flex-col gap-1.5">
@@ -94,8 +111,10 @@ export function Field({
         required
         placeholder={placeholder}
         autoComplete={autoComplete}
+        defaultValue={defaultValue}
         className="rounded-[10px] border border-border bg-surface px-3.5 py-2.5 text-[14px] text-text outline-none focus:border-accent/50"
       />
+      {hint && <span className="text-[11.5px] text-muted/70">{hint}</span>}
     </label>
   );
 }
