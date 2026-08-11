@@ -5,6 +5,7 @@ import { LandingPricing } from "@/components/landing-pricing";
 import { db } from "@/lib/db";
 import { isPagePublic } from "@/lib/web-pages";
 import { ComingSoon } from "@/components/coming-soon";
+import { BrandLockup } from "@/components/brand-lockup";
 
 const REPLACES = ["Spreadsheets", "Notes app", "HubSpot", "Dropbox folders", "Group texts", "Sticky notes on the dash"];
 
@@ -59,13 +60,7 @@ export default async function LandingPage() {
 
         {/* Nav */}
         <div className="relative mx-auto flex w-full max-w-[1100px] items-center gap-4 px-4 py-[18px] sm:gap-7 sm:px-10">
-          <div className="flex flex-col items-start gap-0.5">
-            <div className="flex items-center gap-2.5">
-              <Image src="/logo.svg" alt="HEADLINE.WORLD" width={28} height={28} />
-              <div className="text-[15px] font-bold">HEADLINE.WORLD</div>
-            </div>
-            <span className="hidden text-[10.5px] tracking-[.04em] text-white/40 sm:block">— Book it. Run it. Own it.</span>
-          </div>
+          <BrandLockup size={28} />
           <div className="ml-auto flex items-center gap-3 text-[13px] text-white/60 sm:gap-5">
             <span className="hidden cursor-pointer hover:text-text sm:inline">Features</span>
             <span className="hidden cursor-pointer hover:text-text sm:inline">Pricing</span>

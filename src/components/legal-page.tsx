@@ -1,14 +1,13 @@
-import Image from "next/image";
 import Link from "next/link";
+import { BrandLockup } from "@/components/brand-lockup";
 
 export function LegalPage({ title, updated, children }: { title: string; updated: string; children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-canvas px-4 py-12 text-text sm:px-10 sm:py-16" data-theme="dark">
       <div className="mx-auto max-w-[720px]">
-        <Link href="/" className="mb-10 flex items-center gap-2.5">
-          <Image src="/logo.svg" alt="HEADLINE.WORLD" width={26} height={26} />
-          <span className="text-[14px] font-bold">HEADLINE.WORLD</span>
-        </Link>
+        <div className="mb-10">
+          <BrandLockup href="/" />
+        </div>
 
         <h1 className="mb-2 text-[30px] tracking-[-.02em] sm:text-[36px]">{title}</h1>
         <div className="mb-10 font-mono text-[11.5px] text-white/40">Last updated {updated}</div>

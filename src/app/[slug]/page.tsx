@@ -1,8 +1,7 @@
-import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { db } from "@/lib/db";
+import { BrandLockup } from "@/components/brand-lockup";
 
 // Renders admin-created pages (kind "custom") at /<slug>. Static routes
 // (/landing, /beta, …) always win over this dynamic segment, and private or
@@ -30,10 +29,7 @@ export default async function CustomPage({ params }: { params: Promise<{ slug: s
     <div className="min-h-screen bg-canvas text-text" data-theme="dark">
       <header className="sticky top-0 z-20 border-b border-border bg-canvas/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-[980px] items-center justify-between px-6 py-3.5">
-          <Link href="/" className="flex items-center gap-2.5">
-            <Image src="/logo.svg" alt="HEADLINE.WORLD" width={26} height={26} />
-            <span className="text-[15px] font-bold tracking-[-.01em]">HEADLINE.WORLD</span>
-          </Link>
+          <BrandLockup href="/" />
         </div>
       </header>
       <main className="mx-auto max-w-[720px] px-6 py-16">

@@ -6,6 +6,7 @@ import { BENEFITS, FEATURES } from "@/lib/landing-content";
 import { PhotoBleedHero, PhotoBleedBand, RoadPhotoStrip, HERO_PHOTO, SOUNDCHECK_PHOTO, CROWD_PHOTO } from "@/components/marketing-photos";
 import { isPagePublic } from "@/lib/web-pages";
 import { ComingSoon } from "@/components/coming-soon";
+import { BrandLockup } from "@/components/brand-lockup";
 
 export async function generateMetadata(): Promise<Metadata> {
   if (!(await isPagePublic("landing"))) return { title: "HEADLINE.WORLD" };
@@ -31,13 +32,7 @@ export default async function LandingPage() {
       {/* header */}
       <header className="sticky top-0 z-20 border-b border-border bg-canvas/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-[980px] items-center justify-between px-6 py-3.5">
-          <div className="flex flex-col items-start gap-0.5">
-            <div className="flex items-center gap-2.5">
-              <Image src="/logo.svg" alt="HEADLINE.WORLD" width={26} height={26} />
-              <span className="text-[15px] font-bold tracking-[-.01em]">HEADLINE.WORLD</span>
-            </div>
-            <span className="hidden text-[10.5px] tracking-[.04em] text-muted/70 sm:block">— Book it. Run it. Own it.</span>
-          </div>
+          <BrandLockup />
           <Link href="/signup" className="rounded-card bg-accent px-4.5 py-2.5 text-[14px] font-semibold text-ink">
             Start free
           </Link>

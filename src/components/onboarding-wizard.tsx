@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { BrandLockup } from "@/components/brand-lockup";
 import { useActionState, useState, useTransition } from "react";
 import { completeOnboarding, type PlanChoice } from "@/lib/actions/onboarding";
 import { redeemBetaInvite, type ActionState } from "@/lib/actions/beta-invites";
@@ -78,10 +78,7 @@ export function OnboardingWizard() {
     <div className="flex min-h-screen flex-col items-center">
       <div className="w-full max-w-[640px] box-border px-8 pt-9 pb-[60px]">
         <div className="mb-9 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <Image src="/logo.svg" alt="HEADLINE.WORLD" width={26} height={26} />
-            <span className="text-[14px] font-bold">HEADLINE.WORLD</span>
-          </div>
+          <BrandLockup />
           <div className="flex items-center gap-3">
             <div className="font-mono text-[11px] text-text/40">STEP {step} OF 3</div>
             <button onClick={() => setShowInvite((s) => !s)} className="cursor-pointer text-[11.5px] text-accent hover:text-accent/80">
