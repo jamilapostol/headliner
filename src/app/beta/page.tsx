@@ -14,6 +14,38 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+// Mirrors the (currently private) home page — the tools HEADLINE.WORLD replaces.
+const RETIRES = ["Spreadsheets", "Notes app", "HubSpot", "Dropbox folders", "Group texts", "Sticky notes on the dash"];
+
+// The concrete-outcome benefits from the home page — what actually changes,
+// as opposed to the "how it feels" set above the features.
+const OUTCOMES = [
+  {
+    glyph: "♪",
+    color: "text-accent",
+    title: "Tour like you've got a team behind you",
+    body: "Booking, routing, contracts and settlements in one place — so a solo artist runs their career at the same level as an act with a full crew.",
+  },
+  {
+    glyph: "✓",
+    color: "text-yellow",
+    title: "Say yes to more shows",
+    body: "No more holds lost to a forgotten follow-up. Every lead stays visible until it's booked, paid, or dead — nothing slips through a group text again.",
+  },
+  {
+    glyph: "◆",
+    color: "text-blue",
+    title: "Never leave money on the table",
+    body: "Every guarantee, deposit and settlement tracked by show. Know exactly what you're owed before you load out — not after tax season.",
+  },
+  {
+    glyph: "☾",
+    color: "text-purple",
+    title: "Actually enjoy the road",
+    body: "Day sheets, hotel confirmations and merch counts synced to your phone — so tour day feels like the reward it's supposed to be, not another spreadsheet.",
+  },
+];
+
 const STEPS = [
   {
     n: "1",
@@ -107,6 +139,20 @@ export default async function BetaPage() {
         </div>
       </section>
 
+      {/* retires strip — the tools this replaces */}
+      <section className="px-6 pb-16">
+        <div className="mx-auto max-w-[900px] text-center">
+          <div className="mb-3.5 font-sans text-[11px] tracking-[.16em] text-muted/60">RETIRES</div>
+          <div className="flex flex-wrap justify-center gap-2.5">
+            {RETIRES.map((r) => (
+              <div key={r} className="rounded-[20px] border border-border px-3.5 py-1.5 text-[12.5px] text-muted line-through decoration-orange/60">
+                {r}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* features */}
       <section className="border-y border-border bg-surface-nested px-6 py-16">
         <div className="mx-auto max-w-[980px]">
@@ -121,6 +167,28 @@ export default async function BetaPage() {
                 <div className="mb-2.5 font-sans text-[15px] text-accent">{f.glyph}</div>
                 <h3 className="mb-1.5 text-[14px] font-semibold">{f.title}</h3>
                 <p className="text-[12.5px] leading-[1.6] text-muted">{f.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* outcome benefits — what concretely changes */}
+      <section className="px-6 py-16">
+        <div className="mx-auto max-w-[980px]">
+          <div className="mx-auto mb-8.5 max-w-[540px] text-center">
+            <div className="mb-2.5 font-sans text-[11px] tracking-[.16em] text-accent">WHAT THAT CHANGES</div>
+            <h2 className="mb-2.5 text-[26px] tracking-[-.02em] text-balance sm:text-[30px]">Run your career like the pro you already are.</h2>
+            <p className="text-[15px] text-muted">This is what changes when the busywork disappears.</p>
+          </div>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {OUTCOMES.map((o) => (
+              <div key={o.title} className="flex gap-4 rounded-tile border border-border bg-surface p-5.5">
+                <div className={`flex-none font-sans text-[19px] ${o.color}`}>{o.glyph}</div>
+                <div>
+                  <h3 className="mb-2 text-[15.5px] font-semibold">{o.title}</h3>
+                  <p className="text-[13.5px] leading-[1.65] text-muted">{o.body}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -185,7 +253,16 @@ export default async function BetaPage() {
         </div>
       </section>
 
-      <footer className="pb-12 text-center font-sans text-[10.5px] text-muted/70">
+      {/* closing CTA — same sendoff as the home page */}
+      <section className="border-t border-border px-6 py-14 text-center">
+        <h2 className="mb-2.5 text-[22px] tracking-[-.02em] sm:text-[28px]">The van is packed. Is your business?</h2>
+        <p className="mb-6 text-[14px] text-muted">Set up your first tour in under ten minutes.</p>
+        <a href="#steps" className="inline-block rounded-tile bg-accent px-8 py-4 text-[16px] font-semibold text-ink">
+          Redeem your invite code
+        </a>
+      </section>
+
+      <footer className="pb-12 pt-10 text-center font-sans text-[10.5px] text-muted/70">
         © 2026 HEADLINE.WORLD · By musicians, for musicians ·{" "}
         <a href="https://headline.world" className="underline">
           headline.world
