@@ -52,7 +52,7 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
     if (!data.session) {
       // Email confirmation is required by the Supabase project — no session
       // yet, so send them to log in once they've confirmed.
-      return { error: "Check your email to confirm your account, then log in." };
+      return { success: "Almost there — check your email to confirm your account, then log in." };
     }
 
     redirect("/onboarding");
