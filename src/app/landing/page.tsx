@@ -4,11 +4,16 @@ import type { Metadata } from "next";
 import { LandingPricing } from "@/components/landing-pricing";
 import { BENEFITS, FEATURES } from "@/lib/landing-content";
 import { PhotoBleedHero, PhotoBleedBand, RoadPhotoStrip, HERO_PHOTO, SOUNDCHECK_PHOTO, CROWD_PHOTO } from "@/components/marketing-photos";
+import { isPagePublic } from "@/lib/web-pages";
+import { ComingSoon } from "@/components/coming-soon";
 
-export const metadata: Metadata = {
-  title: "HEADLINE.WORLD — Run Your Business Like You Run a Soundcheck",
-  description: "Bookings, routing, contracts, merch and money — all in one place, so the only thing you're managing from the green room is the set.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  if (!(await isPagePublic("landing"))) return { title: "HEADLINE.WORLD" };
+  return {
+    title: "HEADLINE.WORLD — Run Your Business Like You Run a Soundcheck",
+    description: "Bookings, routing, contracts, merch and money — all in one place, so the only thing you're managing from the green room is the set.",
+  };
+}
 
 const FAQS = [
   { q: "Do I need to migrate anything to start?", a: "No. Free gets you 5 active bookings and 50 contacts to try it on real, current work before you commit to anything." },
@@ -18,7 +23,9 @@ const FAQS = [
   { q: "What happens to my data if I stop paying, or want to leave?", a: "Your contacts, your contracts, your history — it's yours, and it's not held hostage behind a paywall the moment you downgrade." },
 ];
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  if (!(await isPagePublic("landing"))) return <ComingSoon />;
+
   return (
     <div className="bg-canvas text-text">
       {/* header */}

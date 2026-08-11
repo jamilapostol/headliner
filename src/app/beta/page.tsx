@@ -3,11 +3,16 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { BENEFITS, FEATURES } from "@/lib/landing-content";
 import { PhotoBleedHero, PhotoBleedBand, RoadPhotoStrip, HERO_PHOTO, SOUNDCHECK_PHOTO, CROWD_PHOTO } from "@/components/marketing-photos";
+import { isPagePublic } from "@/lib/web-pages";
+import { ComingSoon } from "@/components/coming-soon";
 
-export const metadata: Metadata = {
-  title: "HEADLINE.WORLD — Join the Beta",
-  description: "HEADLINE.WORLD is invite-only right now. Here's what you get, and how to redeem your invite code.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  if (!(await isPagePublic("beta"))) return { title: "HEADLINE.WORLD" };
+  return {
+    title: "HEADLINE.WORLD — Join the Beta",
+    description: "HEADLINE.WORLD is invite-only right now. Here's what you get, and how to redeem your invite code.",
+  };
+}
 
 const STEPS = [
   {
@@ -37,7 +42,9 @@ const STEPS = [
   },
 ];
 
-export default function BetaPage() {
+export default async function BetaPage() {
+  if (!(await isPagePublic("beta"))) return <ComingSoon />;
+
   return (
     <div className="bg-canvas text-text">
       {/* header */}

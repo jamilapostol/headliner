@@ -3,6 +3,8 @@ import Link from "next/link";
 import { getSiteContent } from "@/lib/site-content";
 import { LandingPricing } from "@/components/landing-pricing";
 import { db } from "@/lib/db";
+import { isPagePublic } from "@/lib/web-pages";
+import { ComingSoon } from "@/components/coming-soon";
 
 const REPLACES = ["Spreadsheets", "Notes app", "HubSpot", "Dropbox folders", "Group texts", "Sticky notes on the dash"];
 
@@ -24,6 +26,8 @@ const BENEFIT_META = [
 ] as const;
 
 export default async function LandingPage() {
+  if (!(await isPagePublic("home"))) return <ComingSoon />;
+
   const c = await getSiteContent();
   const blocks = await db.landingBlock.findMany({ orderBy: { order: "asc" } });
 

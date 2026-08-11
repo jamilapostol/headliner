@@ -18,6 +18,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <Link href="/admin/workspaces" className="rounded-lg px-2.5 py-2 text-[13px] font-medium hover:bg-text/5">
             Workspaces
           </Link>
+          <Link href="/admin/pages" className="rounded-lg px-2.5 py-2 text-[13px] font-medium hover:bg-text/5">
+            Web pages
+          </Link>
           <Link href="/admin/content" className="rounded-lg px-2.5 py-2 text-[13px] font-medium hover:bg-text/5">
             Landing page content
           </Link>

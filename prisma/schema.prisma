@@ -439,3 +439,18 @@ model LandingBlock {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// Public web pages managed from /admin/pages. "system" rows gate the
+// hardcoded marketing routes (/, /landing, /beta) — only their visibility is
+// editable. "custom" rows are admin-authored pages rendered at /<slug>.
+model WebPage {
+  id         String   @id @default(cuid())
+  slug       String   @unique
+  title      String
+  kind       String   @default("custom") // system | custom
+  visibility String   @default("private") // public | private
+  heading    String?
+  body       String? // custom pages: blank-line-separated paragraphs
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
