@@ -6,6 +6,7 @@ import { AccountView } from "@/components/account-view";
 import { TeamSection, type MemberRow } from "@/components/team-section";
 import { IntegrationsPanel } from "@/components/integrations-panel";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { SecuritySection } from "@/components/security-section";
 import { ReferFriendsSection } from "@/components/refer-friends-section";
 import { referralLink } from "@/lib/referral";
 
@@ -57,6 +58,7 @@ export default async function AccountPage() {
           convertedCount={convertedCount}
           creditsEarned={workspace.referralCreditsEarned}
         />
+        <SecuritySection />
         <IntegrationsPanel />
         <ThemeToggle />
       </div>

@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { fmtDateUTC } from "@/lib/format";
 import { AdminPlanForm } from "@/components/admin-plan-form";
 import { AdminImpersonateButton } from "@/components/admin-impersonate-button";
+import { AdminDeleteWorkspaceButton } from "@/components/admin-delete-workspace-button";
 
 export type WorkspaceRow = {
   id: string;
@@ -75,7 +76,10 @@ export function AdminWorkspacesTable({ workspaces }: { workspaces: WorkspaceRow[
               <div className="truncate text-[12px] text-text/60">{w.ownerEmail ?? "—"}</div>
               <div className="text-[11.5px] text-text/50">{fmtDateUTC(new Date(w.createdAt), { month: "short", day: "numeric", year: "numeric" })}</div>
               <AdminPlanForm workspaceId={w.id} plan={w.plan} billingCycle={w.billingCycle} />
-              <AdminImpersonateButton workspaceId={w.id} />
+              <div className="flex items-center gap-2">
+                <AdminImpersonateButton workspaceId={w.id} />
+                <AdminDeleteWorkspaceButton workspaceId={w.id} name={w.name} />
+              </div>
             </div>
           ))}
           {filtered.length === 0 && <div className="px-[18px] py-7 text-center text-[13px] text-text/40">No workspaces match.</div>}

@@ -79,8 +79,17 @@ export async function logIn(_prev: AuthState, formData: FormData): Promise<AuthS
 
     // Honor a ?next= destination (e.g. /admin bounced them here), but only
     // same-site paths — "//evil.com" would be treated as protocol-relative.
-    const next = String(formData.get("next") ?? "");
-    redirect(next.startsWith("/") && !next.startsWith("//") ? next : "/app");
+    const rawNext = String(formData.get("next") ?? "");
+    const next = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/app";
+
+    // Password puts the session at AAL1; if this account has a verified TOTP
+    // factor, the second step happens at /login/verify before anything else.
+    const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (aal && aal.currentLevel === "aal1" && aal.nextLevel === "aal2") {
+      redirect(`/login/verify?next=${encodeURIComponent(next)}`);
+    }
+
+    redirect(next);
   });
 }
 

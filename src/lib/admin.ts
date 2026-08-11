@@ -1,6 +1,7 @@
 import { redirect, notFound } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { enforceMfa } from "@/lib/mfa";
 
 export function envAdminEmails() {
   return (process.env.ADMIN_EMAILS ?? "")
@@ -25,6 +26,7 @@ export async function isAdminEmail(email: string) {
 export async function requireAdmin() {
   const session = await getSession();
   if (!session) redirect("/login?next=/admin");
+  await enforceMfa();
   if (!(await isAdminEmail(session.email))) notFound();
   return session;
 }
