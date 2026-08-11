@@ -95,6 +95,7 @@ model Workspace {
   contracts    Contract[]
   fans         Fan[]
   campaigns    Campaign[]
+  aiUsage      AiUsage[]
   automations  Automation[]
   integrations Integration[]
 }
@@ -366,6 +367,21 @@ enum CampaignStatus {
   Sending
   Sent
   Failed
+}
+
+// One row per workspace per calendar month ("2026-08") counting Roadie AI
+// calls — bounds the platform's Anthropic bill the same way MONTHLY_EMAIL_CAP
+// bounds the Resend bill. Only real Claude calls increment it; template
+// fallbacks (no API key) are free and uncounted.
+model AiUsage {
+  id          String @id @default(cuid())
+  workspaceId String
+  month       String
+  count       Int    @default(0)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, month])
 }
 
 model Campaign {

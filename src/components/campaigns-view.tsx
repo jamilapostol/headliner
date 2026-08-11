@@ -122,7 +122,7 @@ export function CampaignsView({
           {!aiUnlocked && (
             <div className="flex items-center gap-3 rounded-[10px] border border-purple/30 bg-purple/[.06] px-4 py-3">
               <div className="text-[13px] text-text/60">
-                <strong className="text-purple">Roadie AI:</strong> Auto-drafted announcements unlock on the Touring plan.{" "}
+                <strong className="text-purple">Roadie AI:</strong> Follow-up drafts and contract review unlock on the Touring plan.{" "}
                 <Link href="/app/billing" className="text-accent underline">
                   Upgrade →
                 </Link>

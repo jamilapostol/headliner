@@ -40,3 +40,8 @@ export const CAMPAIGN_RECIPIENT_CAP: Record<string, number> = { pro: 2000, beta:
 // Resend bill and its sender reputation no matter how enthusiastically a
 // workspace blasts — enforced server-side in sendCampaign.
 export const MONTHLY_EMAIL_CAP: Record<string, number> = { pro: 5000, beta: 5000, touring: 20000, team: 50000 };
+
+// Monthly Roadie AI action ceilings (drafts + contract reviews combined) —
+// bounds the platform's Anthropic bill per workspace. Roadie is Touring+
+// only, so Free/Pro/Beta have no quota. Advertised on the pricing page.
+export const MONTHLY_AI_CAP: Record<string, number> = { touring: 200, team: 500 };

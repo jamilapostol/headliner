@@ -88,7 +88,7 @@ export const SITE_CONTENT_FIELDS: SiteContentField[] = [
     multiline: true,
   },
   { key: "feature_6_title", section: "Features", label: "6 — title", default: "Roadie AI" },
-  { key: "feature_6_body", section: "Features", label: "6 — body", default: "Drafts your follow-ups, summarizes contracts, flags radius clauses, and predicts your best cities.", multiline: true },
+  { key: "feature_6_body", section: "Features", label: "6 — body", default: "Drafts your follow-ups from your real booking history and reads your contracts for you — flagging radius clauses, cancellation traps, and auto-renewals before you sign.", multiline: true },
   { key: "feature_7_title", section: "Features", label: "7 — title", default: "Fans who keep coming back" },
   {
     key: "feature_7_body",

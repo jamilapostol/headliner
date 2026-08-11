@@ -68,8 +68,8 @@ export default async function DashboardPage() {
       <div className="mb-[22px] flex items-center gap-3 rounded-[10px] border border-accent/25 bg-accent-soft px-4 py-3">
         <span className="h-2 w-2 flex-none rounded-full bg-accent animate-tp-pulse" />
         <div className="text-[13.5px]">
-          <strong className="text-accent">Roadie AI:</strong> Available on the Touring plan — draft follow-ups, summarize contracts and
-          forecast restocks straight from your pipeline.
+          <strong className="text-accent">Roadie AI:</strong> Available on the Touring plan — drafts follow-ups from your real booking
+          history and reviews your contracts before you sign.
         </div>
       </div>
 

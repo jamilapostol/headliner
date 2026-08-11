@@ -13,6 +13,6 @@ export const FEATURES = [
   { glyph: "▣", title: "Merch inventory", body: "Track stock and margin by show, so you know what's in the trailer before you run out mid-tour." },
   { glyph: "$", title: "Financial hub", body: "Settlements, P&L, balance sheet and receipts — tracked by show, city and tour, so tax season isn't a scavenger hunt." },
   { glyph: "♥", title: "Fan CRM", body: "Rank supporters by lifetime spend and know exactly who to reach out to next time you're back in their city." },
-  { glyph: "✳", title: "Roadie AI", body: "Drafts your outreach, summarizes contracts, flags radius clauses, and tells you which cities are worth the drive." },
+  { glyph: "✳", title: "Roadie AI", body: "Drafts your follow-ups from your real booking history and reads your contracts for you — flagging radius clauses, cancellation traps, and auto-renewals before you sign." },
   { glyph: "☾", title: "Mobile show-day view", body: "Day sheet, contacts, and merch counts on your phone — so show day runs itself." },
 ];

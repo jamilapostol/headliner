@@ -19,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
 const FAQS = [
   { q: "Do I need to migrate anything to start?", a: "No. Free gets you 5 active bookings and 50 contacts to try it on real, current work before you commit to anything." },
   { q: "Is this only for full touring acts, or also local gigging bands?", a: "Both. Pro Artist is built for artists gigging regularly without a full tour underway. Touring Artist adds routing, day sheets and contracts for artists on the road." },
-  { q: "What does Roadie AI actually do?", a: "It drafts follow-up emails, summarizes contracts, flags radius clauses, and predicts which cities are worth booking based on your history. It's a drafting and flagging tool — you're still the one deciding." },
+  { q: "What does Roadie AI actually do?", a: "It drafts follow-up emails grounded in your real booking history, and reads the contracts you upload — flagging radius clauses, cancellation penalties, and auto-renewals. It's a drafting and flagging tool — you're still the one deciding. Touring includes 200 Roadie actions a month; Team includes 500." },
   { q: "Can my band or crew use it with me?", a: "Yes. Touring Artist includes 3 team seats, Management Team includes 10." },
   { q: "What happens to my data if I stop paying, or want to leave?", a: "Your contacts, your contracts, your history — it's yours, and it's not held hostage behind a paywall the moment you downgrade." },
 ];

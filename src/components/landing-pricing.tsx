@@ -22,7 +22,7 @@ function tiers(annual: boolean) {
       per: "/mo",
       popular: false,
       cta: "Choose Pro",
-      feats: ["Unlimited bookings", "Full CRM + reminders", "Merch inventory", "Financial hub", "Email campaigns (2k)"],
+      feats: ["Unlimited bookings", "Full CRM + reminders", "Merch inventory", "Financial hub", "Email campaigns (5k/mo)"],
     },
     {
       name: "Touring Artist",
@@ -31,7 +31,7 @@ function tiers(annual: boolean) {
       per: "/mo",
       popular: true,
       cta: "Choose Touring",
-      feats: ["Everything in Pro", "Tour routing + day sheets", "Roadie AI (drafts, summaries)", "Contracts + e-sign", "3 team seats"],
+      feats: ["Everything in Pro", "Tour routing + day sheets", "Roadie AI (200 actions/mo)", "Contracts + e-sign", "3 team seats"],
     },
     {
       name: "Management Team",
@@ -40,7 +40,7 @@ function tiers(annual: boolean) {
       per: "/mo",
       popular: false,
       cta: "Talk to us",
-      feats: ["Everything in Touring", "Multi-artist workspaces", "Role-based permissions", "Accountant exports", "10 team seats"],
+      feats: ["Everything in Touring", "Roadie AI (500 actions/mo)", "Multi-artist workspaces", "Role-based permissions", "Accountant exports", "10 team seats"],
     },
   ];
 }
@@ -50,9 +50,9 @@ const MATRIX: Array<[string, string, string, string, string]> = [
   ["Contacts", "50", "∞", "∞", "∞"],
   ["Merch inventory", "—", "✓", "✓", "✓"],
   ["Financial hub + P&L", "—", "✓", "✓", "✓"],
-  ["Email campaigns", "—", "2k/send", "∞", "∞"],
+  ["Email campaigns", "—", "5k/mo", "20k/mo", "50k/mo"],
   ["Tour routing + day sheets", "—", "—", "✓", "✓"],
-  ["Roadie AI", "—", "—", "✓", "✓"],
+  ["Roadie AI actions", "—", "—", "200/mo", "500/mo"],
   ["Contracts + e-sign", "—", "—", "✓", "✓"],
   ["Team seats", "1", "1", "3", "10"],
   ["CSV export", "—", "—", "—", "✓"],
