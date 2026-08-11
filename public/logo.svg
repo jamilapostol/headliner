@@ -1,9 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-<rect width="48" height="48" rx="11" fill="#3fe87a"></rect>
-<path d="M9 21 L43 6 L31 29 L23 22 Z" fill="#0d110e"></path>
-<polygon points="13.7,29.5 23.3,26.8 23.3,29.6 13.7,32.3" fill="#0d110e"></polygon>
-<rect x="13.7" y="29.5" width="1.5" height="9.7" fill="#0d110e"></rect>
-<rect x="21.8" y="26.8" width="1.5" height="9.9" fill="#0d110e"></rect>
-<circle cx="12.4" cy="39.2" r="2.9" fill="#0d110e"></circle>
-<circle cx="20.5" cy="36.7" r="2.9" fill="#0d110e"></circle>
+<rect width="48" height="48" rx="11" fill="#3fe87a"/>
+<g stroke="#0d110e" stroke-width="2.8" fill="none" stroke-linecap="round">
+  <circle cx="20.5" cy="28" r="11.2"/>
+  <ellipse cx="20.5" cy="28" rx="4.9" ry="11.2"/>
+  <line x1="9.3" y1="28" x2="31.7" y2="28"/>
+  <path d="M12 21.8 Q20.5 19.6 29 21.8"/>
+  <path d="M12 34.2 Q20.5 36.4 29 34.2"/>
+</g>
+<g fill="#0d110e">
+  <circle cx="34.3" cy="17.2" r="3.9"/>
+  <path d="M36.5 17.2 L36.5 6.6 L38.9 6.6 L38.9 17.2 Z"/>
+  <path d="M38.9 6.6 C42.6 8 43.6 11 42.3 14.4 C41.9 11.5 40.7 9.9 38.9 9.4 Z"/>
+</g>
 </svg>
