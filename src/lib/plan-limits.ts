@@ -35,3 +35,8 @@ export const FEATURE_LABEL: Record<keyof typeof MIN_PLAN, string> = {
 
 // Pro's "Email campaigns (2k)" cap — Touring/Team are uncapped. Beta mirrors Pro.
 export const CAMPAIGN_RECIPIENT_CAP: Record<string, number> = { pro: 2000, beta: 2000, touring: Infinity, team: Infinity };
+
+// Monthly outbound-email ceilings per workspace. These bound the platform's
+// Resend bill and its sender reputation no matter how enthusiastically a
+// workspace blasts — enforced server-side in sendCampaign.
+export const MONTHLY_EMAIL_CAP: Record<string, number> = { pro: 5000, beta: 5000, touring: 20000, team: 50000 };

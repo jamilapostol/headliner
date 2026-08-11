@@ -6,7 +6,7 @@ import { getSession } from "@/lib/auth";
 import { resendEnabled, sendEmail, sendEmailBatch, type OutgoingEmail } from "@/lib/resend";
 import { withErrorLog, withErrorState } from "@/lib/action-error";
 import { signFanId } from "@/lib/unsubscribe-token";
-import { CAMPAIGN_RECIPIENT_CAP } from "@/lib/plan-limits";
+import { CAMPAIGN_RECIPIENT_CAP, MONTHLY_EMAIL_CAP } from "@/lib/plan-limits";
 import { requireMinPlan } from "@/lib/plan-limits-server";
 
 type FanTier = "VIP" | "Patron" | "Donor" | "Fan";
@@ -148,6 +148,24 @@ export async function sendCampaign(campaignId: string): Promise<{ error?: string
     const cap = CAMPAIGN_RECIPIENT_CAP[workspace.plan] ?? Infinity;
     const fans = allFans.slice(0, cap);
     if (fans.length === 0) return { error: "No subscribed fans with an email in this audience." };
+
+    // Monthly ceiling across all campaigns this workspace sent this calendar
+    // month — bounds platform email spend and protects sender reputation.
+    const monthlyCap = MONTHLY_EMAIL_CAP[workspace.plan] ?? 5000;
+    const monthStart = new Date();
+    monthStart.setUTCDate(1);
+    monthStart.setUTCHours(0, 0, 0, 0);
+    const { _sum } = await db.campaign.aggregate({
+      where: { workspaceId: session.workspaceId, status: "Sent", sentAt: { gte: monthStart } },
+      _sum: { recipientCount: true },
+    });
+    const sentThisMonth = _sum.recipientCount ?? 0;
+    if (sentThisMonth + fans.length > monthlyCap) {
+      const remaining = Math.max(0, monthlyCap - sentThisMonth);
+      return {
+        error: `Monthly send limit: your plan covers ${monthlyCap.toLocaleString()} emails/month and ${sentThisMonth.toLocaleString()} are already sent. ${remaining.toLocaleString()} remaining — shrink the audience or wait for the new month.`,
+      };
+    }
 
     await db.campaign.update({ where: { id: campaignId }, data: { status: "Sending" } });
 
