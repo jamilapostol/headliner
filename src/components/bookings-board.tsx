@@ -38,7 +38,7 @@ export function BookingsBoard({ bookings: bookingsProp, plan }: { bookings: Book
   const [dragOverStage, setDragOverStage] = useState<Stage | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
   const [showNew, setShowNew] = useState(false);
-  const [draft, setDraft] = useState<{ bookingId: string; text: string } | null>(null);
+  const [draft, setDraft] = useState<{ bookingId: string; text: string; fallback?: true } | null>(null);
   const [draftError, setDraftError] = useState<string | null>(null);
   const [stageOverride, setStageOverride] = useState<Record<string, Stage>>({});
   const [, startTransition] = useTransition();
@@ -52,7 +52,7 @@ export function BookingsBoard({ bookings: bookingsProp, plan }: { bookings: Book
         setDraftError(result?.error ?? "Couldn't generate a draft. Try again.");
         return;
       }
-      setDraft({ bookingId, text: result.text });
+      setDraft({ bookingId, text: result.text, fallback: result.fallback });
     });
   }
 
@@ -237,6 +237,11 @@ export function BookingsBoard({ bookings: bookingsProp, plan }: { bookings: Book
               </div>
               {draft && draft.bookingId === open.id ? (
                 <>
+                  {draft.fallback && (
+                    <div className="mb-2 rounded-lg border border-orange/25 bg-orange/[.06] px-2.5 py-2 text-[12px] leading-relaxed text-text/75">
+                      Roadie isn&rsquo;t connected right now, so this is a starter template — not a draft written from your booking history. Read it over before sending.
+                    </div>
+                  )}
                   <div className="whitespace-pre-line rounded-lg border border-text/[.06] bg-canvas p-3 text-[12.5px] leading-relaxed text-text/85">
                     {draft.text}
                   </div>

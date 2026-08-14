@@ -43,12 +43,12 @@ export function ContractsView({ contracts, plan }: { contracts: ContractDTO[]; p
   const aiUnlocked = planUnlocksAI(plan);
   const renewals = contracts.filter((c) => c.renewsAt).sort((a, b) => new Date(a.renewsAt!).getTime() - new Date(b.renewsAt!).getTime());
 
-  const [summary, setSummary] = useState<{ contractId: string; facts: ContractFact[] } | null>(null);
+  const [summary, setSummary] = useState<{ contractId: string; facts: ContractFact[]; fallback?: true } | null>(null);
   useEffect(() => {
     if (!aiUnlocked || !selected) return;
     let cancelled = false;
     generateContractSummary(selected.id).then((result) => {
-      if (!cancelled && result?.facts) setSummary({ contractId: selected.id, facts: result.facts });
+      if (!cancelled && result?.facts) setSummary({ contractId: selected.id, facts: result.facts, fallback: result.fallback });
     });
     return () => {
       cancelled = true;
@@ -89,8 +89,15 @@ export function ContractsView({ contracts, plan }: { contracts: ContractDTO[]; p
               <div className="rounded-xl border border-accent/30 bg-accent-soft p-4">
                 <div className="mb-2.5 flex items-center gap-2">
                   <span className="h-[7px] w-[7px] rounded-full bg-accent" />
-                  <span className="text-[12.5px] font-semibold text-accent">AI summary — {selected.name.split(" — ")[1] ?? selected.name}</span>
+                  <span className="text-[12.5px] font-semibold text-accent">
+                    {summary?.contractId === selected.id && summary.fallback ? "What to check" : "AI summary"} — {selected.name.split(" — ")[1] ?? selected.name}
+                  </span>
                 </div>
+                {summary?.contractId === selected.id && summary.fallback && (
+                  <div className="mb-2.5 rounded-lg border border-orange/25 bg-orange/[.06] px-2.5 py-2 text-[12px] leading-relaxed text-text/75">
+                    Roadie isn&rsquo;t connected right now, so this document hasn&rsquo;t been read. These are the terms worth checking yourself for this kind of agreement.
+                  </div>
+                )}
                 <div className="flex flex-col gap-2">
                   {summary && summary.contractId === selected.id ? (
                     summary.facts.map((f, i) => (

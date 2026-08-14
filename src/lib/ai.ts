@@ -2,6 +2,13 @@
 // ANTHROPIC_API_KEY is unset (see src/lib/claude.ts). With a key configured,
 // src/lib/actions/ai.ts makes real Claude calls instead and these are never
 // rendered to users.
+//
+// These templates have not read the workspace's data or the uploaded
+// document, so they must never assert a specific fact as if they had:
+// no ticket counts, no radius distances, no dollar amounts, no clause
+// terms. Anything concrete here would be presented to the user as a
+// finding about their real booking or contract. Keep them as prompts to
+// check, and let the real Claude path supply specifics.
 
 export function planUnlocksAI(plan: string) {
   return plan === "touring" || plan === "team";
@@ -14,7 +21,7 @@ export function draftFollowupEmail(opts: { contactName: string | null; venue: st
 
   return `Hi ${contactName},
 
-Just circling back on the ${dateLabel} hold at ${opts.venue}. We're routing through ${cityShort} that week and would love to lock it in — happy to share updated numbers from this spring's run (avg 240 tickets in comparable rooms).
+Just circling back on the ${dateLabel} hold at ${opts.venue}. We're routing through ${cityShort} that week and would love to lock it in — happy to share recent numbers from comparable rooms if that's useful.
 
 Could we confirm by Friday?
 
@@ -24,44 +31,54 @@ ${opts.artistName}`;
 
 export type ContractFact = { flag: "✓" | "!"; text: string };
 
-export function summarizeContract(kind: string, status: string, value: string): ContractFact[] {
+// Every item is phrased as something to check, never as something found —
+// this function has not seen the contract. The "✓" flag is deliberately
+// unused: a checkmark reads as "reviewed and clear", which nothing here
+// can honestly claim.
+export function summarizeContract(kind: string, status: string, _value: string): ContractFact[] {
   if (status === "DRAFT") {
     return [
-      { flag: "!", text: "This agreement hasn't been sent for signature yet — review terms before sending." },
+      { flag: "!", text: "This agreement hasn't been sent for signature yet — review the terms before sending." },
       { flag: "!", text: "No countersigned copy on file. Confirm payment terms match your standard rider." },
     ];
   }
 
+  const common: ContractFact[] = [
+    { flag: "!", text: "Check the payment schedule: deposit amount, balance timing, and how it's paid." },
+    { flag: "!", text: "Check the cancellation terms, including whether there's a force-majeure carve-out." },
+  ];
+
   switch (kind) {
     case "Performance":
       return [
-        { flag: "✓", text: "Guarantee wired as 50% deposit, balance night-of in cash or Zelle." },
-        { flag: "✓", text: "Venue provides full backline, house engineer, and 2 hotel rooms." },
-        { flag: "!", text: "Radius clause: no shows within 60 mi for 45 days — check against nearby holds." },
-        { flag: "!", text: "Cancellation within 30 days forfeits deposit; no force-majeure carve-out." },
+        { flag: "!", text: "Check for a radius clause — what distance, and for how long either side of the date." },
+        ...common,
+        { flag: "!", text: "Confirm what the venue provides: backline, engineer, hospitality, lodging." },
       ];
     case "Sponsorship":
       return [
-        { flag: "✓", text: `Annual commitment of ${value}, paid quarterly.` },
-        { flag: "✓", text: "Logo placement and 2 social posts per quarter satisfy the brand deliverables." },
-        { flag: "!", text: "Auto-renews unless cancelled 60 days before term end — set a reminder." },
+        { flag: "!", text: "Check for an auto-renewal clause and the notice window to cancel." },
+        ...common,
+        { flag: "!", text: "Confirm the deliverables you're committing to and their cadence." },
       ];
     case "Licensing":
       return [
-        { flag: "✓", text: `One-time sync fee of ${value} for festival and streaming use.` },
-        { flag: "!", text: "Territory is North America only — confirm before any international placement." },
+        { flag: "!", text: "Check the territory and the media the license covers." },
+        { flag: "!", text: "Check the term length and whether use extends beyond it." },
+        ...common,
       ];
     case "Insurance":
       return [
-        { flag: "✓", text: `Coverage renews at ${value} — general liability, $1M per occurrence.` },
-        { flag: "!", text: "Some venues require a certificate naming them as additionally insured — request ahead of the show." },
+        { flag: "!", text: "Confirm coverage limits and what's excluded." },
+        { flag: "!", text: "Check whether venues can be named as additionally insured, and how to request it." },
       ];
     case "Work-for-hire":
       return [
-        { flag: "✓", text: `Session rate of ${value}, work-for-hire — no royalty obligation.` },
-        { flag: "!", text: "No exclusivity clause — player is free to work other dates in this window." },
+        { flag: "!", text: "Confirm whether royalties or credit are owed, or whether it's a flat buyout." },
+        { flag: "!", text: "Check for exclusivity — whether either side is restricted during the window." },
+        ...common,
       ];
     default:
-      return [{ flag: "✓", text: "No flagged risks in this agreement." }];
+      return common;
   }
 }

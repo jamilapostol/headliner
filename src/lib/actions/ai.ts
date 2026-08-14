@@ -43,7 +43,10 @@ function firstText(content: Array<{ type: string; text?: string }>): string {
   return "";
 }
 
-export async function generateFollowupDraft(bookingId: string): Promise<{ error?: string; text?: string }> {
+// `fallback: true` means this came from the deterministic template, not from
+// Claude. The caller must surface that — an unlabelled template reads as a
+// real Roadie result on a plan the user is paying for it on.
+export async function generateFollowupDraft(bookingId: string): Promise<{ error?: string; text?: string; fallback?: true }> {
   return withErrorState("generateFollowupDraft", async () => {
     const session = await getSession();
     if (!session) return { error: "Not signed in." };
@@ -55,6 +58,7 @@ export async function generateFollowupDraft(bookingId: string): Promise<{ error?
 
     if (!aiEnabled) {
       return {
+        fallback: true,
         text: templateFollowupEmail({
           contactName: booking.contactName,
           venue: booking.venue,
@@ -145,7 +149,7 @@ const CONTRACT_FACTS_SCHEMA = {
   additionalProperties: false,
 } as const;
 
-export async function generateContractSummary(contractId: string): Promise<{ error?: string; facts?: ContractFact[] }> {
+export async function generateContractSummary(contractId: string): Promise<{ error?: string; facts?: ContractFact[]; fallback?: true }> {
   return withErrorState("generateContractSummary", async () => {
     const session = await getSession();
     if (!session) return { error: "Not signed in." };
@@ -156,7 +160,7 @@ export async function generateContractSummary(contractId: string): Promise<{ err
     await requireMinPlan(session.workspaceId, "touring");
 
     if (!aiEnabled) {
-      return { facts: templateContractSummary(contract.kind, contract.status, contract.value) };
+      return { fallback: true, facts: templateContractSummary(contract.kind, contract.status, contract.value) };
     }
 
     const quotaError = await consumeAiQuota(session.workspaceId);
