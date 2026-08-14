@@ -1,13 +1,19 @@
 // Free-plan caps advertised on the pricing page — enforced here so they're
 // not just marketing copy. Paid plans are uncapped. "beta" is an
-// admin-granted, unbilled plan with the same access as Pro — for early
-// testers.
+// admin-granted, unbilled plan with full feature access — testers need to
+// reach every module, including the Touring/Team ones, or their feedback
+// only covers half the product.
+//
+// Feature access and spend are separated on purpose: beta unlocks every
+// module, but keeps conservative volume ceilings (see MONTHLY_EMAIL_CAP and
+// MONTHLY_AI_CAP), because a beta workspace is unbilled and every Roadie
+// call and campaign send costs real money.
 export const BOOKING_LIMITS: Record<string, number> = { free: 5, pro: Infinity, touring: Infinity, team: Infinity, beta: Infinity };
 export const CONTACT_LIMITS: Record<string, number> = { free: 50, pro: Infinity, touring: Infinity, team: Infinity, beta: Infinity };
 
 export type PlanKey = "free" | "pro" | "touring" | "team" | "beta";
 
-const PLAN_RANK: Record<PlanKey, number> = { free: 0, pro: 1, beta: 1, touring: 2, team: 3 };
+const PLAN_RANK: Record<PlanKey, number> = { free: 0, pro: 1, touring: 2, team: 3, beta: 3 };
 
 // Pure — no server-only dependencies — safe to import from client components
 // (e.g. to decide whether to render an "Export CSV" button as locked).
@@ -43,5 +49,8 @@ export const MONTHLY_EMAIL_CAP: Record<string, number> = { pro: 5000, beta: 5000
 
 // Monthly Roadie AI action ceilings (drafts + contract reviews combined) —
 // bounds the platform's Anthropic bill per workspace. Roadie is Touring+
-// only, so Free/Pro/Beta have no quota. Advertised on the pricing page.
-export const MONTHLY_AI_CAP: Record<string, number> = { touring: 200, team: 500 };
+// only, so Free/Pro have no quota. Beta gets the Touring allowance rather
+// than Team's: enough to exercise the feature and report on it, without an
+// unbilled workspace running up an uncapped bill. Advertised on the
+// pricing page.
+export const MONTHLY_AI_CAP: Record<string, number> = { touring: 200, team: 500, beta: 200 };

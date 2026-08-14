@@ -10,8 +10,11 @@
 // finding about their real booking or contract. Keep them as prompts to
 // check, and let the real Claude path supply specifics.
 
+// Mirrors the server-side gate (requireMinPlan(..., "touring")); beta is
+// admin-granted full access, so it belongs here too. This only decides
+// whether the UI renders Roadie or an upsell — the real check is server-side.
 export function planUnlocksAI(plan: string) {
-  return plan === "touring" || plan === "team";
+  return plan === "touring" || plan === "team" || plan === "beta";
 }
 
 export function draftFollowupEmail(opts: { contactName: string | null; venue: string; city: string; date: string; artistName: string }) {

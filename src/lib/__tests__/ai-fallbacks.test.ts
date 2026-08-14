@@ -64,7 +64,7 @@ test("the contract fallback ignores the stated value it cannot verify", () => {
 test("planUnlocksAI agrees with the server-side Roadie gate", () => {
   assert.equal(planUnlocksAI("touring"), true);
   assert.equal(planUnlocksAI("team"), true);
+  assert.equal(planUnlocksAI("beta"), true, "beta has full feature access");
   assert.equal(planUnlocksAI("pro"), false);
-  assert.equal(planUnlocksAI("beta"), false);
   assert.equal(planUnlocksAI("free"), false);
 });

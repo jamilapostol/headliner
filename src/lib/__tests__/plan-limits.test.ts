@@ -16,13 +16,17 @@ test("plan ranking is ordered free < pro < touring < team", () => {
   assert.equal(planAtLeast("team", "pro"), true);
 });
 
-test("beta ranks with pro, not above it", () => {
-  // Documented intent: beta is admin-granted and unbilled, with Pro-level
-  // access. If beta is ever meant to reach Touring features, PLAN_RANK and
-  // MONTHLY_AI_CAP both have to change — this test should fail first.
-  assert.equal(planAtLeast("beta", "pro"), true);
-  assert.equal(planAtLeast("beta", "touring"), false);
-  assert.equal(planAtLeast("beta", "team"), false);
+test("beta reaches every gated module", () => {
+  // Beta is admin-granted, unbilled, and exists to gather feedback — a
+  // tester who can't open Contracts or Roadie can only report on half the
+  // product. Feature access is full; spend is bounded by the cap tables
+  // instead, which the quota tests below cover.
+  for (const min of ["pro", "touring", "team"] as const) {
+    assert.equal(planAtLeast("beta", min), true, `beta should unlock ${min} features`);
+  }
+  for (const [feature, min] of Object.entries(MIN_PLAN)) {
+    assert.equal(planAtLeast("beta", min), true, `beta should unlock ${feature}`);
+  }
 });
 
 test("an unknown or empty plan gets nothing above free", () => {
@@ -64,14 +68,27 @@ test("email caps rise with plan and never leave a paying plan unbounded", () => 
 
 test("Roadie quotas exist for exactly the plans that can reach Roadie", () => {
   // consumeAiQuota treats a missing/zero cap as "not entitled", so this
-  // table is load-bearing for access, not just for spend.
-  for (const plan of ["touring", "team"]) {
+  // table is load-bearing for access, not just for spend. Any plan that
+  // passes the server-side gate must have a quota, or the feature is
+  // unreachable no matter what PLAN_RANK says.
+  for (const plan of ["touring", "team", "beta"]) {
     assert.ok((MONTHLY_AI_CAP[plan] ?? 0) > 0, `${plan} must have a Roadie quota`);
+    assert.equal(planAtLeast(plan, MIN_PLAN.contracts), true, `${plan} must pass the Roadie gate`);
   }
-  for (const plan of ["free", "pro", "beta"]) {
+  for (const plan of ["free", "pro"]) {
     assert.ok(!(MONTHLY_AI_CAP[plan] > 0), `${plan} must not have a Roadie quota`);
   }
   assert.ok(MONTHLY_AI_CAP.touring < MONTHLY_AI_CAP.team);
+  // Unbilled beta stays on the smaller allowance.
+  assert.equal(MONTHLY_AI_CAP.beta, MONTHLY_AI_CAP.touring);
+});
+
+test("beta's spend ceilings stay conservative despite full access", () => {
+  // Full feature access must not mean an unbilled workspace can run up an
+  // uncapped Resend or Anthropic bill.
+  assert.ok(Number.isFinite(MONTHLY_EMAIL_CAP.beta));
+  assert.ok(MONTHLY_EMAIL_CAP.beta <= MONTHLY_EMAIL_CAP.touring);
+  assert.ok(MONTHLY_AI_CAP.beta <= MONTHLY_AI_CAP.team);
 });
 
 test("campaign recipient cap is finite for pro and beta only", () => {
