@@ -25,7 +25,7 @@ export async function createTransaction(formData: FormData) {
     await requireMinPlan(session.workspaceId, "pro");
 
     const receipt = formData.get("receipt") as File | null;
-    const { url: receiptUrl } = await uploadReceiptImage(receipt, session.workspaceId);
+    const { path: receiptUrl } = await uploadReceiptImage(receipt, session.workspaceId);
 
     await db.transaction.create({
       data: {
@@ -63,7 +63,7 @@ export async function updateTransaction(id: string, formData: FormData) {
     await requireMinPlan(session.workspaceId, "pro");
 
     const receipt = formData.get("receipt") as File | null;
-    const { url: newReceiptUrl } = await uploadReceiptImage(receipt, session.workspaceId);
+    const { path: newReceiptUrl } = await uploadReceiptImage(receipt, session.workspaceId);
 
     await db.transaction.update({
       where: { id },

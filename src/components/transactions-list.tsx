@@ -82,7 +82,7 @@ export function TransactionsList({ transactions }: { transactions: TransactionRo
         {filtered.map((t) => (
           <div key={t.id} className="flex items-center gap-3 border-b border-text/[.05] py-2.5 last:border-b-0">
             {t.receiptUrl ? (
-              <Image src={t.receiptUrl} alt="Receipt" width={64} height={64} className="h-8 w-8 flex-none rounded-md border border-border object-cover" />
+              <Image src={`/api/transactions/${t.id}/receipt`} alt="Receipt" width={64} height={64} className="h-8 w-8 flex-none rounded-md border border-border object-cover" />
             ) : (
               <div className="h-8 w-8 flex-none" />
             )}
@@ -114,6 +114,7 @@ export function TransactionsList({ transactions }: { transactions: TransactionRo
           title="Edit transaction"
           submitLabel="Save"
           initial={{
+            id: editing.id,
             kind: editing.kind,
             category: editing.category,
             amount: (editing.amount / 100).toString(),

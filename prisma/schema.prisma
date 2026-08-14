@@ -311,7 +311,7 @@ model Transaction {
   category    String
   amount      Int // cents; expenses stored positive, kind marks sign
   source      String?
-  receiptUrl  String? // public URL in the "receipts" storage bucket
+  receiptUrl  String? // path within the private "receipts" bucket; served via /api/transactions/[id]/receipt
   occurredAt  DateTime        @default(now())
   createdAt   DateTime        @default(now())
 

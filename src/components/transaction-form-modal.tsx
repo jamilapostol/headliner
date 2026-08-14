@@ -5,6 +5,9 @@ import { useState, useTransition } from "react";
 import { categoriesFor } from "@/lib/transaction-categories";
 
 export type TransactionFormValues = {
+  // Set when editing an existing transaction — the receipt preview is served
+  // from /api/transactions/[id]/receipt, so it needs the id, not a URL.
+  id?: string;
   kind: "income" | "expense";
   category: string;
   amount: string;
@@ -81,8 +84,8 @@ export function TransactionFormModal({
               accept="image/*"
               className="rounded-[10px] border border-border bg-surface-nested px-3.5 py-2.5 text-[12.5px] text-text outline-none file:mr-3 file:rounded-md file:border-0 file:bg-accent file:px-2.5 file:py-1 file:text-[11px] file:font-semibold file:text-ink"
             />
-            {initial?.receiptUrl && (
-              <Image src={initial.receiptUrl} alt="Current receipt" width={128} height={128} className="mt-1 h-16 w-16 rounded-lg border border-border object-cover" />
+            {initial?.receiptUrl && initial.id && (
+              <Image src={`/api/transactions/${initial.id}/receipt`} alt="Current receipt" width={128} height={128} className="mt-1 h-16 w-16 rounded-lg border border-border object-cover" />
             )}
           </label>
           <div className="mt-2 flex gap-2">

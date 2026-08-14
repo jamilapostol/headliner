@@ -16,7 +16,7 @@ export async function logExpense(formData: FormData) {
     if (!amountDollars || amountDollars <= 0) return { ok: false as const };
 
     const receipt = formData.get("receipt") as File | null;
-    const { url: receiptUrl, error } = await uploadReceiptImage(receipt, session.workspaceId);
+    const { path: receiptUrl, error } = await uploadReceiptImage(receipt, session.workspaceId);
     if (error) return { ok: false as const };
 
     await db.transaction.create({
