@@ -19,7 +19,7 @@ export async function createLandingBlock(type: "text" | "image") {
     data:
       type === "text"
         ? { type, order, heading: "New heading", body: "New body copy." }
-        : { type, order, imageUrl: "/hero.png", imageAlt: "" },
+        : { type, order, imageUrl: "/hero.webp", imageAlt: "" },
   });
 
   await logAdminAction({ adminEmail: session.email, action: "landing_block.create", targetType: "LandingBlock", targetId: block.id, detail: type });

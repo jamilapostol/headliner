@@ -24,7 +24,7 @@ export const SITE_CONTENT_FIELDS: SiteContentField[] = [
   { key: "hero_cta_primary", section: "Hero", label: "Primary button", default: "Start free" },
   { key: "hero_cta_secondary", section: "Hero", label: "Secondary button", default: "Watch demo — 2 min" },
   { key: "hero_disclaimer", section: "Hero", label: "Fine print under buttons", default: "Free forever for your first 5 bookings. No card required." },
-  { key: "hero_image", section: "Hero", label: "Background photo", default: "/hero.png", type: "image" },
+  { key: "hero_image", section: "Hero", label: "Background photo", default: "/hero.webp", type: "image" },
 
   { key: "retires_label", section: "Retires strip", label: "Label", default: "RETIRES" },
 
@@ -68,7 +68,7 @@ export const SITE_CONTENT_FIELDS: SiteContentField[] = [
     multiline: true,
   },
 
-  { key: "break_image", section: "Photo break", label: "Full-bleed photo", default: "/drums.png", type: "image" },
+  { key: "break_image", section: "Photo break", label: "Full-bleed photo", default: "/drums.webp", type: "image" },
   { key: "break_image_alt", section: "Photo break", label: "Alt text", default: "A drum kit on stage at a live show" },
 
   { key: "feature_1_title", section: "Features", label: "1 — title", default: "Booking pipeline" },

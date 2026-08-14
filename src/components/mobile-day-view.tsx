@@ -239,8 +239,7 @@ export function MobileDayView({
         {recentExpenses.map((exp) => (
           <div key={exp.id} className="flex items-center gap-3 border-b border-text/5 py-2.5 last:border-b-0">
             {exp.receiptUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={exp.receiptUrl} alt="Receipt" className="h-9 w-9 flex-none rounded-md object-cover" />
+              <Image src={exp.receiptUrl} alt="Receipt" width={72} height={72} className="h-9 w-9 flex-none rounded-md object-cover" />
             ) : (
               <div className="h-9 w-9 flex-none rounded-md bg-text/5" />
             )}

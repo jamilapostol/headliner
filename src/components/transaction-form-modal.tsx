@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useTransition } from "react";
 import { categoriesFor } from "@/lib/transaction-categories";
 
@@ -81,8 +82,7 @@ export function TransactionFormModal({
               className="rounded-[10px] border border-border bg-surface-nested px-3.5 py-2.5 text-[12.5px] text-text outline-none file:mr-3 file:rounded-md file:border-0 file:bg-accent file:px-2.5 file:py-1 file:text-[11px] file:font-semibold file:text-ink"
             />
             {initial?.receiptUrl && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={initial.receiptUrl} alt="Current receipt" className="mt-1 h-16 w-16 rounded-lg border border-border object-cover" />
+              <Image src={initial.receiptUrl} alt="Current receipt" width={128} height={128} className="mt-1 h-16 w-16 rounded-lg border border-border object-cover" />
             )}
           </label>
           <div className="mt-2 flex gap-2">

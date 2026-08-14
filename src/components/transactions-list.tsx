@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState, useTransition } from "react";
 import { money, fmtDateUTC } from "@/lib/format";
 import { updateTransaction, deleteTransaction, restoreTransaction } from "@/lib/actions/transactions";
@@ -81,8 +82,7 @@ export function TransactionsList({ transactions }: { transactions: TransactionRo
         {filtered.map((t) => (
           <div key={t.id} className="flex items-center gap-3 border-b border-text/[.05] py-2.5 last:border-b-0">
             {t.receiptUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={t.receiptUrl} alt="Receipt" className="h-8 w-8 flex-none rounded-md border border-border object-cover" />
+              <Image src={t.receiptUrl} alt="Receipt" width={64} height={64} className="h-8 w-8 flex-none rounded-md border border-border object-cover" />
             ) : (
               <div className="h-8 w-8 flex-none" />
             )}
