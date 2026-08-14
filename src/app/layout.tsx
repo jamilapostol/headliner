@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     "tour routing and day sheets",
     "merch inventory tracking",
     "fan CRM for artists",
-    "music contracts and settlements",
+    "music contract tracking",
     "touring musician finances",
   ],
   applicationName: "HEADLINE.WORLD",

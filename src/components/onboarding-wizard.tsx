@@ -30,14 +30,14 @@ const RECS: Record<"light" | "heavy" | "team", { plan: PlanChoice; name: string;
     name: "Pro Artist",
     price: "$24",
     reason: "A few shows a month — Pro covers unlimited bookings, merch and money without paying for tour tooling you won't use yet.",
-    feats: ["Unlimited bookings", "Full CRM + reminders", "Merch inventory", "Financial hub"],
+    feats: ["Unlimited bookings", "Full CRM", "Merch inventory", "Financial hub"],
   },
   heavy: {
     plan: "touring",
     name: "Touring Artist",
     price: "$59",
     reason: "You're on the road most of the year — routing, day sheets and Roadie AI pay for themselves on the first run.",
-    feats: ["Tour routing + day sheets", "Roadie AI drafts & summaries", "Contracts + e-sign", "3 team seats"],
+    feats: ["Tour routing + day sheets", "Roadie AI drafts & summaries", "Contracts", "3 team seats"],
   },
   team: {
     plan: "team",

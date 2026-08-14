@@ -25,7 +25,7 @@ const OUTCOMES = [
     glyph: "♪",
     color: "text-accent",
     title: "Tour like you've got a team behind you",
-    body: "Booking, routing, contracts and settlements in one place — so a solo artist runs their career at the same level as an act with a full crew.",
+    body: "Booking, routing, contracts and the money side in one place — so a solo artist runs their career at the same level as an act with a full crew.",
   },
   {
     glyph: "✓",
@@ -37,7 +37,7 @@ const OUTCOMES = [
     glyph: "◆",
     color: "text-blue",
     title: "Never leave money on the table",
-    body: "Every guarantee, deposit and settlement tracked by show. Know exactly what you're owed before you load out — not after tax season.",
+    body: "Every guarantee and deposit tracked per show, so you know what you're still owed before you load out — not after tax season.",
   },
   {
     glyph: "☾",
