@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { baselineCsp } from "./src/lib/csp";
 
 const nextConfig: NextConfig = {
   images: {
@@ -21,6 +22,13 @@ const nextConfig: NextConfig = {
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), browsing-topics=()" },
           { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains" },
         ],
+      },
+      {
+        // Enforced everywhere. proxy.ts adds the stricter nonce policy on the
+        // authenticated routes as Report-Only, which is a separate header, so
+        // the two never conflict.
+        source: "/:path*",
+        headers: [{ key: "Content-Security-Policy", value: baselineCsp(process.env.NODE_ENV === "development") }],
       },
     ];
   },
