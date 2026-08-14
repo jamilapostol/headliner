@@ -17,6 +17,11 @@ export type CampaignDTO = {
   recipientCount: number;
   sentAt: string | null;
   revenue: number | null;
+  // 0 until Resend reports an event for this campaign — see the webhook at
+  // /api/webhooks/resend. Untracked and genuinely-zero are distinguished by
+  // the caller, not here.
+  openRate: number;
+  clickRate: number;
 };
 
 export type AutomationDTO = {
@@ -113,11 +118,31 @@ export function CampaignsView({
             </div>
           </div>
 
-          {sentCampaigns.length > 0 && (
-            <div className="rounded-[10px] border border-border bg-surface px-4 py-3 text-[11.5px] text-text/45">
-              Open and click tracking isn&rsquo;t wired up yet — {sentCampaigns.length} campaign{sentCampaigns.length === 1 ? "" : "s"} sent, avg open rate not tracked.
-            </div>
-          )}
+          {sentCampaigns.length > 0 &&
+            // Only claim a rate once a campaign has actually reported one.
+            // Averaging in campaigns that predate open tracking would quietly
+            // drag the number toward zero and read as poor performance
+            // rather than missing data.
+            (() => {
+              const tracked = sentCampaigns.filter((c) => c.openRate > 0 || c.clickRate > 0);
+              if (tracked.length === 0) {
+                return (
+                  <div className="rounded-[10px] border border-border bg-surface px-4 py-3 text-[11.5px] text-text/45">
+                    {sentCampaigns.length} campaign{sentCampaigns.length === 1 ? "" : "s"} sent. No opens or clicks reported yet — rates
+                    appear here once Resend starts sending events.
+                  </div>
+                );
+              }
+              const avgOpen = tracked.reduce((n, c) => n + c.openRate, 0) / tracked.length;
+              const avgClick = tracked.reduce((n, c) => n + c.clickRate, 0) / tracked.length;
+              return (
+                <div className="rounded-[10px] border border-border bg-surface px-4 py-3 text-[11.5px] text-text/45">
+                  {Math.round(avgOpen * 100)}% avg open · {Math.round(avgClick * 100)}% avg click across {tracked.length} tracked
+                  campaign{tracked.length === 1 ? "" : "s"}
+                  {tracked.length < sentCampaigns.length && ` (${sentCampaigns.length - tracked.length} sent before tracking, excluded)`}.
+                </div>
+              );
+            })()}
 
           {!aiUnlocked && (
             <div className="flex items-center gap-3 rounded-[10px] border border-purple/30 bg-purple/[.06] px-4 py-3">

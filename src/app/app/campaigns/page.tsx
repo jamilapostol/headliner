@@ -33,6 +33,8 @@ export default async function CampaignsPage() {
     audienceTier: c.audienceTier,
     status: c.status,
     recipientCount: c.recipientCount,
+    openRate: c.openRate,
+    clickRate: c.clickRate,
     sentAt: c.sentAt ? c.sentAt.toISOString() : null,
     revenue: c.revenue,
   }));

@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth";
-import { resendEnabled, sendEmail, sendEmailBatch, type OutgoingEmail } from "@/lib/resend";
+import { resendEnabled, sendEmail, sendEmailBatch, campaignTag, type OutgoingEmail } from "@/lib/resend";
 import { withErrorLog, withErrorState } from "@/lib/action-error";
 import { signFanId } from "@/lib/unsubscribe-token";
 import { CAMPAIGN_RECIPIENT_CAP, MONTHLY_EMAIL_CAP } from "@/lib/plan-limits";
@@ -177,7 +177,7 @@ export async function sendCampaign(campaignId: string): Promise<{ error?: string
         text: campaign.body + unsubscribeFooter(fan.id),
       }));
 
-    const { sent, failed } = await sendEmailBatch(messages);
+    const { sent, failed } = await sendEmailBatch(messages, campaignTag(campaignId));
 
     await db.campaign.update({
       where: { id: campaignId },

@@ -122,6 +122,23 @@ model BetaInvite {
   createdAt DateTime @default(now())
 }
 
+// One row per recipient per event type, written by the Resend webhook.
+// Storing events rather than incrementing a counter is what makes opens
+// unique: a recipient who opens the same email six times must count once,
+// and a webhook that redelivers must not inflate the rate.
+model CampaignEvent {
+  id         String   @id @default(cuid())
+  campaignId String
+  email      String
+  type       String // "delivered" | "opened" | "clicked" | "bounced" | "complained"
+  createdAt  DateTime @default(now())
+
+  campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@unique([campaignId, email, type])
+  @@index([campaignId])
+}
+
 // Server-action failures, so they're visible somewhere other than a Vercel
 // runtime log nobody reads. Written by withErrorLog/withErrorState in
 // src/lib/action-error.ts, which never lets a failed write here mask the
@@ -416,7 +433,8 @@ model Campaign {
   revenue        Int? // cents; null when not applicable (e.g. patron updates)
   createdAt      DateTime       @default(now())
 
-  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspace Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  events    CampaignEvent[]
 
   @@index([workspaceId])
 }

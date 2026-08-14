@@ -10,6 +10,15 @@ const REPLY_TO = process.env.RESEND_REPLY_TO_EMAIL || "support@headline.world";
 
 export type OutgoingEmail = { to: string; subject: string; text: string };
 
+// Resend echoes tags back on delivery/open/click webhooks, and it's the only
+// thing tying an event to the campaign that sent it — without this the
+// webhook knows an email was opened but not which campaign to credit.
+// Tag values accept letters, numbers, underscores and dashes only, which
+// cuid ids satisfy.
+export function campaignTag(campaignId: string) {
+  return [{ name: "campaign_id", value: campaignId }];
+}
+
 export async function sendEmail({ to, subject, text }: OutgoingEmail) {
   if (!resendEnabled) throw new Error("Resend is not configured (set RESEND_API_KEY).");
 
@@ -33,7 +42,7 @@ export async function sendEmail({ to, subject, text }: OutgoingEmail) {
 // inside a single server-action invocation instead of timing out.
 const BATCH_SIZE = 100;
 
-export async function sendEmailBatch(messages: OutgoingEmail[]): Promise<{ sent: number; failed: number }> {
+export async function sendEmailBatch(messages: OutgoingEmail[], tags?: Array<{ name: string; value: string }>): Promise<{ sent: number; failed: number }> {
   if (!resendEnabled) throw new Error("Resend is not configured (set RESEND_API_KEY).");
 
   let sent = 0;
@@ -48,7 +57,7 @@ export async function sendEmailBatch(messages: OutgoingEmail[]): Promise<{ sent:
           "Content-Type": "application/json",
         },
         body: JSON.stringify(
-          chunk.map((m) => ({ from: FROM, to: m.to, subject: m.subject, text: m.text, reply_to: REPLY_TO }))
+          chunk.map((m) => ({ from: FROM, to: m.to, subject: m.subject, text: m.text, reply_to: REPLY_TO, ...(tags ? { tags } : {}) }))
         ),
       });
       if (res.ok) sent += chunk.length;
