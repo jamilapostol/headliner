@@ -1,79 +1,20 @@
-import { db } from "@/lib/db";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { requireAdmin } from "@/lib/admin";
 import { fmtDateUTC } from "@/lib/format";
+import { getBetaCohort, daysSince } from "@/lib/beta-cohort";
 
 // Beta cohort view. The overview page answers "how many signed up"; this one
 // answers the question that actually matters during a beta — did they do
 // anything after signing up, and who should you call first.
+//
+// The cohort itself is computed in lib/beta-cohort.ts, which the Yantra
+// bridge also reads, so this screen and the agent briefings never disagree.
 
 export const dynamic = "force-dynamic";
-
-type Row = {
-  id: string;
-  name: string;
-  createdAt: Date;
-  email: string;
-  confirmed: boolean;
-  bookings: number;
-  contacts: number;
-  transactions: number;
-  fans: number;
-  lastActivity: Date | null;
-};
-
-function daysSince(d: Date) {
-  return Math.floor((Date.now() - d.getTime()) / 86_400_000);
-}
 
 export default async function AdminBetaPage() {
   await requireAdmin();
 
-  const workspaces = await db.workspace.findMany({
-    where: { plan: "beta" },
-    orderBy: { createdAt: "desc" },
-    include: {
-      memberships: { orderBy: { createdAt: "asc" }, take: 1 },
-      _count: { select: { bookings: true, contacts: true, transactions: true, fans: true } },
-    },
-  });
-
-  const admin = createAdminClient();
-  const { data: usersData } = await admin.auth.admin.listUsers({ perPage: 1000 });
-  const usersById = new Map(usersData?.users.map((u) => [u.id, u]) ?? []);
-
-  // Most-recent write across the tables a real user touches first — a stand-in
-  // for "last seen" without adding session tracking.
-  const rows: Row[] = await Promise.all(
-    workspaces.map(async (w) => {
-      const [booking, contact, txn] = await Promise.all([
-        db.booking.findFirst({ where: { workspaceId: w.id }, orderBy: { updatedAt: "desc" }, select: { updatedAt: true } }),
-        db.contact.findFirst({ where: { workspaceId: w.id }, orderBy: { createdAt: "desc" }, select: { createdAt: true } }),
-        db.transaction.findFirst({ where: { workspaceId: w.id }, orderBy: { createdAt: "desc" }, select: { createdAt: true } }),
-      ]);
-      const stamps = [booking?.updatedAt, contact?.createdAt, txn?.createdAt].filter(Boolean) as Date[];
-      const user = w.memberships[0] ? usersById.get(w.memberships[0].userId) : undefined;
-
-      return {
-        id: w.id,
-        name: w.name,
-        createdAt: w.createdAt,
-        email: user?.email ?? "—",
-        confirmed: !!user?.email_confirmed_at,
-        bookings: w._count.bookings,
-        contacts: w._count.contacts,
-        transactions: w._count.transactions,
-        fans: w._count.fans,
-        lastActivity: stamps.length ? new Date(Math.max(...stamps.map((s) => s.getTime()))) : null,
-      };
-    })
-  );
-
-  // Activation = created at least one booking. It's the one action that means
-  // they're using this for real work rather than looking around.
-  const activated = rows.filter((r) => r.bookings > 0);
-  const confirmedOnly = rows.filter((r) => r.confirmed && r.bookings === 0);
-  const neverConfirmed = rows.filter((r) => !r.confirmed);
+  const { rows, activated, confirmedOnly, neverConfirmed } = await getBetaCohort();
 
   const stats = [
     { label: "BETA WORKSPACES", value: String(rows.length) },
