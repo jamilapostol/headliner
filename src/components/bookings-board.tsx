@@ -107,6 +107,26 @@ export function BookingsBoard({ bookings: bookingsProp, plan }: { bookings: Book
       </div>
       <div className="mb-[18px] text-[13px] text-text/50">Drag cards between stages, or click one to open details and move it from there.</div>
 
+      {bookings.length === 0 && (
+        // First thing a new workspace sees. Five empty columns read as a
+        // broken page rather than an empty one, so say what this is for and
+        // give the one action that starts everything else working.
+        <div className="mb-[18px] rounded-card border border-accent/25 bg-accent-soft px-5 py-[18px]">
+          <div className="mb-1 text-[14.5px] font-semibold">Start with one hold you&rsquo;re chasing</div>
+          <div className="mb-3.5 max-w-[560px] text-[13px] leading-relaxed text-text/60">
+            A booking moves left to right as it firms up — lead, contacted, offer sent, negotiating, confirmed, paid. Add the show
+            you&rsquo;re waiting to hear back on and the rest of HEADLINE.WORLD fills in around it: the contact, the contract, the
+            money, the day sheet.
+          </div>
+          <button
+            onClick={() => setShowNew(true)}
+            className="cursor-pointer rounded-lg bg-accent px-3.5 py-2 text-[12.5px] font-semibold text-ink"
+          >
+            Add your first booking
+          </button>
+        </div>
+      )}
+
       <div className="flex flex-1 items-start gap-3 overflow-x-auto pb-3">
         {STAGES.map((stage) => {
           const cards = bookings.filter((b) => b.stage === stage.key);

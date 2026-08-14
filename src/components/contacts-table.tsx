@@ -198,7 +198,30 @@ export function ContactsTable({ contacts, plan }: { contacts: ContactDTO[]; plan
               </div>
             );
           })}
-          {filtered.length === 0 && <div className="px-[18px] py-7 text-center text-[13px] text-text/40">No contacts match your search.</div>}
+          {filtered.length === 0 &&
+            // An empty workspace isn't a failed search — telling a new user
+            // their search matched nothing when they've never added anyone
+            // reads as a broken filter.
+            (contacts.length === 0 ? (
+              <div className="px-[18px] py-9 text-center">
+                <div className="mb-1 text-[14px] font-semibold">No contacts yet</div>
+                <div className="mx-auto mb-4 max-w-[420px] text-[13px] leading-relaxed text-text/55">
+                  Promoters, buyers, venue staff, press. Add them as you meet them and every booking can point at the person behind
+                  it — or import a list you already keep.
+                </div>
+                <button
+                  onClick={() => {
+                    setNewContactError(null);
+                    setShowNew(true);
+                  }}
+                  className="cursor-pointer rounded-lg bg-accent px-3.5 py-2 text-[12.5px] font-semibold text-ink"
+                >
+                  Add your first contact
+                </button>
+              </div>
+            ) : (
+              <div className="px-[18px] py-7 text-center text-[13px] text-text/40">No contacts match your search.</div>
+            ))}
         </div>
       </div>
 
