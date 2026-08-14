@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
+import { normalizeInviteCode, inviteRedeemable, redeemableWhere } from "@/lib/invites";
 import { createClient } from "@/lib/supabase/server";
 import { checkRateLimit, requestIp } from "@/lib/rate-limit";
 import { withErrorState } from "@/lib/action-error";
@@ -15,7 +16,7 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
     const name = String(formData.get("name") ?? "").trim();
     const email = String(formData.get("email") ?? "").trim().toLowerCase();
     const password = String(formData.get("password") ?? "");
-    const code = String(formData.get("code") ?? "").trim().toUpperCase();
+    const code = normalizeInviteCode(formData.get("code"));
 
     if (!name || !email || !password) {
       return { error: "All fields are required." };
@@ -41,7 +42,7 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
 
     const invite = await db.betaInvite.findUnique({ where: { code } });
     if (!invite || !invite.active) return { error: "That invite code isn't valid." };
-    if (invite.maxUses !== null && invite.usedCount >= invite.maxUses) {
+    if (!inviteRedeemable(invite)) {
       return { error: "That invite code has already been fully redeemed." };
     }
 
@@ -68,11 +69,7 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
     try {
       await db.$transaction(async (tx) => {
         const claimed = await tx.betaInvite.updateMany({
-          where: {
-            code,
-            active: true,
-            ...(invite.maxUses !== null ? { usedCount: { lt: invite.maxUses } } : {}),
-          },
+          where: redeemableWhere(code, invite.maxUses),
           data: { usedCount: { increment: 1 } },
         });
         if (claimed.count === 0) throw new Error("invite no longer available");

@@ -5,7 +5,7 @@ import { getSession } from "@/lib/auth";
 import { withErrorState } from "@/lib/action-error";
 import { requireMinPlan } from "@/lib/plan-limits-server";
 import { aiEnabled, claude, ROADIE_MODEL } from "@/lib/claude";
-import { MONTHLY_AI_CAP } from "@/lib/plan-limits";
+import { aiCapFor, aiQuotaExceeded, usageMonth } from "@/lib/plan-limits";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { draftFollowupEmail as templateFollowupEmail, summarizeContract as templateContractSummary, type ContractFact } from "@/lib/ai";
 
@@ -21,16 +21,16 @@ import { draftFollowupEmail as templateFollowupEmail, summarizeContract as templ
 // can't meaningfully overshoot the cap.
 async function consumeAiQuota(workspaceId: string): Promise<string | null> {
   const workspace = await db.workspace.findUniqueOrThrow({ where: { id: workspaceId }, select: { plan: true } });
-  const cap = MONTHLY_AI_CAP[workspace.plan] ?? 0;
+  const cap = aiCapFor(workspace.plan);
   if (cap <= 0) return "Roadie AI requires the Touring plan or higher.";
 
-  const month = new Date().toISOString().slice(0, 7); // "2026-08"
+  const month = usageMonth();
   const usage = await db.aiUsage.upsert({
     where: { workspaceId_month: { workspaceId, month } },
     create: { workspaceId, month, count: 1 },
     update: { count: { increment: 1 } },
   });
-  if (usage.count > cap) {
+  if (aiQuotaExceeded(usage.count, cap)) {
     return `You've used all ${cap} Roadie actions included this month. Your quota resets on the 1st.`;
   }
   return null;

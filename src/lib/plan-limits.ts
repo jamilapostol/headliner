@@ -54,3 +54,22 @@ export const MONTHLY_EMAIL_CAP: Record<string, number> = { pro: 5000, beta: 5000
 // unbilled workspace running up an uncapped bill. Advertised on the
 // pricing page.
 export const MONTHLY_AI_CAP: Record<string, number> = { touring: 200, team: 500, beta: 200 };
+
+/** A missing or zero cap means "not entitled", not "unlimited" — this table
+ *  gates access to Roadie as well as bounding spend, so the default has to
+ *  fail closed. */
+export function aiCapFor(plan: string): number {
+  return MONTHLY_AI_CAP[plan] ?? 0;
+}
+
+/** consumeAiQuota increments first, then checks, so a burst of parallel
+ *  requests can't slip past the cap. That makes the nth call the last
+ *  allowed one: count === cap is still inside the allowance. */
+export function aiQuotaExceeded(countAfterIncrement: number, cap: number): boolean {
+  return countAfterIncrement > cap;
+}
+
+/** The calendar month key used for per-workspace usage rows ("2026-08"). */
+export function usageMonth(now: Date = new Date()): string {
+  return now.toISOString().slice(0, 7);
+}
