@@ -122,6 +122,23 @@ model BetaInvite {
   createdAt DateTime @default(now())
 }
 
+// Server-action failures, so they're visible somewhere other than a Vercel
+// runtime log nobody reads. Written by withErrorLog/withErrorState in
+// src/lib/action-error.ts, which never lets a failed write here mask the
+// original error. Deliberately has no relations — an error is worth
+// recording even when the row it concerned is gone.
+model ActionError {
+  id          String   @id @default(cuid())
+  label       String // the server action's name, e.g. "generateFollowupDraft"
+  message     String
+  stack       String?
+  workspaceId String? // best-effort; absent when the failure preceded session lookup
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([label])
+}
+
 model AdminAuditLog {
   id         String   @id @default(cuid())
   adminEmail String
