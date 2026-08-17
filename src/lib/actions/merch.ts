@@ -1,12 +1,15 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { randomUUID } from "node:crypto";
+import { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { withErrorLog, withErrorState } from "@/lib/action-error";
 import { isAllowedImage } from "@/lib/file-validation";
 import { requireMinPlan } from "@/lib/plan-limits-server";
+import type { AdjustStockResult, CompleteSaleResult, MerchSyncOutcome } from "@/lib/merch-sync";
 
 const GLYPH_COLORS = ["#3fe87a", "#e8e43f", "#e8983f", "#7ab8e8", "#c99df5", "#e87a9a"];
 
@@ -45,20 +48,6 @@ export async function createMerchItem(formData: FormData) {
   });
 }
 
-export async function adjustStock(itemId: string, delta: number) {
-  return withErrorLog("adjustStock", async () => {
-    const session = await getSession();
-    if (!session) return;
-
-    const item = await db.merchItem.findUnique({ where: { id: itemId } });
-    if (!item || item.workspaceId !== session.workspaceId) return;
-
-    const stock = Math.max(0, item.stock + delta);
-    await db.merchItem.update({ where: { id: itemId }, data: { stock } });
-    revalidatePath("/app/merch");
-  });
-}
-
 export async function uploadMerchImage(_prev: ActionState, formData: FormData): Promise<ActionState> {
   return withErrorState("uploadMerchImage", async () => {
     const session = await getSession();
@@ -91,41 +80,181 @@ export async function uploadMerchImage(_prev: ActionState, formData: FormData): 
   });
 }
 
-export async function completeSale(cart: Array<{ itemId: string; qty: number }>) {
-  return withErrorLog("completeSale", async () => {
+// --- Idempotent, delta-based mutations ---------------------------------
+//
+// adjustStock and completeSale are the two flows a device queues while
+// offline at a merch table (see src/lib/merch-offline.ts) and replays on
+// reconnect. Both properties below are what make replay safe:
+//
+// 1. Idempotent: every call carries a client-generated key. claimOrReplay
+//    claims it once via `INSERT ... ON CONFLICT DO NOTHING` — never a
+//    Prisma .create() + catch, because a thrown Postgres error aborts every
+//    later statement in the same transaction, and this whole claim needs to
+//    share a transaction with the effect it guards. A second call with the
+//    same key finds the row already claimed and returns the stored result
+//    instead of re-running the effect, so a retried "sell one" can't sell
+//    two, and a retried sale can't log revenue twice.
+//
+// 2. Delta-based: the stock write is one atomic `UPDATE ... SET stock =
+//    stock + $delta` (or the LEAST/GREATEST-clamped equivalent), not a
+//    read-in-application-code-then-write. Postgres evaluates the SET
+//    expression against the pre-statement row under that row's lock, so two
+//    concurrent updates to the same item — from two different devices both
+//    coming back online at once — serialize correctly instead of one
+//    clobbering the other.
+
+async function claimOrReplay<T>(
+  tx: Prisma.TransactionClient,
+  workspaceId: string,
+  key: string,
+  action: string
+): Promise<{ claimed: true; opId: string } | { claimed: false; result: T | null }> {
+  const opId = randomUUID();
+  const rows = await tx.$queryRaw<Array<{ id: string }>>`
+    INSERT INTO "MerchSyncOperation" ("id", "workspaceId", "key", "action", "resultJson", "createdAt")
+    VALUES (${opId}, ${workspaceId}, ${key}, ${action}, '', now())
+    ON CONFLICT ("workspaceId", "key") DO NOTHING
+    RETURNING "id"
+  `;
+  if (rows.length > 0) return { claimed: true, opId: rows[0].id };
+
+  const existing = await tx.merchSyncOperation.findUnique({ where: { workspaceId_key: { workspaceId, key } } });
+  if (existing?.resultJson) return { claimed: false, result: JSON.parse(existing.resultJson) as T };
+  // Claimed by an attempt that hasn't written its result yet — another tab
+  // mid-flight, or a crash between claiming and finishing. Either way this
+  // call didn't do the work; the caller reports retryable, not success.
+  return { claimed: false, result: null };
+}
+
+export async function adjustStock(
+  itemId: string,
+  delta: number,
+  idempotencyKey: string
+): Promise<MerchSyncOutcome<AdjustStockResult>> {
+  const outcome = await withErrorLog("adjustStock", async (): Promise<MerchSyncOutcome<AdjustStockResult>> => {
     const session = await getSession();
-    if (!session) return;
+    if (!session) return { ok: false, kind: "permanent", error: "Not signed in." };
+
+    return db.$transaction(async (tx) => {
+      const claim = await claimOrReplay<AdjustStockResult>(tx, session.workspaceId, idempotencyKey, "adjustStock");
+      if (!claim.claimed) {
+        if (claim.result) return { ok: true, result: claim.result, replayed: true };
+        return { ok: false, kind: "retryable", error: "Sync already in progress — retry shortly." };
+      }
+
+      // GREATEST(stock + delta, 0): the SET expression's `stock` reads the
+      // pre-update value, so this is a single atomic delta write, not a
+      // read-then-write — see the module comment.
+      const rows = await tx.$queryRaw<Array<{ stock: number }>>`
+        UPDATE "MerchItem"
+        SET stock = GREATEST(stock + ${delta}, 0)
+        WHERE id = ${itemId} AND "workspaceId" = ${session.workspaceId}
+        RETURNING stock
+      `;
+      if (rows.length === 0) {
+        return { ok: false, kind: "permanent", error: "Item not found." };
+      }
+
+      const result: AdjustStockResult = { itemId, stock: rows[0].stock };
+      await tx.merchSyncOperation.update({ where: { id: claim.opId }, data: { resultJson: JSON.stringify(result) } });
+      return { ok: true, result };
+    });
+  });
+
+  if (outcome) revalidatePath("/app/merch");
+  return outcome ?? { ok: false, kind: "retryable", error: "Unexpected server error." };
+}
+
+export async function completeSale(
+  cart: Array<{ itemId: string; qty: number }>,
+  idempotencyKey: string
+): Promise<MerchSyncOutcome<CompleteSaleResult>> {
+  const outcome = await withErrorLog("completeSale", async (): Promise<MerchSyncOutcome<CompleteSaleResult>> => {
+    const session = await getSession();
+    if (!session) return { ok: false, kind: "permanent", error: "Not signed in." };
 
     const items = cart.filter((c) => c.qty > 0);
-    if (items.length === 0) return;
+    if (items.length === 0) return { ok: false, kind: "permanent", error: "Nothing in the cart." };
 
-    await requireMinPlan(session.workspaceId, "pro");
-
-    const merchItems = await db.merchItem.findMany({
-      where: { id: { in: items.map((c) => c.itemId) }, workspaceId: session.workspaceId },
-    });
-
-    let total = 0;
-    const updates = [];
-    for (const c of items) {
-      const item = merchItems.find((m) => m.id === c.itemId);
-      if (!item) continue;
-      const qty = Math.min(c.qty, item.stock);
-      if (qty <= 0) continue;
-      total += qty * item.price;
-      updates.push(db.merchItem.update({ where: { id: item.id }, data: { stock: item.stock - qty } }));
+    try {
+      await requireMinPlan(session.workspaceId, "pro");
+    } catch {
+      return { ok: false, kind: "permanent", error: "Merch requires the Pro plan or higher." };
     }
-    if (total === 0) return;
 
-    await db.$transaction([
-      ...updates,
-      db.transaction.create({
+    return db.$transaction(async (tx) => {
+      const claim = await claimOrReplay<CompleteSaleResult>(tx, session.workspaceId, idempotencyKey, "completeSale");
+      if (!claim.claimed) {
+        if (claim.result) return { ok: true, result: claim.result, replayed: true };
+        return { ok: false, kind: "retryable", error: "Sync already in progress — retry shortly." };
+      }
+
+      const sold: CompleteSaleResult["sold"] = [];
+      let total = 0;
+
+      // Every completeSale locks its cart's rows in the same order
+      // (itemId ascending) regardless of the order they were added to the
+      // cart. Two concurrent multi-item sales sharing items but adding them
+      // in different orders would otherwise be a textbook deadlock: A holds
+      // item1's lock wanting item2, B holds item2's lock wanting item1.
+      // Postgres would detect and abort one — a fixed lock order prevents
+      // the circular wait instead of just recovering from it.
+      const ordered = [...items].sort((a, b) => a.itemId.localeCompare(b.itemId));
+
+      for (const c of ordered) {
+        // The `before` CTE takes a row lock (FOR UPDATE) and captures the
+        // pre-update stock. Without it, referencing `stock` inside RETURNING
+        // would read the just-updated (post-decrement) value — RETURNING
+        // reflects the new row, unlike a SET clause's right-hand side, which
+        // reads the old one. Capturing the old value explicitly is what lets
+        // one statement do an atomic, stock-clamped decrement and report how
+        // much it actually sold.
+        const rows = await tx.$queryRaw<Array<{ price: number; sold: number }>>`
+          WITH before AS (
+            SELECT stock, price FROM "MerchItem"
+            WHERE id = ${c.itemId} AND "workspaceId" = ${session.workspaceId}
+            FOR UPDATE
+          )
+          UPDATE "MerchItem"
+          SET stock = "MerchItem".stock - LEAST(${c.qty}, before.stock)
+          FROM before
+          WHERE "MerchItem".id = ${c.itemId} AND "MerchItem"."workspaceId" = ${session.workspaceId}
+          RETURNING before.price, LEAST(${c.qty}, before.stock) AS sold
+        `;
+        if (rows.length === 0) continue; // item deleted or not this workspace's — skip, don't fail the whole sale
+
+        const qtySold = rows[0].sold;
+        if (qtySold > 0) {
+          total += qtySold * rows[0].price;
+        }
+        if (qtySold !== c.qty) {
+          sold.push({ itemId: c.itemId, requested: c.qty, sold: qtySold });
+        }
+      }
+
+      if (total === 0) {
+        // Still store this under the claimed key: a replay of this exact
+        // key must keep returning "nothing was sellable", not silently
+        // re-attempt against whatever stock exists by the time it retries.
+        const result: CompleteSaleResult = { total: 0, sold: items.map((c) => ({ itemId: c.itemId, requested: c.qty, sold: 0 })) };
+        await tx.merchSyncOperation.update({ where: { id: claim.opId }, data: { resultJson: JSON.stringify(result) } });
+        return { ok: false, kind: "permanent", error: "Everything in this sale is out of stock." };
+      }
+
+      await tx.transaction.create({
         data: { workspaceId: session.workspaceId, kind: "income", category: "Merchandise", amount: total, source: "Point of sale" },
-      }),
-    ]);
+      });
 
+      const result: CompleteSaleResult = { total, sold };
+      await tx.merchSyncOperation.update({ where: { id: claim.opId }, data: { resultJson: JSON.stringify(result) } });
+      return { ok: true, result };
+    });
+  });
+
+  if (outcome) {
     revalidatePath("/app/merch");
     revalidatePath("/app/finance");
     revalidatePath("/app");
-  });
+  }
+  return outcome ?? { ok: false, kind: "retryable", error: "Unexpected server error." };
 }

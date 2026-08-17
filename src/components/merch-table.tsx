@@ -3,7 +3,10 @@
 import { useActionState, useRef, useState, useTransition } from "react";
 import Image from "next/image";
 import { money } from "@/lib/format";
-import { adjustStock, createMerchItem, uploadMerchImage, type ActionState } from "@/lib/actions/merch";
+import { createMerchItem, uploadMerchImage, type ActionState } from "@/lib/actions/merch";
+import { useMerchSyncQueue } from "@/lib/merch-offline";
+import { effectiveStock } from "@/lib/merch-sync";
+import { SyncStatus } from "@/components/merch-sync-status";
 
 export type MerchItemDTO = {
   id: string;
@@ -21,9 +24,15 @@ export type MerchItemDTO = {
 export function MerchTable({ items }: { items: MerchItemDTO[] }) {
   const [showNew, setShowNew] = useState(false);
   const [, startTransition] = useTransition();
+  const sync = useMerchSyncQueue();
 
-  const totalUnits = items.reduce((a, i) => a + i.stock, 0);
-  const retailValue = items.reduce((a, i) => a + i.stock * i.price, 0);
+  // Server-given stock minus whatever's still queued for that item — see
+  // src/lib/merch-sync.ts. Keeps the count honest while offline instead of
+  // showing a number the seller already knows is stale.
+  const displayStock = (item: MerchItemDTO) => effectiveStock(item.stock, item.id, [...sync.pending, ...sync.failed]);
+
+  const totalUnits = items.reduce((a, i) => a + displayStock(i), 0);
+  const retailValue = items.reduce((a, i) => a + displayStock(i) * i.price, 0);
 
   return (
     <div>
@@ -38,7 +47,10 @@ export function MerchTable({ items }: { items: MerchItemDTO[] }) {
           </button>
         </div>
       </div>
-      <div className="mb-[18px] text-[13px] text-text/50">Inventory travels with the tour — adjust counts after each settle-up.</div>
+      <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2">
+        <div className="text-[13px] text-text/50">Inventory travels with the tour — adjust counts after each settle-up.</div>
+        <SyncStatus sync={sync} />
+      </div>
 
       <div className="overflow-x-auto rounded-card border border-border bg-surface">
         <div className="min-w-[560px]">
@@ -50,7 +62,8 @@ export function MerchTable({ items }: { items: MerchItemDTO[] }) {
           <div>STATUS</div>
         </div>
         {items.map((m) => {
-          const pct = m.maxStock ? m.stock / m.maxStock : 0;
+          const stock = displayStock(m);
+          const pct = m.maxStock ? stock / m.maxStock : 0;
           const low = pct < 0.25;
           const margin = m.price ? Math.round(((m.price - m.cogs) / m.price) * 100) : 0;
           return (
@@ -67,12 +80,12 @@ export function MerchTable({ items }: { items: MerchItemDTO[] }) {
               <div>
                 <div className="mb-1 flex items-center gap-2 font-mono text-[12.5px]">
                   <span>
-                    {m.stock}/{m.maxStock}
+                    {stock}/{m.maxStock}
                   </span>
-                  <button onClick={() => startTransition(() => adjustStock(m.id, -1))} className="cursor-pointer text-text/40 hover:text-text" title="Sell one">
+                  <button onClick={() => sync.enqueueAdjustStock(m.id, -1)} className="cursor-pointer text-text/40 hover:text-text" title="Sell one">
                     −
                   </button>
-                  <button onClick={() => startTransition(() => adjustStock(m.id, 10))} className="cursor-pointer text-text/40 hover:text-text" title="Restock +10">
+                  <button onClick={() => sync.enqueueAdjustStock(m.id, 10)} className="cursor-pointer text-text/40 hover:text-text" title="Restock +10">
                     +10
                   </button>
                 </div>

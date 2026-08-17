@@ -122,6 +122,34 @@ model BetaInvite {
   createdAt DateTime @default(now())
 }
 
+// Idempotency ledger for offline-queued merch mutations (adjustStock,
+// completeSale) — see src/lib/merch-offline.ts. A device at a merch table
+// with bad signal queues an action locally and retries it on reconnect;
+// without this table a retried request would sell the same inventory or
+// log the same revenue twice.
+//
+// The (workspaceId, key) unique constraint is the whole mechanism: claiming
+// a key is a single `INSERT ... ON CONFLICT DO NOTHING`, which can't throw,
+// so it's safe inside the same transaction as the mutation it guards (a
+// caught Postgres error aborts the rest of that transaction — a pattern
+// this deliberately avoids). A conflict means "already applied or in
+// flight" — resultJson holds what to hand back to a replay without
+// re-running the effect. An empty resultJson on a conflicting row means a
+// prior attempt claimed the key but never finished (crash, or another tab
+// racing at this instant); the caller treats that as retryable rather than
+// waiting on it.
+model MerchSyncOperation {
+  id          String   @id @default(cuid())
+  workspaceId String
+  key         String // client-generated UUID, one per queued action
+  action      String // "adjustStock" | "completeSale"
+  resultJson  String // "" until the effect completes; then the JSON to replay verbatim
+  createdAt   DateTime @default(now())
+
+  @@unique([workspaceId, key])
+  @@index([createdAt])
+}
+
 // One row per recipient per event type, written by the Resend webhook.
 // Storing events rather than incrementing a counter is what makes opens
 // unique: a recipient who opens the same email six times must count once,
