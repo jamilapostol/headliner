@@ -1,12 +1,12 @@
 import { requireAdmin } from "@/lib/admin";
 import { fmtDateUTC } from "@/lib/format";
-import { getBetaCohort, daysSince } from "@/lib/beta-cohort";
+import { getCohort, daysSince } from "@/lib/cohort";
 
 // Beta cohort view. The overview page answers "how many signed up"; this one
 // answers the question that actually matters during a beta — did they do
 // anything after signing up, and who should you call first.
 //
-// The cohort itself is computed in lib/beta-cohort.ts, which the Yantra
+// The cohort itself is computed in lib/cohort.ts, which the YANTRA
 // bridge also reads, so this screen and the agent briefings never disagree.
 
 export const dynamic = "force-dynamic";
@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 export default async function AdminBetaPage() {
   await requireAdmin();
 
-  const { rows, activated, confirmedOnly, neverConfirmed } = await getBetaCohort();
+  const { rows, activated, confirmedOnly, neverConfirmed } = await getCohort("beta");
 
   const stats = [
     { label: "BETA WORKSPACES", value: String(rows.length) },

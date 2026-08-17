@@ -1,14 +1,20 @@
+import type { Plan } from "@prisma/client";
 import { db } from "@/lib/db";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-// Beta cohort computation, shared by the /admin/beta screen and the Yantra
-// bridge (src/app/api/integrations/yantra/route.ts). Both need the same
-// answer to "who signed up, and did they do anything after" — keeping one
-// implementation means the console and the agent briefings can't disagree.
+// Workspace cohort computation, shared by the /admin/beta screen and the
+// YANTRA bridge. Both need the same answer to "who signed up, and did they do
+// anything after" — one implementation means the console and the agent
+// briefings can't disagree.
+//
+// Was beta-only; it now covers every plan, because reporting a total of six
+// workspaces while only describing two of them left four accounts visible to
+// YANTRA as a bare count.
 
-export type BetaCohortRow = {
+export type CohortRow = {
   id: string;
   name: string;
+  plan: string;
   createdAt: Date;
   email: string;
   confirmed: boolean;
@@ -17,25 +23,25 @@ export type BetaCohortRow = {
   transactions: number;
   fans: number;
   lastActivity: Date | null;
+  /** activated = did real work; idle = confirmed but never did; unconfirmed = never clicked the email link. */
+  status: "activated" | "idle" | "unconfirmed";
 };
 
-export type BetaCohort = {
-  rows: BetaCohortRow[];
-  /** Created at least one booking — the action that means real use, not a look around. */
-  activated: BetaCohortRow[];
-  /** Confirmed their email but never created a booking: the follow-up list. */
-  confirmedOnly: BetaCohortRow[];
-  /** Never confirmed their email — stuck before they ever saw the product. */
-  neverConfirmed: BetaCohortRow[];
+export type Cohort = {
+  rows: CohortRow[];
+  activated: CohortRow[];
+  confirmedOnly: CohortRow[];
+  neverConfirmed: CohortRow[];
 };
 
 export function daysSince(d: Date): number {
   return Math.floor((Date.now() - d.getTime()) / 86_400_000);
 }
 
-export async function getBetaCohort(): Promise<BetaCohort> {
+/** Pass a plan to narrow (the beta console does); omit for every workspace. */
+export async function getCohort(plan?: Plan): Promise<Cohort> {
   const workspaces = await db.workspace.findMany({
-    where: { plan: "beta" },
+    ...(plan ? { where: { plan } } : {}),
     orderBy: { createdAt: "desc" },
     include: {
       memberships: { orderBy: { createdAt: "asc" }, take: 1 },
@@ -49,7 +55,7 @@ export async function getBetaCohort(): Promise<BetaCohort> {
 
   // Most-recent write across the tables a real user touches first — a stand-in
   // for "last seen" without adding session tracking.
-  const rows: BetaCohortRow[] = await Promise.all(
+  const rows: CohortRow[] = await Promise.all(
     workspaces.map(async (w) => {
       const [booking, contact, txn] = await Promise.all([
         db.booking.findFirst({ where: { workspaceId: w.id }, orderBy: { updatedAt: "desc" }, select: { updatedAt: true } }),
@@ -58,26 +64,31 @@ export async function getBetaCohort(): Promise<BetaCohort> {
       ]);
       const stamps = [booking?.updatedAt, contact?.createdAt, txn?.createdAt].filter(Boolean) as Date[];
       const user = w.memberships[0] ? usersById.get(w.memberships[0].userId) : undefined;
+      const confirmed = !!user?.email_confirmed_at;
 
       return {
         id: w.id,
         name: w.name,
+        plan: w.plan,
         createdAt: w.createdAt,
         email: user?.email ?? "—",
-        confirmed: !!user?.email_confirmed_at,
+        confirmed,
         bookings: w._count.bookings,
         contacts: w._count.contacts,
         transactions: w._count.transactions,
         fans: w._count.fans,
         lastActivity: stamps.length ? new Date(Math.max(...stamps.map((s) => s.getTime()))) : null,
+        // Activation = created at least one booking. It's the one action that
+        // means they're using this for real work rather than looking around.
+        status: w._count.bookings > 0 ? "activated" : confirmed ? "idle" : "unconfirmed",
       };
     })
   );
 
   return {
     rows,
-    activated: rows.filter((r) => r.bookings > 0),
-    confirmedOnly: rows.filter((r) => r.confirmed && r.bookings === 0),
-    neverConfirmed: rows.filter((r) => !r.confirmed),
+    activated: rows.filter((r) => r.status === "activated"),
+    confirmedOnly: rows.filter((r) => r.status === "idle"),
+    neverConfirmed: rows.filter((r) => r.status === "unconfirmed"),
   };
 }
