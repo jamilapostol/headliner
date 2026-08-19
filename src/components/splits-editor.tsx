@@ -36,7 +36,7 @@ export function SplitsEditor({
   tourId: string | null;
 }) {
   const [adding, setAdding] = useState(false);
-  const [, startTransition] = useTransition();
+  const [pending, startTransition] = useTransition();
 
   // Off by exactly 100 is the only configuration that pays out what people
   // expect; anything else is flagged rather than silently normalised, since
@@ -99,8 +99,12 @@ export function SplitsEditor({
                 className="rounded-[10px] border border-border bg-surface-nested px-3 py-2 text-right font-mono text-[13px] outline-none focus:border-accent/50"
               />
             </label>
-            <button type="submit" className="cursor-pointer rounded-[10px] bg-accent px-4 py-2 text-[12.5px] font-semibold text-ink">
-              Add
+            <button
+              type="submit"
+              disabled={pending}
+              className="cursor-pointer rounded-[10px] bg-accent px-4 py-2 text-[12.5px] font-semibold text-ink disabled:opacity-50"
+            >
+              {pending ? "Adding…" : "Add"}
             </button>
             <button
               type="button"
@@ -320,8 +324,12 @@ function SplitRow({ row, color, tourId }: { row: Row; color: string; tourId: str
               className="rounded-[8px] border border-border bg-surface-nested px-2.5 py-1.5 text-[12.5px] outline-none focus:border-accent/50"
             />
           </label>
-          <button type="submit" className="cursor-pointer rounded-[8px] bg-accent px-3 py-1.5 text-[12px] font-semibold text-ink">
-            Record
+          <button
+            type="submit"
+            disabled={pending}
+            className="cursor-pointer rounded-[8px] bg-accent px-3 py-1.5 text-[12px] font-semibold text-ink disabled:opacity-50"
+          >
+            {pending ? "Recording…" : "Record"}
           </button>
           <button
             type="button"

@@ -16,10 +16,18 @@ export default async function MerchEconomicsPage() {
   const { workspace } = await requireWorkspace();
   if (!planAtLeast(workspace.plan, "pro")) redirect("/app/billing?locked=merch");
 
+  // Bounded to a rolling year. Line items accumulate for as long as an
+  // artist keeps selling, and an all-time query would read every row ever
+  // written on each page load. A year is also the more useful window: what
+  // sold two tours and a merch redesign ago says little about what to print
+  // next. Aligned with the (workspaceId, soldAt) index.
+  const since = new Date();
+  since.setUTCFullYear(since.getUTCFullYear() - 1);
+
   const [items, sales, counts, tour] = await Promise.all([
     db.merchItem.findMany({ where: { workspaceId: workspace.id }, orderBy: { name: "asc" } }),
-    db.merchSale.findMany({ where: { workspaceId: workspace.id }, orderBy: { soldAt: "asc" } }),
-    db.stockCount.findMany({ where: { workspaceId: workspace.id }, orderBy: { countedAt: "desc" } }),
+    db.merchSale.findMany({ where: { workspaceId: workspace.id, soldAt: { gte: since } }, orderBy: { soldAt: "asc" } }),
+    db.stockCount.findMany({ where: { workspaceId: workspace.id, countedAt: { gte: since } }, orderBy: { countedAt: "desc" } }),
     db.tour.findFirst({
       where: { workspaceId: workspace.id },
       orderBy: { startDate: "desc" },
@@ -63,7 +71,8 @@ export default async function MerchEconomicsPage() {
 
       <h1 className="mb-1 text-[22px] tracking-[-.02em] sm:text-[26px]">Merch economics</h1>
       <div className="mb-[18px] text-[13px] text-text/50">
-        What each item earns after what it cost to make — before the venue&rsquo;s cut and every other tour expense.
+        What each item earns after what it cost to make — before the venue&rsquo;s cut and every other tour expense. Last 12
+        months.
       </div>
 
       {(loss.unitsShort > 0 || loss.unitsOver > 0) && (

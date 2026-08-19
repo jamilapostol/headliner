@@ -14,8 +14,11 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
   });
   if (!workspace) return new Response("Not found", { status: 404 });
 
+  // Upcoming only, filtered in the query — same boundary as the page.
+  const todayUtc = new Date(`${new Date().toISOString().slice(0, 10)}T00:00:00.000Z`);
+
   const bookings = await db.booking.findMany({
-    where: { workspaceId: workspace.id, stage: { in: ["Confirmed", "Paid"] } },
+    where: { workspaceId: workspace.id, stage: { in: ["Confirmed", "Paid"] }, date: { gte: todayUtc } },
     select: { id: true, venue: true, city: true, date: true, stage: true, ticketUrl: true },
     orderBy: { date: "asc" },
   });

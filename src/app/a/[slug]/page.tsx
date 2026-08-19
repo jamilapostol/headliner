@@ -1,3 +1,4 @@
+import { cache } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -13,21 +14,30 @@ export const dynamic = "force-dynamic";
 // confirmed dates only, and only the fields a listing needs. See
 // lib/public-profile.ts for why that mapping is field-by-field.
 
-async function load(slug: string) {
+// generateMetadata and the component both need this, and Next calls them
+// separately — cache() collapses that into one set of queries per request,
+// matching how getSession() is shared in lib/auth.ts.
+const load = cache(async function load(slug: string) {
   const workspace = await db.workspace.findFirst({
     where: { publicSlug: slug, publicEnabled: true },
     select: { id: true, name: true, publicBio: true, publicSlug: true },
   });
   if (!workspace) return null;
 
+  // Filter to upcoming at the DB rather than fetching a career's worth of
+  // dates to display the next handful. Booking dates are UTC-midnight
+  // markers, so gte today-midnight keeps a show happening tonight —
+  // matching what publicShows() does with the same boundary.
+  const todayUtc = new Date(`${new Date().toISOString().slice(0, 10)}T00:00:00.000Z`);
+
   const bookings = await db.booking.findMany({
-    where: { workspaceId: workspace.id, stage: { in: ["Confirmed", "Paid"] } },
+    where: { workspaceId: workspace.id, stage: { in: ["Confirmed", "Paid"] }, date: { gte: todayUtc } },
     select: { id: true, venue: true, city: true, date: true, stage: true, ticketUrl: true },
     orderBy: { date: "asc" },
   });
 
   return { workspace, shows: publicShows(bookings) };
-}
+});
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;

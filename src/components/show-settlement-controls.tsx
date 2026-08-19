@@ -293,8 +293,12 @@ function VenueCutSettlement({
               className="rounded-[8px] border border-border bg-surface-nested px-2.5 py-1.5 text-right font-mono text-[12.5px] outline-none focus:border-accent/50"
             />
           </label>
-          <button type="submit" className="cursor-pointer rounded-[8px] bg-accent px-3 py-1.5 text-[12px] font-semibold text-ink">
-            Record
+          <button
+            type="submit"
+            disabled={pending}
+            className="cursor-pointer rounded-[8px] bg-accent px-3 py-1.5 text-[12px] font-semibold text-ink disabled:opacity-50"
+          >
+            {pending ? "Recording…" : "Record"}
           </button>
           <button
             type="button"
