@@ -90,6 +90,7 @@ export default async function ShowSettlementPage({ params }: { params: Promise<{
       <ShowSettlementControls
         bookingId={booking.id}
         merchCutPct={booking.merchCutBps / 100}
+        timezone={booking.timezone}
         merchGross={pnl.merchGross}
         venueMerchCut={pnl.venueMerchCut}
         tagged={tagged.map((t) => ({

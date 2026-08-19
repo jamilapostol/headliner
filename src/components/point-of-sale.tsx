@@ -1,67 +1,78 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { money, utcDayKey } from "@/lib/format";
+import { useMemo, useState } from "react";
+import { dayKeyInZone, deviceTimeZone, money, utcDayKey } from "@/lib/format";
+import { useClientClock } from "@/lib/use-client-clock";
 import { useMerchSyncQueue } from "@/lib/merch-offline";
 import { effectiveStock } from "@/lib/merch-sync";
 import { SyncStatus } from "@/components/merch-sync-status";
 import type { MerchItemDTO } from "@/components/merch-table";
 
-export type ShowOptionDTO = { id: string; city: string; venue: string; date: string; isToday: boolean };
+export type ShowOptionDTO = {
+  id: string;
+  city: string;
+  venue: string;
+  /** Display label for the show's date, formatted server-side. */
+  date: string;
+  /** The show's calendar date as "2026-08-19". Booking dates are stored as
+   *  UTC-midnight markers, so this is a plain date with no time-of-day. */
+  dayKey: string;
+  /** IANA zone for the venue; null when nobody has set it. */
+  timezone: string | null;
+};
 
 /**
- * Whether the calendar day has moved on since the server rendered this page.
+ * Which of these shows is happening TODAY, decided fresh on the device.
  *
- * A merch device is loaded once and then lives in a pocket — the tab can be
- * days old by the time it is used, and everything the server worked out
- * about "tonight" went stale silently. Re-checks on visibilitychange above
- * all: waking the phone at the next venue is exactly the moment this needs
- * to be right.
+ * "Today" only means something in a place. A show dated Aug 19 in Los
+ * Angeles is still tonight at 9pm local — which is already Aug 20 in UTC —
+ * so comparing UTC days mislabels the show for most of the hours a merch
+ * table is actually open.
  *
- * Starts false and only decides inside the effect, so the first client
- * render matches the server's and hydration stays quiet.
+ * Zone precedence: the venue's stored zone, then the device's own. The
+ * fallback is a good one rather than a shrug — the phone taking payments is
+ * physically standing at the venue, so its zone is almost always the
+ * venue's. UTC is the last resort and is wrong by design, not by accident.
+ *
+ * Recomputed whenever the clock is re-read (see useClientClock), so a tab
+ * that slept in a pocket since the last city corrects itself on wake
+ * instead of carrying yesterday's answer into tonight's sales.
  */
-function useDayStale(renderedDayKey: string): boolean {
-  const [stale, setStale] = useState(false);
+function useVenueToday(shows: ShowOptionDTO[]): { todayIds: Set<string>; measured: boolean } {
+  const now = useClientClock();
 
-  useEffect(() => {
-    const check = () => setStale(utcDayKey(new Date()) !== renderedDayKey);
-    check();
+  const todayIds = useMemo(() => {
+    const ids = new Set<string>();
+    if (!now) return ids;
+    const device = deviceTimeZone();
+    for (const show of shows) {
+      const zone = show.timezone ?? device;
+      const todayThere = zone ? dayKeyInZone(now, zone) : utcDayKey(now);
+      if (todayThere === show.dayKey) ids.add(show.id);
+    }
+    return ids;
+  }, [now, shows]);
 
-    const onVisible = () => {
-      if (document.visibilityState === "visible") check();
-    };
-    document.addEventListener("visibilitychange", onVisible);
-    const interval = window.setInterval(check, 60_000);
-
-    return () => {
-      document.removeEventListener("visibilitychange", onVisible);
-      window.clearInterval(interval);
-    };
-  }, [renderedDayKey]);
-
-  return stale;
+  return { todayIds, measured: now !== null };
 }
 
 export function PointOfSale({
   items,
   shows = [],
-  defaultShowId = null,
-  renderedDayKey,
   renderedOnLabel,
 }: {
   items: MerchItemDTO[];
   shows?: ShowOptionDTO[];
-  defaultShowId?: string | null;
-  renderedDayKey: string;
   renderedOnLabel: string;
 }) {
   const [open, setOpen] = useState(false);
   const [cart, setCart] = useState<Record<string, number>>({});
-  // Which show the sale gets filed against. Chosen before the sale is rung
-  // up and carried into the offline queue with it, because a device at a
-  // merch table cannot ask the server which night it is.
-  const [showId, setShowId] = useState<string | null>(defaultShowId);
+  // The seller's explicit choice, three-valued on purpose: `undefined` is
+  // "hasn't chosen", so the live default applies; `null` is the deliberate
+  // "don't link"; a string is a picked show. Collapsing the first two would
+  // make an explicit "no show" indistinguishable from silence, and the
+  // default would keep overriding it.
+  const [chosenShowId, setChosenShowId] = useState<string | null | undefined>(undefined);
   const [pickingShow, setPickingShow] = useState(false);
   // Set to the queue key returned by enqueueCompleteSale once the sale is
   // recorded locally — null means no sale has been rung up in this session
@@ -101,33 +112,30 @@ export function PointOfSale({
     setCart({});
     setQueuedKey(null);
     setPickingShow(false);
-    // showId deliberately survives: the seller is at the same venue for
-    // every sale that night, and re-picking per transaction is how it ends
-    // up unset on half of them.
+    // chosenShowId deliberately survives: the seller is at the same venue
+    // for every sale that night, and re-picking per transaction is how it
+    // ends up unset on half of them.
   }
 
   // Once flushOnce removes a synced op from the queue, its key stops
   // appearing in either list — that transition (present → gone) is exactly
   // "this sale reached the server", with no separate status field to keep
   // in sync with the queue's own state.
-  const dayStale = useDayStale(renderedDayKey);
-  const clearedForStale = useRef(false);
+  const { todayIds, measured } = useVenueToday(shows);
 
-  // Drop the auto-picked show the moment the date turns over, exactly once.
-  // A wrong attribution is the worse failure: it looks right, so nobody
-  // checks it, and it corrupts two nights' numbers at once — the show that
-  // gets money it didn't earn and the one that doesn't get what it did.
-  // No attribution is visible on its face and fixable from the show screen.
-  // After this one clear the seller is in charge; re-clearing a choice they
-  // made *after* seeing the warning would be its own bug.
-  useEffect(() => {
-    if (dayStale && !clearedForStale.current) {
-      clearedForStale.current = true;
-      setShowId(null);
-    }
-  }, [dayStale]);
+  // Auto-pick only when exactly one show is on tonight. Two in a day is
+  // genuinely ambiguous and guessing files a whole night's money against
+  // the wrong one; none means there is nothing to guess from. Derived
+  // rather than stored, so it can never go stale sitting in state — the
+  // old version cached a default from render time and had to be cleared
+  // when the date turned over.
+  const autoShowId = todayIds.size === 1 ? [...todayIds][0] : null;
+  const showId = chosenShowId === undefined ? autoShowId : chosenShowId;
 
   const selectedShow = shows.find((s) => s.id === showId) ?? null;
+  // Distinguishes "the list is old" from "tonight is genuinely a day off":
+  // both show no show tonight, only one is worth reloading over.
+  const noShowTonight = measured && todayIds.size === 0;
 
   const stillQueued = queuedKey !== null && [...sync.pending, ...sync.failed].some((o) => o.key === queuedKey);
   const failedOp = queuedKey !== null ? sync.failed.find((o) => o.key === queuedKey) : undefined;
@@ -198,12 +206,13 @@ export function PointOfSale({
                   </button>
                 </div>
 
-                {dayStale && shows.length > 0 && (
+                {noShowTonight && shows.length > 0 && (
                   <div className="mb-3 rounded-[10px] border border-orange/30 bg-orange/[.07] px-3.5 py-2.5 text-[12px] leading-relaxed">
-                    <div className="mb-0.5 font-semibold text-orange">This page loaded on {renderedOnLabel}</div>
+                    <div className="mb-0.5 font-semibold text-orange">No show tonight in this list</div>
                     <div className="text-text/60">
-                      The date has changed since, so it can no longer tell which show is tonight&rsquo;s — pick one below before
-                      selling. Anything already queued is safe, and reloading refreshes the dates when you have signal.
+                      Going by the time at each venue, none of these is on tonight. This page loaded {renderedOnLabel} — if
+                      you&rsquo;re at a venue now, reload for current dates. Selling without a show is fine; you can file it from
+                      the show&rsquo;s page later. Anything already queued is safe either way.
                     </div>
                   </div>
                 )}
@@ -222,7 +231,7 @@ export function PointOfSale({
                             <button
                               key={s.id}
                               onClick={() => {
-                                setShowId(s.id);
+                                setChosenShowId(s.id);
                                 setPickingShow(false);
                               }}
                               className={`flex items-baseline justify-between gap-2 rounded-md px-2 py-1.5 text-left text-[12.5px] hover:bg-text/[.05] ${s.id === showId ? "text-accent" : "text-text/80"}`}
@@ -232,13 +241,13 @@ export function PointOfSale({
                                 <span className="text-text/40"> · {s.venue}</span>
                               </span>
                               <span className="flex-none font-mono text-[10.5px] text-text/40">
-                                {!dayStale && s.isToday ? "TONIGHT" : s.date}
+                                {todayIds.has(s.id) ? "TONIGHT" : s.date}
                               </span>
                             </button>
                           ))}
                           <button
                             onClick={() => {
-                              setShowId(null);
+                              setChosenShowId(null);
                               setPickingShow(false);
                             }}
                             className="rounded-md px-2 py-1.5 text-left text-[12.5px] text-text/50 hover:bg-text/[.05]"

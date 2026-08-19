@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 import { withErrorLog } from "@/lib/action-error";
 import { requireMinPlan } from "@/lib/plan-limits-server";
+import { isValidTimeZone } from "@/lib/format";
 import { BPS } from "@/lib/settlement";
 
 /** Percent (possibly fractional, as typed) to integer basis points. */
@@ -77,6 +78,29 @@ export async function setMerchCut(bookingId: string, cutPct: number) {
     });
     revalidatePath("/app/settlement");
     revalidatePath(`/app/settlement/show/${bookingId}`);
+  });
+}
+
+/**
+ * Set (or clear) the venue's IANA timezone.
+ *
+ * Validated server-side because the read path fails SILENTLY: dayKeyInZone
+ * falls back to UTC on a zone it cannot use, so a typo would not surface as
+ * an error — it would just quietly move when "tonight" starts at that
+ * venue, which is exactly the bug this field exists to fix.
+ */
+export async function setBookingTimezone(bookingId: string, timezone: string | null) {
+  return withErrorLog("setBookingTimezone", async () => {
+    const session = await getSession();
+    if (!session) return;
+    if (timezone !== null && !isValidTimeZone(timezone)) return;
+
+    await db.booking.updateMany({
+      where: { id: bookingId, workspaceId: session.workspaceId },
+      data: { timezone },
+    });
+    revalidatePath(`/app/settlement/show/${bookingId}`);
+    revalidatePath("/app/merch");
   });
 }
 

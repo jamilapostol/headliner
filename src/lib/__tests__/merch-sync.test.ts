@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { opStockDeltas, effectiveStock, type QueuedMerchOp } from "../merch-sync";
-import { utcDayKey } from "../format";
+import { dayKeyInZone, isValidTimeZone, utcDayKey } from "../format";
 
 // The optimistic-display math for the merch offline queue. This is what a
 // seller sees on the screen while a device is offline — it has to agree
@@ -93,6 +93,55 @@ test("day keys differ across midnight — the transition the warning fires on", 
   const after = utcDayKey(new Date("2026-08-20T00:00:01Z"));
   assert.notEqual(before, after);
   assert.equal(after, "2026-08-20");
+});
+
+test("a west-coast evening is still today locally, though tomorrow in UTC", () => {
+  // The bug this whole field exists for. 9pm in Los Angeles on Aug 19 is
+  // 04:00 UTC on Aug 20 — so a UTC comparison calls the show "yesterday"
+  // during the exact hours the merch table is open.
+  const showtime = new Date("2026-08-20T04:00:00Z");
+
+  assert.equal(utcDayKey(showtime), "2026-08-20", "UTC has already rolled over");
+  assert.equal(dayKeyInZone(showtime, "America/Los_Angeles"), "2026-08-19", "but it is still the 19th at the venue");
+});
+
+test("the same instant is different days in different venues", () => {
+  const instant = new Date("2026-08-20T04:00:00Z");
+  assert.equal(dayKeyInZone(instant, "America/Los_Angeles"), "2026-08-19");
+  assert.equal(dayKeyInZone(instant, "America/New_York"), "2026-08-20");
+  assert.equal(dayKeyInZone(instant, "Europe/Berlin"), "2026-08-20");
+  assert.equal(dayKeyInZone(instant, "Asia/Tokyo"), "2026-08-20");
+});
+
+test("a zone's day boundary is its own midnight, not UTC's", () => {
+  // One second either side of midnight in Denver.
+  assert.equal(dayKeyInZone(new Date("2026-08-20T05:59:59Z"), "America/Denver"), "2026-08-19");
+  assert.equal(dayKeyInZone(new Date("2026-08-20T06:00:01Z"), "America/Denver"), "2026-08-20");
+});
+
+test("a zone ahead of UTC rolls over before UTC does", () => {
+  // Tokyo is +9, so 3pm UTC is already the next day there.
+  assert.equal(utcDayKey(new Date("2026-08-19T15:00:00Z")), "2026-08-19");
+  assert.equal(dayKeyInZone(new Date("2026-08-19T15:00:00Z"), "Asia/Tokyo"), "2026-08-20");
+});
+
+test("day keys survive a daylight-saving transition", () => {
+  // US DST ends 2026-11-01. The date must not skip or repeat across it.
+  assert.equal(dayKeyInZone(new Date("2026-11-01T05:30:00Z"), "America/New_York"), "2026-11-01");
+  assert.equal(dayKeyInZone(new Date("2026-11-01T07:30:00Z"), "America/New_York"), "2026-11-01");
+});
+
+test("an unusable zone falls back to UTC instead of throwing", () => {
+  // A bad stored value must not take down a merch table mid-show.
+  assert.equal(dayKeyInZone(new Date("2026-08-19T12:00:00Z"), "Not/AZone"), "2026-08-19");
+  assert.equal(dayKeyInZone(new Date("2026-08-19T12:00:00Z"), ""), "2026-08-19");
+});
+
+test("timezone validation accepts real zones and rejects junk", () => {
+  assert.equal(isValidTimeZone("America/Los_Angeles"), true);
+  assert.equal(isValidTimeZone("UTC"), true);
+  assert.equal(isValidTimeZone("Not/AZone"), false);
+  assert.equal(isValidTimeZone("America/Los Angeles"), false);
 });
 
 test("day keys sort chronologically as plain strings", () => {

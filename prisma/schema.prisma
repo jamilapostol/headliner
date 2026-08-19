@@ -266,6 +266,12 @@ model Booking {
   // commonly take 20-35% off the top and it is rarely written down anywhere
   // the artist looks again, so it is stored per-show rather than assumed.
   merchCutBps      Int          @default(0)
+  // IANA zone for the venue, e.g. "America/Los_Angeles". Null means unknown,
+  // which is the honest default: it cannot be inferred from a city name
+  // without guessing. `date` above stays a plain calendar marker stored at
+  // UTC midnight — this is not a time-of-day for the show, it is what
+  // decides when "tonight" begins and ends at that venue.
+  timezone         String?
   contactName      String?
   contactPhone     String?
   notes            String?

@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { requireWorkspace } from "@/lib/workspace";
 import { db } from "@/lib/db";
 import { planAtLeast } from "@/lib/plan-limits";
-import { calendarDay, fmtDateUTC, utcDayKey } from "@/lib/format";
+import { fmtDateUTC, utcDayKey } from "@/lib/format";
 import { MerchTable, type MerchItemDTO } from "@/components/merch-table";
 import { PointOfSale, type ShowOptionDTO } from "@/components/point-of-sale";
 
@@ -23,20 +23,17 @@ export default async function MerchPage() {
     take: 6,
   });
 
-  const todayKey = calendarDay(now).getTime();
+  // Each show carries its own calendar date and venue zone; which of them
+  // is "tonight" is worked out on the device, live, because the answer
+  // depends on the time there and this page may have rendered days ago.
   const showOptions: ShowOptionDTO[] = nearby.map((b) => ({
     id: b.id,
     city: b.city,
     venue: b.venue,
     date: fmtDateUTC(b.date, { weekday: "short", month: "short", day: "numeric" }),
-    isToday: calendarDay(b.date).getTime() === todayKey,
+    dayKey: utcDayKey(b.date),
+    timezone: b.timezone,
   }));
-
-  // Default only when there is exactly one show today. Two shows in a day
-  // is ambiguous, and guessing between them silently files the night's
-  // merch money against the wrong one.
-  const todayShows = showOptions.filter((s) => s.isToday);
-  const defaultShowId = todayShows.length === 1 ? todayShows[0].id : null;
 
   const [items, tour] = await Promise.all([
     db.merchItem.findMany({ where: { workspaceId: workspace.id }, orderBy: { name: "asc" } }),
@@ -90,8 +87,6 @@ export default async function MerchPage() {
           <PointOfSale
             items={dtos}
             shows={showOptions}
-            defaultShowId={defaultShowId}
-            renderedDayKey={utcDayKey(now)}
             renderedOnLabel={fmtDateUTC(now, { weekday: "long", month: "short", day: "numeric" })}
           />
         </div>

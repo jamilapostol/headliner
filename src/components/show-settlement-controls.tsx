@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { money } from "@/lib/format";
-import { setMerchCut, tagTransaction } from "@/lib/actions/settlement";
+import { useMemo, useState, useTransition } from "react";
+import { deviceTimeZone, isValidTimeZone, money } from "@/lib/format";
+import { setBookingTimezone, setMerchCut, tagTransaction } from "@/lib/actions/settlement";
+import { useClientClock } from "@/lib/use-client-clock";
 
 type Txn = { id: string; kind: string; category: string; amount: number; source: string | null; occurredAt: string };
 
@@ -14,6 +15,7 @@ export function ShowSettlementControls({
   merchCutPct,
   merchGross,
   venueMerchCut,
+  timezone,
   tagged,
   untagged,
 }: {
@@ -21,6 +23,7 @@ export function ShowSettlementControls({
   merchCutPct: number;
   merchGross: number;
   venueMerchCut: number;
+  timezone: string | null;
   tagged: Txn[];
   untagged: Txn[];
 }) {
@@ -63,6 +66,8 @@ export function ShowSettlementControls({
           {pending && <span className="font-mono text-[10.5px] text-text/35">SAVING…</span>}
         </div>
       </div>
+
+      <VenueTimezone bookingId={bookingId} timezone={timezone} />
 
       <div className="mt-3.5 rounded-card border border-border bg-surface px-5 py-[18px]">
         <div className="mb-1 text-[14.5px] font-semibold">What&rsquo;s counted here</div>
@@ -111,6 +116,98 @@ function Row({ txn, action, onAction, accent }: { txn: Txn; action: string; onAc
         >
           {pending ? "…" : action}
         </button>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * The venue's timezone — what decides when "tonight" starts and ends there,
+ * and therefore which show the merch table files its sales against.
+ *
+ * Shows the current local time at the chosen zone as you type: a zone name
+ * is hard to verify by reading, and a clock is not. The device's own zone
+ * is offered in one tap because the person setting this up is usually
+ * standing at the venue.
+ */
+function VenueTimezone({ bookingId, timezone }: { bookingId: string; timezone: string | null }) {
+  const [value, setValue] = useState(timezone ?? "");
+  const [pending, startTransition] = useTransition();
+  const now = useClientClock(30_000);
+
+  // Intl.supportedValuesOf is the real IANA list where the browser has it;
+  // typing stays free-form either way, and the server validates regardless.
+  const zones = useMemo(() => {
+    try {
+      const supported = (Intl as unknown as { supportedValuesOf?: (k: string) => string[] }).supportedValuesOf;
+      return supported ? supported("timeZone") : [];
+    } catch {
+      return [];
+    }
+  }, []);
+
+  const device = typeof window === "undefined" ? null : deviceTimeZone();
+  const valid = value.trim() !== "" && isValidTimeZone(value.trim());
+  const localTime =
+    valid && now
+      ? new Intl.DateTimeFormat("en-US", { timeZone: value.trim(), hour: "numeric", minute: "2-digit", weekday: "short" }).format(now)
+      : null;
+
+  const save = (next: string | null) => startTransition(() => setBookingTimezone(bookingId, next));
+
+  return (
+    <div className="mt-3.5 rounded-card border border-border bg-surface px-5 py-[18px]">
+      <div className="mb-1 text-[14.5px] font-semibold">Venue timezone</div>
+      <div className="mb-3.5 max-w-[560px] text-[12.5px] leading-relaxed text-text/50">
+        Decides when tonight begins and ends at this venue, so the merch table files sales against the right show. Without it the
+        app falls back to the selling device&rsquo;s own timezone.
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2.5">
+        <input
+          list="tz-options"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onBlur={() => {
+            const next = value.trim();
+            if (next === (timezone ?? "")) return;
+            if (next === "") save(null);
+            else if (isValidTimeZone(next)) save(next);
+          }}
+          placeholder="America/Los_Angeles"
+          aria-label="Venue timezone"
+          className="min-w-[220px] flex-1 rounded-[10px] border border-border bg-surface-nested px-3 py-2 text-[13px] outline-none focus:border-accent/50"
+        />
+        <datalist id="tz-options">
+          {zones.map((z) => (
+            <option key={z} value={z} />
+          ))}
+        </datalist>
+
+        {device && device !== value && (
+          <button
+            onClick={() => {
+              setValue(device);
+              save(device);
+            }}
+            className="cursor-pointer rounded-[10px] border border-border px-3 py-2 text-[12px] text-text/70 hover:border-text/30"
+          >
+            Use this device&rsquo;s ({device})
+          </button>
+        )}
+        {pending && <span className="font-mono text-[10.5px] text-text/35">SAVING…</span>}
+      </div>
+
+      <div className="mt-2.5 text-[12px] text-text/50">
+        {localTime ? (
+          <>
+            It&rsquo;s <span className="font-semibold text-text">{localTime}</span> there now.
+          </>
+        ) : value.trim() === "" ? (
+          <>Not set — falling back to the selling device&rsquo;s timezone.</>
+        ) : (
+          <span className="text-orange">Not a timezone this browser recognises, so it won&rsquo;t be saved.</span>
+        )}
       </div>
     </div>
   );
