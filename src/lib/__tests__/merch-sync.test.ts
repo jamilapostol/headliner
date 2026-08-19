@@ -54,6 +54,27 @@ test("a restock (+10) queued alongside a sale nets correctly", () => {
   assert.equal(effectiveStock(0, "shirt", pending), 7);
 });
 
+// --- show attribution, added after the queue shipped ----------------------
+
+test("a sale queued before attribution existed still computes its stock deltas", () => {
+  // Ops already sitting in a device's IndexedDB carry no bookingId. The
+  // field is optional precisely so those replay instead of throwing, and
+  // the stock math must not notice its absence.
+  const legacy = { type: "completeSale", cart: [{ itemId: "shirt", qty: 2 }] } as const;
+  assert.deepEqual(opStockDeltas(legacy), [{ itemId: "shirt", delta: -2 }]);
+});
+
+test("attributing a sale to a show does not change what it does to stock", () => {
+  const withShow = { type: "completeSale" as const, cart: [{ itemId: "shirt", qty: 2 }], bookingId: "booking-1" };
+  const without = { type: "completeSale" as const, cart: [{ itemId: "shirt", qty: 2 }], bookingId: null };
+  assert.deepEqual(opStockDeltas(withShow), opStockDeltas(without));
+});
+
+test("a show-attributed sale still counts against optimistic stock", () => {
+  const pending = [op({ type: "completeSale", cart: [{ itemId: "shirt", qty: 3 }], bookingId: "booking-1" })];
+  assert.equal(effectiveStock(10, "shirt", pending), 7);
+});
+
 // Not covered here: that the IndexedDB queue actually persists across a
 // reload, that flushOnce stops at the first retryable failure and skips
 // past permanent ones, and that the server's idempotency claim and atomic

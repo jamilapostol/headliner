@@ -5,7 +5,15 @@
 // in.
 
 export type AdjustStockPayload = { type: "adjustStock"; itemId: string; delta: number };
-export type CompleteSalePayload = { type: "completeSale"; cart: Array<{ itemId: string; qty: number }> };
+export type CompleteSalePayload = {
+  type: "completeSale";
+  cart: Array<{ itemId: string; qty: number }>;
+  /** Which show this sale happened at, for the settlement screens. Optional
+   *  because the queue is durable: ops sitting in a device's IndexedDB from
+   *  before attribution shipped replay without it, and a sale that cannot
+   *  say where it happened is still a sale worth keeping. */
+  bookingId?: string | null;
+};
 export type MerchOpPayload = AdjustStockPayload | CompleteSalePayload;
 
 export type QueuedMerchOp = {

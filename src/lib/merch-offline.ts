@@ -59,7 +59,7 @@ async function deleteOp(key: string): Promise<void> {
 
 function callServerAction(payload: MerchOpPayload, key: string): Promise<MerchSyncOutcome<AdjustStockResult | CompleteSaleResult>> {
   if (payload.type === "adjustStock") return adjustStock(payload.itemId, payload.delta, key);
-  return completeSale(payload.cart, key);
+  return completeSale(payload.cart, key, payload.bookingId ?? null);
 }
 
 /** Attempts every queued op in enqueue order. Stops at the first retryable
@@ -178,7 +178,8 @@ export function useMerchSyncQueue() {
     failed,
     flushing,
     enqueueAdjustStock: (itemId: string, delta: number) => enqueue({ type: "adjustStock", itemId, delta }),
-    enqueueCompleteSale: (cart: Array<{ itemId: string; qty: number }>) => enqueue({ type: "completeSale", cart }),
+    enqueueCompleteSale: (cart: Array<{ itemId: string; qty: number }>, bookingId: string | null = null) =>
+      enqueue({ type: "completeSale", cart, bookingId }),
     discard,
     retry,
   };

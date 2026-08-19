@@ -2,12 +2,41 @@ import { redirect } from "next/navigation";
 import { requireWorkspace } from "@/lib/workspace";
 import { db } from "@/lib/db";
 import { planAtLeast } from "@/lib/plan-limits";
+import { calendarDay, fmtDateUTC } from "@/lib/format";
 import { MerchTable, type MerchItemDTO } from "@/components/merch-table";
-import { PointOfSale } from "@/components/point-of-sale";
+import { PointOfSale, type ShowOptionDTO } from "@/components/point-of-sale";
 
 export default async function MerchPage() {
   const { workspace } = await requireWorkspace();
   if (!planAtLeast(workspace.plan, "pro")) redirect("/app/billing?locked=merch");
+
+  // Shows near today, so a sale at the merch table can say which night it
+  // belonged to. The window is deliberately narrow: a seller picking from
+  // every date on the tour is a seller who picks wrong.
+  const now = new Date();
+  const nearby = await db.booking.findMany({
+    where: {
+      workspaceId: workspace.id,
+      date: { gte: new Date(now.getTime() - 2 * 86_400_000), lte: new Date(now.getTime() + 2 * 86_400_000) },
+    },
+    orderBy: { date: "asc" },
+    take: 6,
+  });
+
+  const todayKey = calendarDay(now).getTime();
+  const showOptions: ShowOptionDTO[] = nearby.map((b) => ({
+    id: b.id,
+    city: b.city,
+    venue: b.venue,
+    date: fmtDateUTC(b.date, { weekday: "short", month: "short", day: "numeric" }),
+    isToday: calendarDay(b.date).getTime() === todayKey,
+  }));
+
+  // Default only when there is exactly one show today. Two shows in a day
+  // is ambiguous, and guessing between them silently files the night's
+  // merch money against the wrong one.
+  const todayShows = showOptions.filter((s) => s.isToday);
+  const defaultShowId = todayShows.length === 1 ? todayShows[0].id : null;
 
   const [items, tour] = await Promise.all([
     db.merchItem.findMany({ where: { workspaceId: workspace.id }, orderBy: { name: "asc" } }),
@@ -58,7 +87,7 @@ export default async function MerchPage() {
             <br />
             Suggested float: <span className="font-mono text-text">$120 small bills</span>
           </div>
-          <PointOfSale items={dtos} />
+          <PointOfSale items={dtos} shows={showOptions} defaultShowId={defaultShowId} />
         </div>
       </div>
     </div>

@@ -167,7 +167,8 @@ export async function adjustStock(
 
 export async function completeSale(
   cart: Array<{ itemId: string; qty: number }>,
-  idempotencyKey: string
+  idempotencyKey: string,
+  bookingId: string | null = null
 ): Promise<MerchSyncOutcome<CompleteSaleResult>> {
   const outcome = await withErrorLog("completeSale", async (): Promise<MerchSyncOutcome<CompleteSaleResult>> => {
     const session = await getSession();
@@ -180,6 +181,21 @@ export async function completeSale(
       await requireMinPlan(session.workspaceId, "pro");
     } catch {
       return { ok: false, kind: "permanent", error: "Merch requires the Pro plan or higher." };
+    }
+
+    // Which show this sale belongs to, for the settlement screens. Checked
+    // against this workspace so a stale or forged id can't attribute income
+    // to someone else's night. A failed check drops the attribution and
+    // keeps the sale: the money physically changed hands, and refusing to
+    // record it because a tag didn't resolve would lose real revenue over
+    // bookkeeping.
+    let attributedBookingId: string | null = null;
+    if (bookingId) {
+      const booking = await db.booking.findFirst({
+        where: { id: bookingId, workspaceId: session.workspaceId },
+        select: { id: true },
+      });
+      attributedBookingId = booking?.id ?? null;
     }
 
     return db.$transaction(async (tx) => {
@@ -242,7 +258,14 @@ export async function completeSale(
       }
 
       await tx.transaction.create({
-        data: { workspaceId: session.workspaceId, kind: "income", category: "Merchandise", amount: total, source: "Point of sale" },
+        data: {
+          workspaceId: session.workspaceId,
+          kind: "income",
+          category: "Merchandise",
+          amount: total,
+          source: "Point of sale",
+          bookingId: attributedBookingId,
+        },
       });
 
       const result: CompleteSaleResult = { total, sold };
@@ -254,6 +277,7 @@ export async function completeSale(
   if (outcome) {
     revalidatePath("/app/merch");
     revalidatePath("/app/finance");
+    revalidatePath("/app/settlement");
     revalidatePath("/app");
   }
   return outcome ?? { ok: false, kind: "retryable", error: "Unexpected server error." };

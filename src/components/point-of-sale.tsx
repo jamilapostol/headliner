@@ -7,9 +7,24 @@ import { effectiveStock } from "@/lib/merch-sync";
 import { SyncStatus } from "@/components/merch-sync-status";
 import type { MerchItemDTO } from "@/components/merch-table";
 
-export function PointOfSale({ items }: { items: MerchItemDTO[] }) {
+export type ShowOptionDTO = { id: string; city: string; venue: string; date: string; isToday: boolean };
+
+export function PointOfSale({
+  items,
+  shows = [],
+  defaultShowId = null,
+}: {
+  items: MerchItemDTO[];
+  shows?: ShowOptionDTO[];
+  defaultShowId?: string | null;
+}) {
   const [open, setOpen] = useState(false);
   const [cart, setCart] = useState<Record<string, number>>({});
+  // Which show the sale gets filed against. Chosen before the sale is rung
+  // up and carried into the offline queue with it, because a device at a
+  // merch table cannot ask the server which night it is.
+  const [showId, setShowId] = useState<string | null>(defaultShowId);
+  const [pickingShow, setPickingShow] = useState(false);
   // Set to the queue key returned by enqueueCompleteSale once the sale is
   // recorded locally — null means no sale has been rung up in this session
   // of the drawer being open.
@@ -39,7 +54,7 @@ export function PointOfSale({ items }: { items: MerchItemDTO[] }) {
       .filter(([, qty]) => qty > 0)
       .map(([itemId, qty]) => ({ itemId, qty }));
     if (cartItems.length === 0) return;
-    const key = await sync.enqueueCompleteSale(cartItems);
+    const key = await sync.enqueueCompleteSale(cartItems, showId);
     setQueuedKey(key);
   }
 
@@ -47,12 +62,18 @@ export function PointOfSale({ items }: { items: MerchItemDTO[] }) {
     setOpen(false);
     setCart({});
     setQueuedKey(null);
+    setPickingShow(false);
+    // showId deliberately survives: the seller is at the same venue for
+    // every sale that night, and re-picking per transaction is how it ends
+    // up unset on half of them.
   }
 
   // Once flushOnce removes a synced op from the queue, its key stops
   // appearing in either list — that transition (present → gone) is exactly
   // "this sale reached the server", with no separate status field to keep
   // in sync with the queue's own state.
+  const selectedShow = shows.find((s) => s.id === showId) ?? null;
+
   const stillQueued = queuedKey !== null && [...sync.pending, ...sync.failed].some((o) => o.key === queuedKey);
   const failedOp = queuedKey !== null ? sync.failed.find((o) => o.key === queuedKey) : undefined;
 
@@ -103,7 +124,10 @@ export function PointOfSale({ items }: { items: MerchItemDTO[] }) {
                 ) : (
                   <>
                     <div className="mb-2 text-[15px] font-semibold text-accent">Sale recorded</div>
-                    <div className="mb-5 text-[13px] text-text/55">{money(total)} logged to Finance as merch income.</div>
+                    <div className="mb-5 text-[13px] text-text/55">
+                      {money(total)} logged to Finance as merch income
+                      {selectedShow ? <>, against {selectedShow.city}.</> : <>, not linked to a show.</>}
+                    </div>
                     <button onClick={close} className="cursor-pointer rounded-[10px] bg-accent px-5 py-2.5 text-[13.5px] font-semibold text-ink">
                       Done
                     </button>
@@ -112,12 +136,74 @@ export function PointOfSale({ items }: { items: MerchItemDTO[] }) {
               </div>
             ) : (
               <>
-                <div className="mb-4 flex items-center justify-between">
+                <div className="mb-3 flex items-center justify-between">
                   <div className="text-[17px] font-semibold">Point of sale</div>
                   <button onClick={close} className="cursor-pointer px-1 text-[18px] text-text/50 hover:text-text">
                     ✕
                   </button>
                 </div>
+
+                {/* Which night this money belongs to. Shown before the sale
+                    rather than asked afterwards — nobody reconciles a merch
+                    table at 1am, and an unattributed sale is one someone has
+                    to place by memory later. */}
+                {shows.length > 0 && (
+                  <div className="mb-3.5 rounded-[10px] border border-text/[.08] bg-surface-nested px-3.5 py-2.5">
+                    {pickingShow ? (
+                      <>
+                        <div className="mb-2 font-mono text-[10px] tracking-[.1em] text-text/40">FILE THIS SALE UNDER</div>
+                        <div className="flex flex-col gap-1">
+                          {shows.map((s) => (
+                            <button
+                              key={s.id}
+                              onClick={() => {
+                                setShowId(s.id);
+                                setPickingShow(false);
+                              }}
+                              className={`flex items-baseline justify-between gap-2 rounded-md px-2 py-1.5 text-left text-[12.5px] hover:bg-text/[.05] ${s.id === showId ? "text-accent" : "text-text/80"}`}
+                            >
+                              <span className="min-w-0 truncate">
+                                {s.city}
+                                <span className="text-text/40"> · {s.venue}</span>
+                              </span>
+                              <span className="flex-none font-mono text-[10.5px] text-text/40">{s.isToday ? "TONIGHT" : s.date}</span>
+                            </button>
+                          ))}
+                          <button
+                            onClick={() => {
+                              setShowId(null);
+                              setPickingShow(false);
+                            }}
+                            className="rounded-md px-2 py-1.5 text-left text-[12.5px] text-text/50 hover:bg-text/[.05]"
+                          >
+                            Don&rsquo;t link to a show
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="min-w-0">
+                          <div className="font-mono text-[10px] tracking-[.1em] text-text/40">SELLING AT</div>
+                          {selectedShow ? (
+                            <div className="truncate text-[12.5px] font-semibold">
+                              {selectedShow.city}
+                              <span className="font-normal text-text/45"> · {selectedShow.venue}</span>
+                            </div>
+                          ) : (
+                            <div className="text-[12.5px] text-text/45">Not linked to a show</div>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => setPickingShow(true)}
+                          className="flex-none cursor-pointer text-[11.5px] text-accent hover:underline"
+                        >
+                          {selectedShow ? "Change" : "Pick one"}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 <div className="flex-1 overflow-y-auto">
                   {inStock.length === 0 && <div className="py-6 text-center text-[13px] text-text/40">No items in stock.</div>}
                   <div className="flex flex-col gap-2.5">
