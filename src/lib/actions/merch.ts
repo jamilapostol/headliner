@@ -300,3 +300,84 @@ export async function completeSale(
   }
   return outcome ?? { ok: false, kind: "retryable", error: "Unexpected server error." };
 }
+
+/**
+ * Record a physical count of the van against what the system believed.
+ *
+ * `expected` is captured in the SAME statement that writes the new stock,
+ * using the FOR UPDATE CTE pattern the sale path already uses. Reading the
+ * stock first and writing it second would let a sale land in between: the
+ * variance would absorb that sale as if it were shrinkage, and the sale's
+ * decrement would then be clobbered by the count. One statement makes a
+ * concurrent sale land cleanly on one side or the other.
+ *
+ * Deliberately NOT routed through the offline queue. A count is not a
+ * customer waiting at a table — it can be redone when there is signal —
+ * and a queued count replayed hours later would compare against a stock
+ * level that has since moved.
+ */
+export async function recordStockCount(formData: FormData) {
+  return withErrorLog("recordStockCount", async () => {
+    const session = await getSession();
+    if (!session) return;
+    await requireMinPlan(session.workspaceId, "pro");
+
+    const note = String(formData.get("note") ?? "").trim();
+    const bookingIdRaw = String(formData.get("bookingId") ?? "").trim();
+
+    // Only count items the form actually carried a number for — a blank
+    // field means "did not count this", which is different from zero.
+    const entries: Array<{ itemId: string; counted: number }> = [];
+    for (const [key, raw] of formData.entries()) {
+      if (!key.startsWith("count-")) continue;
+      const value = String(raw).trim();
+      if (value === "") continue;
+      const counted = Number(value);
+      if (!Number.isFinite(counted) || counted < 0) continue;
+      entries.push({ itemId: key.slice("count-".length), counted: Math.round(counted) });
+    }
+    if (entries.length === 0) return;
+
+    let bookingId: string | null = null;
+    if (bookingIdRaw) {
+      const booking = await db.booking.findFirst({
+        where: { id: bookingIdRaw, workspaceId: session.workspaceId },
+        select: { id: true },
+      });
+      bookingId = booking?.id ?? null;
+    }
+
+    await db.$transaction(async (tx) => {
+      for (const entry of entries) {
+        const rows = await tx.$queryRaw<Array<{ expected: number; cogs: number }>>`
+          WITH before AS (
+            SELECT stock, cogs FROM "MerchItem"
+            WHERE id = ${entry.itemId} AND "workspaceId" = ${session.workspaceId}
+            FOR UPDATE
+          )
+          UPDATE "MerchItem"
+          SET stock = ${entry.counted}
+          FROM before
+          WHERE "MerchItem".id = ${entry.itemId} AND "MerchItem"."workspaceId" = ${session.workspaceId}
+          RETURNING before.stock AS expected, before.cogs AS cogs
+        `;
+        if (rows.length === 0) continue; // not this workspace's item
+
+        await tx.stockCount.create({
+          data: {
+            workspaceId: session.workspaceId,
+            merchItemId: entry.itemId,
+            bookingId,
+            expected: rows[0].expected,
+            counted: entry.counted,
+            unitCogs: rows[0].cogs,
+            note: note || null,
+          },
+        });
+      }
+    });
+
+    revalidatePath("/app/merch");
+    revalidatePath("/app/merch/economics");
+  });
+}

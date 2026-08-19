@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { planAtLeast } from "@/lib/plan-limits";
 import { money, fmtDateUTC, stageLabel } from "@/lib/format";
 import { computeShowPnl } from "@/lib/settlement";
+import { itemPerformance } from "@/lib/merch-economics";
 import { ShowSettlementControls } from "@/components/show-settlement-controls";
 
 export const dynamic = "force-dynamic";
@@ -34,6 +35,25 @@ export default async function ShowSettlementPage({ params }: { params: Promise<{
     orderBy: { occurredAt: "asc" },
     take: 25,
   });
+
+  // What actually left the table here, item by item. Only exists for sales
+  // rung through the register after line items shipped; earlier nights show
+  // merch as a single income line and nothing more.
+  const merchLines = await db.merchSale.findMany({
+    where: { workspaceId: workspace.id, bookingId },
+    include: { merchItem: { select: { name: true, variant: true, glyph: true, color: true } } },
+  });
+
+  const soldHere = itemPerformance(
+    merchLines.map((l) => ({
+      merchItemId: l.merchItemId,
+      bookingId: l.bookingId,
+      qty: l.qty,
+      unitPrice: l.unitPrice,
+      unitCogs: l.unitCogs,
+    }))
+  );
+  const itemMeta = new Map(merchLines.map((l) => [l.merchItemId, l.merchItem]));
 
   const pnl = computeShowPnl(
     {
@@ -86,6 +106,39 @@ export default async function ShowSettlementPage({ params }: { params: Promise<{
           tone="orange"
         />
       </div>
+
+      {soldHere.length > 0 && (
+        <div className="mt-3.5 rounded-card border border-border bg-surface px-5 py-[18px]">
+          <div className="mb-1 text-[14.5px] font-semibold">Sold at this show</div>
+          <div className="mb-3.5 text-[12.5px] text-text/50">
+            {soldHere.reduce((a, p) => a + p.unitsSold, 0)} units through the register.
+          </div>
+          <div className="flex flex-col">
+            {soldHere.map((p) => {
+              const meta = itemMeta.get(p.merchItemId);
+              return (
+                <div
+                  key={p.merchItemId}
+                  className="flex items-center gap-2.5 border-b border-text/[.05] py-2.5 text-[12.5px] last:border-b-0"
+                >
+                  <div
+                    className="grid h-6 w-6 flex-none place-items-center rounded-[6px] text-[11px] font-bold text-ink"
+                    style={{ background: meta?.color ?? "#3fe87a" }}
+                  >
+                    {meta?.glyph ?? "M"}
+                  </div>
+                  <span className="min-w-0 flex-1 truncate">
+                    {meta?.name ?? "Item"}
+                    {meta?.variant && <span className="text-text/40"> · {meta.variant}</span>}
+                  </span>
+                  <span className="w-10 flex-none text-right font-mono text-text/55">×{p.unitsSold}</span>
+                  <span className="w-[70px] flex-none text-right font-mono font-semibold">{money(p.gross)}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       <ShowSettlementControls
         bookingId={booking.id}

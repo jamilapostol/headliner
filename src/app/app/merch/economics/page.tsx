@@ -4,7 +4,7 @@ import { requireWorkspace } from "@/lib/workspace";
 import { db } from "@/lib/db";
 import { planAtLeast } from "@/lib/plan-limits";
 import { money } from "@/lib/format";
-import { itemPerformance, restockAdvice, unitsByShow } from "@/lib/merch-economics";
+import { itemPerformance, restockAdvice, shrinkage, unitsByShow } from "@/lib/merch-economics";
 
 export const dynamic = "force-dynamic";
 
@@ -16,9 +16,10 @@ export default async function MerchEconomicsPage() {
   const { workspace } = await requireWorkspace();
   if (!planAtLeast(workspace.plan, "pro")) redirect("/app/billing?locked=merch");
 
-  const [items, sales, tour] = await Promise.all([
+  const [items, sales, counts, tour] = await Promise.all([
     db.merchItem.findMany({ where: { workspaceId: workspace.id }, orderBy: { name: "asc" } }),
     db.merchSale.findMany({ where: { workspaceId: workspace.id }, orderBy: { soldAt: "asc" } }),
+    db.stockCount.findMany({ where: { workspaceId: workspace.id }, orderBy: { countedAt: "desc" } }),
     db.tour.findFirst({
       where: { workspaceId: workspace.id },
       orderBy: { startDate: "desc" },
@@ -43,6 +44,8 @@ export default async function MerchEconomicsPage() {
     tour?.stops.filter((s) => s.booking && s.booking.date >= now).length ?? 0;
   const restock = restockAdvice(items, lines, showsRemaining).filter((r) => r.shortfall > 0);
 
+  const loss = shrinkage(counts.map((c) => ({ merchItemId: c.merchItemId, expected: c.expected, counted: c.counted, unitCogs: c.unitCogs })));
+
   const totalGross = performance.reduce((a, p) => a + p.gross, 0);
   const totalContribution = performance.reduce((a, p) => a + p.contribution, 0);
   const totalUnits = performance.reduce((a, p) => a + p.unitsSold, 0);
@@ -62,6 +65,34 @@ export default async function MerchEconomicsPage() {
       <div className="mb-[18px] text-[13px] text-text/50">
         What each item earns after what it cost to make — before the venue&rsquo;s cut and every other tour expense.
       </div>
+
+      {(loss.unitsShort > 0 || loss.unitsOver > 0) && (
+        <div className="mb-3.5 rounded-card border border-orange/25 bg-orange/[.06] px-[18px] py-3.5">
+          <div className="mb-1.5 text-[13.5px] font-semibold text-orange">
+            {loss.unitsShort > 0
+              ? `${loss.unitsShort} unit${loss.unitsShort === 1 ? "" : "s"} unaccounted for`
+              : `${loss.unitsOver} unit${loss.unitsOver === 1 ? "" : "s"} more than expected`}
+          </div>
+          <div className="text-[12.5px] leading-relaxed text-text/60">
+            {loss.unitsShort > 0 && (
+              <>
+                Across {counts.length} count{counts.length === 1 ? "" : "s"} — {money(loss.costOfShortfall)} at what they cost to
+                make.{" "}
+              </>
+            )}
+            {loss.unitsOver > 0 && loss.unitsShort > 0 && (
+              <>
+                Separately, {loss.unitsOver} turned up beyond what was expected — usually an earlier miscount or stock added
+                without being recorded.{" "}
+              </>
+            )}
+            {loss.unitsOver > 0 && loss.unitsShort === 0 && (
+              <>Usually an earlier miscount, or stock added without being recorded. </>
+            )}
+            Counts are recorded from Merch → Count the van.
+          </div>
+        </div>
+      )}
 
       {sales.length === 0 ? (
         <div className="rounded-card border border-border bg-surface px-5 py-10 text-center">

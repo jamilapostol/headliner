@@ -119,3 +119,41 @@ export function restockAdvice(
     })
     .sort((a, b) => b.shortfall - a.shortfall);
 }
+
+export type CountLine = {
+  merchItemId: string;
+  expected: number;
+  counted: number;
+  unitCogs: number;
+};
+
+export type Shrinkage = {
+  /** Units that were expected and were not there. Positive number. */
+  unitsShort: number;
+  /** Units found beyond what was expected — an earlier miscount, or stock
+   *  added without being recorded. Kept separate from shortfall rather than
+   *  netted off: four missing shirts and four surplus hoodies is not "all
+   *  square", it is two different problems. */
+  unitsOver: number;
+  /** What the missing units cost to make. The real money lost — retail is
+   *  what they might have sold for, which is a different and softer claim. */
+  costOfShortfall: number;
+};
+
+export function shrinkage(counts: readonly CountLine[]): Shrinkage {
+  let unitsShort = 0;
+  let unitsOver = 0;
+  let costOfShortfall = 0;
+
+  for (const c of counts) {
+    const variance = c.counted - c.expected;
+    if (variance < 0) {
+      unitsShort += -variance;
+      costOfShortfall += -variance * c.unitCogs;
+    } else if (variance > 0) {
+      unitsOver += variance;
+    }
+  }
+
+  return { unitsShort, unitsOver, costOfShortfall };
+}

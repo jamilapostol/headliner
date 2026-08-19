@@ -101,6 +101,7 @@ model Workspace {
   splits       Split[]
   payouts      Payout[]
   merchSales   MerchSale[]
+  stockCounts  StockCount[]
   contracts    Contract[]
   fans         Fan[]
   campaigns    Campaign[]
@@ -344,6 +345,7 @@ model MerchItem {
 
   workspace Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   sales     MerchSale[]
+  counts    StockCount[]
 
   @@index([workspaceId])
 }
@@ -483,6 +485,35 @@ model MerchSale {
   @@index([workspaceId, soldAt])
   @@index([merchItemId])
   @@index([bookingId])
+}
+
+// A physical count of what is actually in the van, against what the system
+// thought was there. Merch walks — given away after a set, miscounted in the
+// dark, quietly gone — and adjustStock records a delta with no reason, so a
+// restock and a correction are indistinguishable afterwards. Without this,
+// shrinkage is invisible: stock just drifts and nobody can say when or how
+// much.
+//
+// `expected` is captured at the instant of the count, not recomputed later.
+// The whole value of the row is the gap between what was believed and what
+// was there at one moment; a recomputed expectation would close that gap
+// retroactively and erase the finding.
+model StockCount {
+  id          String   @id @default(cuid())
+  workspaceId String
+  merchItemId String
+  bookingId   String? // where it was counted, when known
+  expected    Int // system stock the moment before the count
+  counted     Int // what was physically there
+  unitCogs    Int // cents, snapshot — what a missing unit actually cost
+  note        String?
+  countedAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  merchItem MerchItem @relation(fields: [merchItemId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, countedAt])
+  @@index([merchItemId])
 }
 
 model Liability {

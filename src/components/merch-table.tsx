@@ -8,6 +8,7 @@ import { createMerchItem, uploadMerchImage, type ActionState } from "@/lib/actio
 import { useMerchSyncQueue } from "@/lib/merch-offline";
 import { effectiveStock } from "@/lib/merch-sync";
 import { SyncStatus } from "@/components/merch-sync-status";
+import { StockCountModal } from "@/components/stock-count-modal";
 
 export type MerchItemDTO = {
   id: string;
@@ -24,6 +25,7 @@ export type MerchItemDTO = {
 
 export function MerchTable({ items }: { items: MerchItemDTO[] }) {
   const [showNew, setShowNew] = useState(false);
+  const [counting, setCounting] = useState(false);
   const [, startTransition] = useTransition();
   const sync = useMerchSyncQueue();
 
@@ -43,6 +45,9 @@ export function MerchTable({ items }: { items: MerchItemDTO[] }) {
           <div className="font-mono text-[12px] text-text/45">
             {totalUnits} units in van · {money(retailValue)} retail
           </div>
+          <button onClick={() => setCounting(true)} className="cursor-pointer text-[12.5px] text-text/60 hover:text-text">
+            Count the van
+          </button>
           <Link href="/app/merch/economics" className="text-[12.5px] text-accent hover:underline">
             Economics →
           </Link>
@@ -109,6 +114,8 @@ export function MerchTable({ items }: { items: MerchItemDTO[] }) {
         {items.length === 0 && <div className="px-[18px] py-7 text-center text-[13px] text-text/40">No merch items yet.</div>}
         </div>
       </div>
+
+      {counting && <StockCountModal items={items} onClose={() => setCounting(false)} />}
 
       {showNew && (
         <div className="fixed inset-0 z-10 flex items-center justify-center bg-black/60 px-4" onClick={() => setShowNew(false)}>

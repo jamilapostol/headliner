@@ -91,3 +91,44 @@ test("the worst shortfall sorts first", () => {
   );
   assert.equal(advice[0].merchItemId, "shirt", "39 short beats 2 short");
 });
+
+// --- shrinkage ------------------------------------------------------------
+
+import { shrinkage, type CountLine } from "../merch-economics";
+
+function count(over: Partial<CountLine> = {}): CountLine {
+  return { merchItemId: "shirt", expected: 40, counted: 40, unitCogs: 1000, ...over };
+}
+
+test("a clean count reports no shrinkage", () => {
+  const s = shrinkage([count()]);
+  assert.deepEqual([s.unitsShort, s.unitsOver, s.costOfShortfall], [0, 0, 0]);
+});
+
+test("missing units are valued at what they cost, not what they'd sell for", () => {
+  // Four shirts gone that cost $10 each to make is $40 of real money out.
+  // Valuing at retail would claim a larger loss than actually occurred.
+  const s = shrinkage([count({ expected: 40, counted: 36, unitCogs: 1000 })]);
+  assert.equal(s.unitsShort, 4);
+  assert.equal(s.costOfShortfall, 4_000);
+});
+
+test("surplus and shortfall are reported separately, never netted", () => {
+  // Four missing shirts and four surplus hoodies is two problems, not zero.
+  const s = shrinkage([
+    count({ merchItemId: "shirt", expected: 40, counted: 36 }),
+    count({ merchItemId: "hoodie", expected: 10, counted: 14 }),
+  ]);
+  assert.equal(s.unitsShort, 4);
+  assert.equal(s.unitsOver, 4);
+  assert.notEqual(s.unitsShort - s.unitsOver, s.unitsShort, "must not cancel out");
+});
+
+test("shrinkage accumulates across items at their own costs", () => {
+  const s = shrinkage([
+    count({ merchItemId: "shirt", expected: 40, counted: 38, unitCogs: 1000 }),
+    count({ merchItemId: "hoodie", expected: 10, counted: 9, unitCogs: 2500 }),
+  ]);
+  assert.equal(s.unitsShort, 3);
+  assert.equal(s.costOfShortfall, 2_000 + 2_500);
+});
