@@ -84,6 +84,12 @@ model Workspace {
   referralRewardIssuedAt DateTime?
   referralCreditsEarned  Int       @default(0)
 
+  // Whether merch income joins the pool that Split rows divide. Off is a
+  // real and common arrangement — plenty of bands split show fees but leave
+  // merch with whoever fronted the print run — so it is a stored choice
+  // rather than an assumption baked into the math.
+  splitsIncludeMerch Boolean @default(true)
+
   memberships  Membership[]
   contacts     Contact[]
   bookings     Booking[]
@@ -92,6 +98,7 @@ model Workspace {
   tasks        Task[]
   tours        Tour[]
   merchItems   MerchItem[]
+  splits       Split[]
   contracts    Contract[]
   fans         Fan[]
   campaigns    Campaign[]
@@ -255,6 +262,10 @@ model Booking {
   stage            BookingStage @default(Lead)
   fee              Int          @default(0) // cents
   deposit          Int          @default(0) // cents
+  // The venue's cut of merch sales, in basis points (2000 = 20%). Venues
+  // commonly take 20-35% off the top and it is rarely written down anywhere
+  // the artist looks again, so it is stored per-show rather than assumed.
+  merchCutBps      Int          @default(0)
   contactName      String?
   contactPhone     String?
   notes            String?
@@ -269,9 +280,10 @@ model Booking {
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
 
-  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  contact   Contact?  @relation(fields: [contactId], references: [id])
-  tourStop  TourStop?
+  workspace    Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  contact      Contact?      @relation(fields: [contactId], references: [id])
+  tourStop     TourStop?
+  transactions Transaction[]
 
   @@index([workspaceId])
 }
@@ -374,16 +386,42 @@ model Transaction {
   amount      Int // cents; expenses stored positive, kind marks sign
   source      String?
   receiptUrl  String? // path within the private "receipts" bucket; served via /api/transactions/[id]/receipt
+  // Which show this money belongs to. Null is the norm, not an error: most
+  // transactions are tour-wide (van repair, a month of rehearsal space) and
+  // genuinely belong to no single night. The settlement screens surface
+  // untagged money in the tour window as "unallocated" rather than hiding
+  // it, so the gap is visible work rather than a silent omission.
+  bookingId   String?
   occurredAt  DateTime        @default(now())
   createdAt   DateTime        @default(now())
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  booking   Booking?  @relation(fields: [bookingId], references: [id], onDelete: SetNull)
 
   @@index([workspaceId])
 }
 
 // Manual liabilities entry for the Finance balance sheet — this app has no
 // bank/loan integration, so debts are simply self-reported.
+// Who gets what share of tour profit. Shares are basis points (2500 = 25%)
+// because percentages with decimals do not survive repeated rounding: three
+// people on "33.33%" must still add to exactly 100, and integer bps make
+// that checkable. Deliberately NOT tied to Membership — the drummer who
+// gets 15% often has no login, and gating a payout on account creation
+// would make the feature useless on the first tour it is needed for.
+model Split {
+  id          String   @id @default(cuid())
+  workspaceId String
+  name        String
+  role        String?
+  shareBps    Int
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+}
+
 model Liability {
   id          String   @id @default(cuid())
   workspaceId String

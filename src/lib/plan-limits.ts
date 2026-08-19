@@ -26,6 +26,7 @@ export function planAtLeast(plan: string, min: PlanKey): boolean {
 export const MIN_PLAN = {
   merch: "pro",
   finance: "pro",
+  settlement: "pro",
   campaigns: "pro",
   contracts: "touring",
   export: "team",
@@ -34,6 +35,7 @@ export const MIN_PLAN = {
 export const FEATURE_LABEL: Record<keyof typeof MIN_PLAN, string> = {
   merch: "Merch inventory",
   finance: "The financial hub",
+  settlement: "Tour settlement",
   campaigns: "Email campaigns",
   contracts: "Contracts",
   export: "CSV export",

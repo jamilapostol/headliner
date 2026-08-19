@@ -33,6 +33,7 @@ export async function updateBookingStage(bookingId: string, stage: Stage) {
           category: "Performance fees",
           amount: booking.fee,
           source: booking.venue,
+          bookingId: booking.id, // attributes the fee to its show on the settlement screens
           occurredAt: booking.date,
         },
       });
