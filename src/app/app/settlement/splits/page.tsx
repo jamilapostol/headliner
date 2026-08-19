@@ -3,7 +3,8 @@ import { redirect } from "next/navigation";
 import { requireWorkspace } from "@/lib/workspace";
 import { db } from "@/lib/db";
 import { planAtLeast } from "@/lib/plan-limits";
-import { computeTourSettlement, allocateSplits, totalShareBps, type BookingLike } from "@/lib/settlement";
+import { computeTourSettlement, allocateSplits, payoutStatus, totalShareBps, type BookingLike } from "@/lib/settlement";
+import { fmtDateUTC } from "@/lib/format";
 import { SplitsEditor } from "@/components/splits-editor";
 
 export const dynamic = "force-dynamic";
@@ -17,8 +18,9 @@ export default async function SplitsPage() {
   const { workspace } = await requireWorkspace();
   if (!planAtLeast(workspace.plan, "pro")) redirect("/app/billing?locked=settlement");
 
-  const [splits, tour] = await Promise.all([
+  const [splits, payouts, tour] = await Promise.all([
     db.split.findMany({ where: { workspaceId: workspace.id }, orderBy: { createdAt: "asc" } }),
+    db.payout.findMany({ where: { workspaceId: workspace.id }, orderBy: { paidAt: "desc" } }),
     db.tour.findFirst({
       where: { workspaceId: workspace.id },
       orderBy: { startDate: "desc" },
@@ -74,17 +76,31 @@ export default async function SplitsPage() {
       </div>
 
       <SplitsEditor
-        splits={splits.map((s) => ({
-          id: s.id,
-          name: s.name,
-          role: s.role,
-          sharePct: s.shareBps / 100,
-          amountCents: allocation.get(s.id) ?? 0,
-        }))}
+        splits={splits.map((s) => {
+          const mine = payouts.filter((p) => p.splitId === s.id);
+          const status = payoutStatus(allocation.get(s.id) ?? 0, mine);
+          return {
+            id: s.id,
+            name: s.name,
+            role: s.role,
+            sharePct: s.shareBps / 100,
+            amountCents: status.allocated,
+            paidCents: status.paid,
+            outstandingCents: status.outstanding,
+            overpaidByCents: status.overpaidBy,
+            payouts: mine.map((p) => ({
+              id: p.id,
+              amount: p.amount,
+              method: p.method,
+              paidAt: fmtDateUTC(p.paidAt, { month: "short", day: "numeric" }),
+            })),
+          };
+        })}
         totalPct={totalShareBps(splits) / 100}
         poolNet={poolNet}
         poolLabel={poolLabel}
         includeMerch={workspace.splitsIncludeMerch}
+        tourId={tour?.id ?? null}
       />
     </div>
   );

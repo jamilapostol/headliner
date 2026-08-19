@@ -2,9 +2,21 @@
 
 import { useState, useTransition } from "react";
 import { money } from "@/lib/format";
-import { addSplit, removeSplit, setSplitsIncludeMerch, updateSplitShare } from "@/lib/actions/settlement";
+import { addSplit, recordPayout, removePayout, removeSplit, setSplitsIncludeMerch, updateSplitShare } from "@/lib/actions/settlement";
 
-type Row = { id: string; name: string; role: string | null; sharePct: number; amountCents: number };
+type PayoutRow = { id: string; amount: number; method: string | null; paidAt: string };
+
+type Row = {
+  id: string;
+  name: string;
+  role: string | null;
+  sharePct: number;
+  amountCents: number;
+  paidCents: number;
+  outstandingCents: number;
+  overpaidByCents: number;
+  payouts: PayoutRow[];
+};
 
 const SWATCHES = ["#3fe87a", "#7ab8e8", "#c99df5", "#e8e43f", "#e8983f", "#e87a9a"];
 
@@ -14,12 +26,14 @@ export function SplitsEditor({
   poolNet,
   poolLabel,
   includeMerch,
+  tourId,
 }: {
   splits: Row[];
   totalPct: number;
   poolNet: number;
   poolLabel: string;
   includeMerch: boolean;
+  tourId: string | null;
 }) {
   const [adding, setAdding] = useState(false);
   const [, startTransition] = useTransition();
@@ -28,6 +42,8 @@ export function SplitsEditor({
   // expect; anything else is flagged rather than silently normalised, since
   // "why did I get less than my 20%" is a conversation nobody wants.
   const balanced = Math.abs(totalPct - 100) < 0.005;
+  const totalPaid = splits.reduce((sum, s) => sum + s.paidCents, 0);
+  const totalOutstanding = splits.reduce((sum, s) => sum + s.outstandingCents, 0);
 
   return (
     <>
@@ -42,7 +58,7 @@ export function SplitsEditor({
         )}
 
         {splits.map((s, i) => (
-          <SplitRow key={s.id} row={s} color={SWATCHES[i % SWATCHES.length]} />
+          <SplitRow key={s.id} row={s} color={SWATCHES[i % SWATCHES.length]} tourId={tourId} />
         ))}
 
         {adding ? (
@@ -110,9 +126,17 @@ export function SplitsEditor({
                 <span key={s.id} style={{ width: `${Math.min(100, s.sharePct)}%`, background: SWATCHES[i % SWATCHES.length] }} />
               ))}
             </div>
-            <div className="mt-3 flex items-center justify-between border-t border-border pt-3 text-[12.5px]">
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3 text-[12.5px]">
               <span className="text-text/50">
                 {splits.length} {splits.length === 1 ? "person" : "people"}
+                {totalPaid > 0 && (
+                  <>
+                    {" · "}
+                    <span className="text-text/70">{money(totalPaid)} paid</span>
+                    {totalOutstanding > 0 && <span className="text-orange"> · {money(totalOutstanding)} still owed</span>}
+                    {totalOutstanding === 0 && <span className="text-accent"> · all settled</span>}
+                  </>
+                )}
               </span>
               <span className={balanced ? "font-semibold text-accent" : "font-semibold text-orange"}>
                 {totalPct.toFixed(totalPct % 1 === 0 ? 0 : 2)}% allocated
@@ -159,8 +183,18 @@ export function SplitsEditor({
         <div className="text-[12.5px] leading-relaxed text-text/55">
           {poolNet > 0 ? (
             <>
-              {poolLabel} net, after costs{includeMerch ? ", merch included" : ", merch excluded"}. Figures above update as the
-              tour records money.
+              {poolLabel} net, after costs{includeMerch ? ", merch included" : ", merch excluded"}.{" "}
+              {totalPaid > 0 ? (
+                totalOutstanding > 0 ? (
+                  <>
+                    <span className="font-semibold text-orange">{money(totalOutstanding)}</span> of it still to hand out.
+                  </>
+                ) : (
+                  <>Everyone has been paid.</>
+                )
+              ) : (
+                <>Nothing paid out yet.</>
+              )}
             </>
           ) : (
             <>
@@ -175,42 +209,139 @@ export function SplitsEditor({
   );
 }
 
-function SplitRow({ row, color }: { row: Row; color: string }) {
+function SplitRow({ row, color, tourId }: { row: Row; color: string; tourId: string | null }) {
   const [pct, setPct] = useState(String(row.sharePct));
+  const [paying, setPaying] = useState(false);
   const [pending, startTransition] = useTransition();
 
+  const settled = row.amountCents > 0 && row.outstandingCents === 0 && row.overpaidByCents === 0;
+
   return (
-    <div className="flex items-center gap-3 border-b border-text/[.05] py-2.5 last:border-b-0">
-      <div className="grid h-7 w-7 flex-none place-items-center rounded-[7px] text-[12px] font-bold text-ink" style={{ background: color }}>
-        {row.name.trim()[0]?.toUpperCase() ?? "?"}
+    <div className="border-b border-text/[.05] py-2.5 last:border-b-0">
+      <div className="flex items-center gap-3">
+        <div
+          className="grid h-7 w-7 flex-none place-items-center rounded-[7px] text-[12px] font-bold text-ink"
+          style={{ background: color }}
+        >
+          {row.name.trim()[0]?.toUpperCase() ?? "?"}
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="truncate text-[13px] font-semibold">{row.name}</div>
+          {row.role && <div className="truncate text-[11px] text-text/40">{row.role}</div>}
+        </div>
+        <div className="flex flex-none items-center gap-1 rounded-[8px] border border-border bg-surface-nested px-2.5 py-1.5">
+          <input
+            value={pct}
+            onChange={(e) => setPct(e.target.value)}
+            onBlur={() => {
+              const n = Number(pct);
+              if (Number.isFinite(n) && n !== row.sharePct) startTransition(() => updateSplitShare(row.id, n));
+            }}
+            inputMode="decimal"
+            aria-label={`${row.name} share percent`}
+            className="w-9 bg-transparent text-right font-mono text-[12.5px] text-text outline-none"
+          />
+          <span className="text-[11px] text-text/40">%</span>
+        </div>
+        <div className="w-[86px] flex-none text-right">
+          <div className="font-mono text-[12.5px] font-semibold">{money(row.amountCents)}</div>
+          {row.paidCents > 0 && (
+            <div
+              className={`font-mono text-[10px] ${settled ? "text-accent" : row.overpaidByCents > 0 ? "text-orange" : "text-text/40"}`}
+            >
+              {settled
+                ? "PAID"
+                : row.overpaidByCents > 0
+                  ? `+${money(row.overpaidByCents)} OVER`
+                  : `${money(row.outstandingCents)} LEFT`}
+            </div>
+          )}
+        </div>
+        <button
+          onClick={() => startTransition(() => removeSplit(row.id))}
+          disabled={pending}
+          aria-label={`Remove ${row.name}`}
+          className="flex-none cursor-pointer px-1 text-[14px] text-text/25 hover:text-text/60 disabled:opacity-30"
+        >
+          ×
+        </button>
       </div>
-      <div className="min-w-0 flex-1">
-        <div className="truncate text-[13px] font-semibold">{row.name}</div>
-        {row.role && <div className="truncate text-[11px] text-text/40">{row.role}</div>}
-      </div>
-      <div className="flex flex-none items-center gap-1 rounded-[8px] border border-border bg-surface-nested px-2.5 py-1.5">
-        <input
-          value={pct}
-          onChange={(e) => setPct(e.target.value)}
-          onBlur={() => {
-            const n = Number(pct);
-            if (Number.isFinite(n) && n !== row.sharePct) startTransition(() => updateSplitShare(row.id, n));
-          }}
-          inputMode="decimal"
-          aria-label={`${row.name} share percent`}
-          className="w-9 bg-transparent text-right font-mono text-[12.5px] text-text outline-none"
-        />
-        <span className="text-[11px] text-text/40">%</span>
-      </div>
-      <div className="w-[86px] flex-none text-right font-mono text-[12.5px] font-semibold">{money(row.amountCents)}</div>
-      <button
-        onClick={() => startTransition(() => removeSplit(row.id))}
-        disabled={pending}
-        aria-label={`Remove ${row.name}`}
-        className="flex-none cursor-pointer px-1 text-[14px] text-text/25 hover:text-text/60 disabled:opacity-30"
-      >
-        ×
-      </button>
+
+      {row.payouts.length > 0 && (
+        <div className="mt-1.5 ml-10 flex flex-col gap-1">
+          {row.payouts.map((p) => (
+            <div key={p.id} className="flex items-center gap-2 text-[11px] text-text/45">
+              <span className="font-mono">{money(p.amount)}</span>
+              <span>{p.paidAt}</span>
+              {p.method && <span className="truncate">· {p.method}</span>}
+              <button
+                onClick={() => startTransition(() => removePayout(p.id))}
+                className="cursor-pointer text-text/25 hover:text-text/60"
+                aria-label="Remove this payment"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {paying ? (
+        <form
+          action={(fd) =>
+            startTransition(async () => {
+              await recordPayout(fd);
+              setPaying(false);
+            })
+          }
+          className="mt-2 ml-10 flex flex-wrap items-end gap-2"
+        >
+          <input type="hidden" name="splitId" value={row.id} />
+          {tourId && <input type="hidden" name="tourId" value={tourId} />}
+          <label className="flex w-[100px] flex-col gap-1">
+            <span className="text-[10.5px] text-text/45">Amount $</span>
+            <input
+              name="amount"
+              required
+              autoFocus
+              inputMode="decimal"
+              // Defaults to what is still owed — the common case is settling
+              // up in full, and retyping a figure the screen already knows
+              // is how the wrong number gets entered.
+              defaultValue={(row.outstandingCents / 100).toFixed(2)}
+              className="rounded-[8px] border border-border bg-surface-nested px-2.5 py-1.5 text-right font-mono text-[12.5px] outline-none focus:border-accent/50"
+            />
+          </label>
+          <label className="flex w-[120px] flex-col gap-1">
+            <span className="text-[10.5px] text-text/45">How</span>
+            <input
+              name="method"
+              placeholder="Bank transfer"
+              className="rounded-[8px] border border-border bg-surface-nested px-2.5 py-1.5 text-[12.5px] outline-none focus:border-accent/50"
+            />
+          </label>
+          <button type="submit" className="cursor-pointer rounded-[8px] bg-accent px-3 py-1.5 text-[12px] font-semibold text-ink">
+            Record
+          </button>
+          <button
+            type="button"
+            onClick={() => setPaying(false)}
+            className="cursor-pointer rounded-[8px] border border-border px-3 py-1.5 text-[12px] text-text/70"
+          >
+            Cancel
+          </button>
+        </form>
+      ) : (
+        row.amountCents > 0 &&
+        !settled && (
+          <button
+            onClick={() => setPaying(true)}
+            className="mt-1.5 ml-10 cursor-pointer text-[11.5px] text-accent hover:underline"
+          >
+            Record a payment
+          </button>
+        )
+      )}
     </div>
   );
 }

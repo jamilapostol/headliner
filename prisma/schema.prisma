@@ -99,6 +99,7 @@ model Workspace {
   tours        Tour[]
   merchItems   MerchItem[]
   splits       Split[]
+  payouts      Payout[]
   contracts    Contract[]
   fans         Fan[]
   campaigns    Campaign[]
@@ -426,6 +427,32 @@ model Split {
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@index([workspaceId])
+}
+
+// A share actually handed over. Splits say who is owed what; this says what
+// has been settled, which is the difference between a calculation and a
+// ledger — without it the splits screen shows the same numbers forever and
+// nobody can tell who has been paid.
+//
+// `name` is a snapshot, not a join. A person removed from the split table
+// after a tour must not take their payment history with them; that history
+// is the record of money that actually moved.
+model Payout {
+  id          String   @id @default(cuid())
+  workspaceId String
+  splitId     String? // null once the split row is gone; name survives
+  name        String
+  tourId      String?
+  amount      Int // cents
+  method      String? // free text — "Bank transfer", "Venmo", "Cash"
+  note        String?
+  paidAt      DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@index([splitId])
 }
 
 model Liability {

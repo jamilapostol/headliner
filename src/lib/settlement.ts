@@ -245,3 +245,32 @@ export function allocateSplits(netCents: number, splits: readonly SplitLike[]): 
   for (const f of floors) out.set(f.id, f.whole);
   return out;
 }
+
+export type PayoutStatus = {
+  allocated: number;
+  paid: number;
+  /** Never negative — see below. */
+  outstanding: number;
+  /** Paid more than the share came to. Surfaced rather than folded into a
+   *  negative "outstanding", which reads as a debt the wrong way round. */
+  overpaidBy: number;
+};
+
+/**
+ * What someone is owed against what they have actually been handed.
+ *
+ * Overpayment is real and worth naming: a tour pays an advance, then the
+ * final split lands lower than expected, and the honest statement is "we
+ * paid you $200 more than your share came to" — not "you are owed
+ * -$200", which nobody reads correctly at settlement time.
+ */
+export function payoutStatus(allocated: number, payouts: ReadonlyArray<{ amount: number }>): PayoutStatus {
+  const paid = payouts.reduce((sum, p) => sum + p.amount, 0);
+  const delta = allocated - paid;
+  return {
+    allocated,
+    paid,
+    outstanding: Math.max(0, delta),
+    overpaidBy: Math.max(0, -delta),
+  };
+}

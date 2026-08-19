@@ -82,6 +82,67 @@ export async function setMerchCut(bookingId: string, cutPct: number) {
 }
 
 /**
+ * Record that a share was actually handed over.
+ *
+ * Takes the name as a snapshot rather than relying on the split row, so
+ * removing someone from the split table later does not erase the record of
+ * money that moved.
+ */
+export async function recordPayout(formData: FormData) {
+  return withErrorLog("recordPayout", async () => {
+    const session = await getSession();
+    if (!session) return;
+    await requireMinPlan(session.workspaceId, "pro");
+
+    const splitId = String(formData.get("splitId") ?? "").trim() || null;
+    const amountDollars = Number(formData.get("amount") ?? 0);
+    const method = String(formData.get("method") ?? "").trim();
+    const note = String(formData.get("note") ?? "").trim();
+    const tourId = String(formData.get("tourId") ?? "").trim() || null;
+    if (!Number.isFinite(amountDollars) || amountDollars <= 0) return;
+
+    // Resolve the name from the split, scoped to this workspace — never
+    // from the form, so a crafted post can't attach a payout to a name
+    // that was never in the split table.
+    let name = "";
+    if (splitId) {
+      const split = await db.split.findFirst({
+        where: { id: splitId, workspaceId: session.workspaceId },
+        select: { name: true },
+      });
+      if (!split) return;
+      name = split.name;
+    }
+    if (!name) return;
+
+    await db.payout.create({
+      data: {
+        workspaceId: session.workspaceId,
+        splitId,
+        name,
+        tourId,
+        amount: Math.round(amountDollars * 100),
+        method: method || null,
+        note: note || null,
+      },
+    });
+    revalidatePath("/app/settlement/splits");
+    revalidatePath("/app/settlement");
+  });
+}
+
+export async function removePayout(payoutId: string) {
+  return withErrorLog("removePayout", async () => {
+    const session = await getSession();
+    if (!session) return;
+
+    await db.payout.deleteMany({ where: { id: payoutId, workspaceId: session.workspaceId } });
+    revalidatePath("/app/settlement/splits");
+    revalidatePath("/app/settlement");
+  });
+}
+
+/**
  * Set (or clear) the venue's IANA timezone.
  *
  * Validated server-side because the read path fails SILENTLY: dayKeyInZone

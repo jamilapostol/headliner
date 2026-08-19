@@ -5,6 +5,7 @@ import {
   computeShowPnl,
   computeTourSettlement,
   forecastTour,
+  payoutStatus,
   totalShareBps,
   type BookingLike,
   type TxnLike,
@@ -163,4 +164,37 @@ test("shares that do not add to 100% still allocate the whole amount", () => {
 
 test("no splits configured allocates nothing and does not throw", () => {
   assert.equal(allocateSplits(50_000, []).size, 0);
+});
+
+// --- payouts --------------------------------------------------------------
+
+test("nothing paid yet leaves the whole share outstanding", () => {
+  const st = payoutStatus(100_000, []);
+  assert.deepEqual([st.paid, st.outstanding, st.overpaidBy], [0, 100_000, 0]);
+});
+
+test("part payments accumulate against the share", () => {
+  const st = payoutStatus(100_000, [{ amount: 30_000 }, { amount: 20_000 }]);
+  assert.equal(st.paid, 50_000);
+  assert.equal(st.outstanding, 50_000);
+});
+
+test("paid in full leaves nothing outstanding", () => {
+  const st = payoutStatus(100_000, [{ amount: 100_000 }]);
+  assert.equal(st.outstanding, 0);
+  assert.equal(st.overpaidBy, 0);
+});
+
+test("overpayment is reported as overpaid, not as negative outstanding", () => {
+  // An advance paid before the tour under-performed. "Owed -$200" is read
+  // backwards by everyone; "overpaid by $200" is not.
+  const st = payoutStatus(100_000, [{ amount: 120_000 }]);
+  assert.equal(st.outstanding, 0);
+  assert.equal(st.overpaidBy, 20_000);
+});
+
+test("a share that came to nothing still reports what was advanced", () => {
+  const st = payoutStatus(0, [{ amount: 50_000 }]);
+  assert.equal(st.outstanding, 0);
+  assert.equal(st.overpaidBy, 50_000);
 });
