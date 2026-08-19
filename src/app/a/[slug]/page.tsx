@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { fmtDateUTC } from "@/lib/format";
 import { publicShows, type PublicShow } from "@/lib/public-profile";
+import { absoluteUrl } from "@/lib/site-url";
 
 export const dynamic = "force-dynamic";
 
@@ -41,7 +42,19 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: `${data.workspace.name} — Tour dates`,
     description,
-    openGraph: { title: `${data.workspace.name} — Tour dates`, description, type: "profile" },
+    // Canonical points at the host that serves 200. The apex 308-redirects
+    // to www, and a canonical aimed at a redirect is worse than omitting
+    // one — it tells a crawler the real address is somewhere it is not.
+    alternates: {
+      canonical: absoluteUrl(`/a/${slug}`),
+      types: { "text/calendar": absoluteUrl(`/a/${slug}/tour.ics`) },
+    },
+    openGraph: {
+      title: `${data.workspace.name} — Tour dates`,
+      description,
+      type: "profile",
+      url: absoluteUrl(`/a/${slug}`),
+    },
     // A listing whose dates change weekly is worth recrawling, and this is
     // the page that wants to be found.
     robots: { index: true, follow: true },

@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
+import { siteUrl } from "@/lib/site-url";
 import { getSession } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -46,7 +47,7 @@ export async function inviteTeamMember(_prev: ActionState, formData: FormData): 
     }
 
     const admin = createAdminClient();
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+    const appUrl = siteUrl();
     const { data, error } = await admin.auth.admin.inviteUserByEmail(email, {
       redirectTo: `${appUrl}/auth/callback?next=/invite/accept`,
       data: { invited_by: session.name },

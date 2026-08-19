@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
+import { siteUrl } from "@/lib/site-url";
 import { getSession } from "@/lib/auth";
 import { stripe, stripeEnabled, PRICE_IDS } from "@/lib/stripe";
 import { withErrorLog } from "@/lib/action-error";
@@ -76,7 +77,7 @@ export async function changePlan(plan: PlanChoice, cycle: Cycle) {
       const applyRefereeDiscount = workspace.plan === "free" && !!workspace.referredByWorkspaceId;
       if (applyRefereeDiscount) await ensureReferralCoupon();
 
-      const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+      const baseUrl = siteUrl();
       const checkoutSession = await stripe.checkout.sessions.create({
         mode: "subscription",
         customer: customerId,

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
+import { siteUrl } from "@/lib/site-url";
 import { getSession } from "@/lib/auth";
 import { resendEnabled, sendEmail, sendEmailBatch, campaignTag, type OutgoingEmail } from "@/lib/resend";
 import { withErrorLog, withErrorState } from "@/lib/action-error";
@@ -21,7 +22,7 @@ function audienceWhere(workspaceId: string, audienceTier: string) {
 }
 
 function unsubscribeFooter(fanId: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const baseUrl = siteUrl();
   return `\n\n—\nUnsubscribe: ${baseUrl}/unsubscribe/${fanId}?t=${signFanId(fanId)}`;
 }
 

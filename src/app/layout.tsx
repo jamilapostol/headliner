@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { siteUrl } from "@/lib/site-url";
 import { Space_Grotesk, Inter } from "next/font/google";
 import { CookieConsentBanner } from "@/components/cookie-consent-banner";
 import "./globals.css";
@@ -16,7 +17,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "https://www.headline.world"),
+  metadataBase: new URL(siteUrl()),
   title: {
     default: "HEADLINE.WORLD — Book it. Run it. Own it.",
     template: "%s",

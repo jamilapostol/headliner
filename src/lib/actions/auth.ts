@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
+import { siteUrl } from "@/lib/site-url";
 import { normalizeInviteCode, inviteRedeemable, redeemableWhere } from "@/lib/invites";
 import { createClient } from "@/lib/supabase/server";
 import { checkRateLimit, requestIp } from "@/lib/rate-limit";
@@ -150,7 +151,7 @@ export async function requestPasswordReset(_prev: AuthState, formData: FormData)
     }
 
     const supabase = await createClient();
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+    const appUrl = siteUrl();
     // Always return the same success message regardless of whether the email
     // exists — otherwise this becomes a way to enumerate registered accounts.
     await supabase.auth.resetPasswordForEmail(email, {

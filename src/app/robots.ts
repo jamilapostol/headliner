@@ -1,6 +1,5 @@
 import type { MetadataRoute } from "next";
-
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://headline.world";
+import { siteUrl } from "@/lib/site-url";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -9,6 +8,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/app/", "/admin/", "/api/", "/onboarding", "/invite/", "/reset-password", "/forgot-password", "/unsubscribe/"],
     },
-    sitemap: `${baseUrl}/sitemap.xml`,
+    sitemap: `${siteUrl()}/sitemap.xml`,
   };
 }
