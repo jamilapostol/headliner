@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { deviceTimeZone, isValidTimeZone, money } from "@/lib/format";
-import { setBookingTimezone, setMerchCut, tagTransaction } from "@/lib/actions/settlement";
+import { setBookingTimezone, setMerchCut, settleVenueMerchCut, tagTransaction } from "@/lib/actions/settlement";
 import { useClientClock } from "@/lib/use-client-clock";
 
 type Txn = { id: string; kind: string; category: string; amount: number; source: string | null; occurredAt: string };
@@ -14,7 +14,9 @@ export function ShowSettlementControls({
   bookingId,
   merchCutPct,
   merchGross,
-  venueMerchCut,
+  venueMerchCutOwed,
+  venueMerchCutSettled,
+  venueMerchCutVariance,
   timezone,
   tagged,
   untagged,
@@ -22,7 +24,9 @@ export function ShowSettlementControls({
   bookingId: string;
   merchCutPct: number;
   merchGross: number;
-  venueMerchCut: number;
+  venueMerchCutOwed: number;
+  venueMerchCutSettled: number;
+  venueMerchCutVariance: number;
   timezone: string | null;
   tagged: Txn[];
   untagged: Txn[];
@@ -56,8 +60,8 @@ export function ShowSettlementControls({
           <div className="text-[12.5px] text-text/55">
             {merchGross > 0 ? (
               <>
-                {money(merchGross)} sold here → <span className="font-semibold text-orange">{money(venueMerchCut)}</span> to the
-                venue
+                {money(merchGross)} sold here → <span className="font-semibold text-orange">{money(venueMerchCutOwed)}</span> to
+                the venue
               </>
             ) : (
               <>No merch income tagged to this night yet.</>
@@ -65,6 +69,15 @@ export function ShowSettlementControls({
           </div>
           {pending && <span className="font-mono text-[10.5px] text-text/35">SAVING…</span>}
         </div>
+
+        {venueMerchCutOwed > 0 && (
+          <VenueCutSettlement
+            bookingId={bookingId}
+            owed={venueMerchCutOwed}
+            settled={venueMerchCutSettled}
+            variance={venueMerchCutVariance}
+          />
+        )}
       </div>
 
       <VenueTimezone bookingId={bookingId} timezone={timezone} />
@@ -209,6 +222,99 @@ function VenueTimezone({ bookingId, timezone }: { bookingId: string; timezone: s
           <span className="text-orange">Not a timezone this browser recognises, so it won&rsquo;t be saved.</span>
         )}
       </div>
+    </div>
+  );
+}
+
+/**
+ * Reconciling the venue's cut: what their percentage says, against what
+ * actually left the table.
+ *
+ * These differ more often than they should — a room takes 25% on the night
+ * despite 20% in the contract, or waives it on a slow one — and the gap is
+ * the only place that shows up. Until something is recorded the P&L carries
+ * a derived estimate; recording turns it into a real expense and the
+ * estimate stops being applied.
+ */
+function VenueCutSettlement({
+  bookingId,
+  owed,
+  settled,
+  variance,
+}: {
+  bookingId: string;
+  owed: number;
+  settled: number;
+  variance: number;
+}) {
+  const [open, setOpen] = useState(false);
+  const [pending, startTransition] = useTransition();
+
+  if (settled > 0) {
+    const reconciled = variance === 0;
+    return (
+      <div className="mt-3 border-t border-border pt-3 text-[12.5px]">
+        <span className="font-semibold text-text">{money(settled)} settled with the venue.</span>{" "}
+        {reconciled ? (
+          <span className="text-text/55">Matches their percentage exactly.</span>
+        ) : variance > 0 ? (
+          <span className="text-orange">{money(variance)} of their cut still unpaid.</span>
+        ) : (
+          <span className="text-orange">
+            {money(-variance)} more than their {(owed > 0 ? "percentage" : "rate")} accounts for — worth checking what they
+            actually took.
+          </span>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-3 border-t border-border pt-3">
+      {open ? (
+        <form
+          action={(fd) =>
+            startTransition(async () => {
+              await settleVenueMerchCut(fd);
+              setOpen(false);
+            })
+          }
+          className="flex flex-wrap items-end gap-2"
+        >
+          <input type="hidden" name="bookingId" value={bookingId} />
+          <label className="flex w-[110px] flex-col gap-1">
+            <span className="text-[10.5px] text-text/45">Paid them $</span>
+            <input
+              name="amount"
+              required
+              autoFocus
+              inputMode="decimal"
+              defaultValue={(owed / 100).toFixed(2)}
+              className="rounded-[8px] border border-border bg-surface-nested px-2.5 py-1.5 text-right font-mono text-[12.5px] outline-none focus:border-accent/50"
+            />
+          </label>
+          <button type="submit" className="cursor-pointer rounded-[8px] bg-accent px-3 py-1.5 text-[12px] font-semibold text-ink">
+            Record
+          </button>
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            className="cursor-pointer rounded-[8px] border border-border px-3 py-1.5 text-[12px] text-text/70"
+          >
+            Cancel
+          </button>
+          {pending && <span className="font-mono text-[10.5px] text-text/35">SAVING…</span>}
+        </form>
+      ) : (
+        <div className="flex flex-wrap items-center justify-between gap-2 text-[12.5px]">
+          <span className="text-text/55">
+            Estimated from their percentage — nothing recorded as paid yet.
+          </span>
+          <button onClick={() => setOpen(true)} className="cursor-pointer text-[11.5px] text-accent hover:underline">
+            Record what you paid
+          </button>
+        </div>
+      )}
     </div>
   );
 }

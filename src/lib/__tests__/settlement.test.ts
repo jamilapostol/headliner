@@ -55,15 +55,53 @@ test("the venue's merch cut is derived from merch income and flagged as computed
   const cut = pnl.expenses.find((l) => l.label === "Venue merch cut");
 
   assert.equal(pnl.merchGross, 124_000);
-  assert.equal(pnl.venueMerchCut, 24_800); // 20%
+  assert.equal(pnl.venueMerchCutOwed, 24_800); // 20%
+  assert.equal(pnl.venueMerchCutSettled, 0);
   assert.equal(cut?.computed, true, "must be marked derived — no receipt backs it");
   assert.equal(pnl.net, 124_000 - 24_800);
 });
 
 test("no merch cut line when the venue takes nothing", () => {
   const pnl = computeShowPnl(booking({ merchCutBps: 0 }), [txn({ amount: 50_000 })]);
-  assert.equal(pnl.venueMerchCut, 0);
+  assert.equal(pnl.venueMerchCutOwed, 0);
   assert.equal(pnl.expenses.find((l) => l.label === "Venue merch cut"), undefined);
+});
+
+test("a settled cut replaces the derived one instead of stacking on it", () => {
+  // The bug this guards: the recorded expense already reaches `expenses`
+  // through the category roll-up, so also pushing the derived line would
+  // charge the venue's cut twice against the same night.
+  const pnl = computeShowPnl(booking({ merchCutBps: 2000 }), [
+    txn({ category: "Merchandise", amount: 124_000 }),
+    txn({ kind: "expense", category: "Venue merch cut", amount: 24_800 }),
+  ]);
+
+  const cutLines = pnl.expenses.filter((l) => l.label === "Venue merch cut");
+  assert.equal(cutLines.length, 1, "exactly one cut line, never two");
+  assert.equal(cutLines[0].computed, undefined, "the recorded one, not the derived one");
+  assert.equal(pnl.totalExpenses, 24_800);
+  assert.equal(pnl.net, 124_000 - 24_800);
+});
+
+test("settling less than owed leaves a positive variance", () => {
+  const pnl = computeShowPnl(booking({ merchCutBps: 2000 }), [
+    txn({ category: "Merchandise", amount: 124_000 }),
+    txn({ kind: "expense", category: "Venue merch cut", amount: 20_000 }),
+  ]);
+  assert.equal(pnl.venueMerchCutOwed, 24_800);
+  assert.equal(pnl.venueMerchCutSettled, 20_000);
+  assert.equal(pnl.venueMerchCutVariance, 4_800, "still to pay");
+});
+
+test("paying the venue more than their percentage shows a negative variance", () => {
+  // Worth surfacing rather than smoothing away: it usually means the venue
+  // took a different cut than the one on file.
+  const pnl = computeShowPnl(booking({ merchCutBps: 2000 }), [
+    txn({ category: "Merchandise", amount: 100_000 }),
+    txn({ kind: "expense", category: "Venue merch cut", amount: 30_000 }),
+  ]);
+  assert.equal(pnl.venueMerchCutOwed, 20_000);
+  assert.equal(pnl.venueMerchCutVariance, -10_000);
 });
 
 // --- tour roll-up ---------------------------------------------------------
@@ -83,6 +121,23 @@ test("money in the tour window that no show claims is surfaced, not dropped", ()
   assert.equal(t.totalIncome, 200_000);
   assert.equal(t.totalExpenses, 85_000);
   assert.equal(t.net, 115_000, "tour net must include costs no single night owns");
+});
+
+test("the tour flags cuts still resting on an estimate", () => {
+  const a = booking({ id: "b1", merchCutBps: 2000, feeTransactionId: "t0" });
+  const b = booking({ id: "b2", merchCutBps: 2000, feeTransactionId: "t0" });
+  const t = computeTourSettlement(
+    [a, b],
+    [
+      // b1: merch sold, cut never settled -> counts as estimated.
+      txn({ id: "m1", category: "Merchandise", amount: 100_000, bookingId: "b1" }),
+      // b2: merch sold AND the cut recorded -> not estimated.
+      txn({ id: "m2", category: "Merchandise", amount: 100_000, bookingId: "b2" }),
+      txn({ id: "c2", kind: "expense", category: "Venue merch cut", amount: 20_000, bookingId: "b2" }),
+    ]
+  );
+
+  assert.equal(t.unsettledVenueCuts, 20_000, "only the un-recorded one");
 });
 
 // --- forecast -------------------------------------------------------------

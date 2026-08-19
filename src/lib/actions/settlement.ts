@@ -6,7 +6,7 @@ import { getSession } from "@/lib/auth";
 import { withErrorLog } from "@/lib/action-error";
 import { requireMinPlan } from "@/lib/plan-limits-server";
 import { isValidTimeZone } from "@/lib/format";
-import { BPS } from "@/lib/settlement";
+import { BPS, VENUE_MERCH_CUT } from "@/lib/settlement";
 
 /** Percent (possibly fractional, as typed) to integer basis points. */
 function pctToBps(pct: number): number {
@@ -78,6 +78,53 @@ export async function setMerchCut(bookingId: string, cutPct: number) {
     });
     revalidatePath("/app/settlement");
     revalidatePath(`/app/settlement/show/${bookingId}`);
+  });
+}
+
+/**
+ * Record the venue's merch cut as actually paid.
+ *
+ * Writes a real expense against the show, which is what turns the derived
+ * estimate on the P&L into a settled figure — computeShowPnl stops deriving
+ * the cut the moment one exists under this category, so the money is never
+ * counted twice.
+ *
+ * The amount is entered rather than assumed: what a venue actually takes at
+ * the table and what their percentage says it should be are not reliably
+ * the same number, and the gap between them is the point of reconciling.
+ */
+export async function settleVenueMerchCut(formData: FormData) {
+  return withErrorLog("settleVenueMerchCut", async () => {
+    const session = await getSession();
+    if (!session) return;
+    await requireMinPlan(session.workspaceId, "pro");
+
+    const bookingId = String(formData.get("bookingId") ?? "").trim();
+    const amountDollars = Number(formData.get("amount") ?? 0);
+    if (!bookingId || !Number.isFinite(amountDollars) || amountDollars <= 0) return;
+
+    const booking = await db.booking.findFirst({
+      where: { id: bookingId, workspaceId: session.workspaceId },
+      select: { id: true, venue: true, date: true },
+    });
+    if (!booking) return;
+
+    await db.transaction.create({
+      data: {
+        workspaceId: session.workspaceId,
+        kind: "expense",
+        category: VENUE_MERCH_CUT,
+        amount: Math.round(amountDollars * 100),
+        source: booking.venue,
+        bookingId: booking.id,
+        // Dated to the show, not to when it was entered — a cut settled
+        // three days later still belongs to the night it came off.
+        occurredAt: booking.date,
+      },
+    });
+    revalidatePath(`/app/settlement/show/${bookingId}`);
+    revalidatePath("/app/settlement");
+    revalidatePath("/app/finance");
   });
 }
 

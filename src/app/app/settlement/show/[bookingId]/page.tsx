@@ -92,7 +92,9 @@ export default async function ShowSettlementPage({ params }: { params: Promise<{
         merchCutPct={booking.merchCutBps / 100}
         timezone={booking.timezone}
         merchGross={pnl.merchGross}
-        venueMerchCut={pnl.venueMerchCut}
+        venueMerchCutOwed={pnl.venueMerchCutOwed}
+        venueMerchCutSettled={pnl.venueMerchCutSettled}
+        venueMerchCutVariance={pnl.venueMerchCutVariance}
         tagged={tagged.map((t) => ({
           id: t.id,
           kind: t.kind,

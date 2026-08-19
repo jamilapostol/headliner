@@ -102,6 +102,16 @@ export default async function SettlementPage() {
         />
       </div>
 
+      {settlement.unsettledVenueCuts > 0 && (
+        <div className="mb-3.5 rounded-card border border-orange/25 bg-orange/[.06] px-[18px] py-3.5 text-[12.5px] leading-relaxed">
+          <span className="font-semibold text-orange">{money(settlement.unsettledVenueCuts)} of venue merch cuts is estimated — </span>
+          <span className="text-text/70">
+            worked out from each room&rsquo;s percentage, with nothing recorded as actually paid. It is already subtracted above,
+            so the net is only as right as those percentages. Open a show to record what the venue really took.
+          </span>
+        </div>
+      )}
+
       {(settlement.unallocatedIncome > 0 || settlement.unallocatedExpenses > 0) && (
         <div className="mb-3.5 rounded-card border border-yellow/25 bg-yellow-soft px-[18px] py-3.5 text-[12.5px] leading-relaxed">
           <span className="font-semibold text-yellow">Not assigned to a show — </span>

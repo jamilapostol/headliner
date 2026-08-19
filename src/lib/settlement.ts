@@ -9,6 +9,12 @@
 
 export const BPS = 10_000;
 
+/** Category for a venue's merch cut once it is actually settled. Shared so
+ *  the write and the read agree — the P&L stops deriving the cut the moment
+ *  a real one is recorded under this name, and a mismatch between the two
+ *  would resurrect the double-count it exists to prevent. */
+export const VENUE_MERCH_CUT = "Venue merch cut";
+
 export type TxnLike = {
   id: string;
   kind: "income" | "expense";
@@ -45,7 +51,14 @@ export type ShowPnl = {
   totalExpenses: number;
   net: number;
   merchGross: number;
-  venueMerchCut: number;
+  /** What the venue's percentage comes to on this night's merch. */
+  venueMerchCutOwed: number;
+  /** What has actually been handed over and recorded. */
+  venueMerchCutSettled: number;
+  /** Owed minus settled. Positive means still to pay, negative means more
+   *  went to the venue than their percentage accounts for — which is the
+   *  whole reason to reconcile rather than assume. */
+  venueMerchCutVariance: number;
   /** The guarantee when it has NOT yet been collected. Kept out of income
    *  on purpose: a fee that hasn't landed is a receivable, and counting it
    *  as profit is how a tour looks solvent right up until it isn't. */
@@ -84,12 +97,18 @@ export function computeShowPnl(booking: BookingLike, transactions: readonly TxnL
     .reduce((sum, t) => sum + t.amount, 0);
 
   // The venue's cut comes off the top at the merch table — the artist is
-  // handed the remainder and usually never records the difference. It is
-  // computed here and flagged as such, because the whole point of showing
-  // it is that it is money leaving without a receipt.
-  const venueMerchCut = Math.round((merchGross * booking.merchCutBps) / BPS);
-  if (venueMerchCut > 0) {
-    expenses.push({ label: "Venue merch cut", cents: venueMerchCut, computed: true });
+  // handed the remainder and usually never records the difference.
+  const venueMerchCutOwed = Math.round((merchGross * booking.merchCutBps) / BPS);
+  const venueMerchCutSettled = transactions
+    .filter((t) => t.kind === "expense" && t.category === VENUE_MERCH_CUT)
+    .reduce((sum, t) => sum + t.amount, 0);
+
+  // Derive the cut ONLY while nothing real has been recorded. A settled cut
+  // is already among `expenses` via byCategory, so pushing the derived line
+  // as well would count the same money twice — the same trap as adding a
+  // booking's fee on top of the transaction that fee already wrote.
+  if (venueMerchCutSettled === 0 && venueMerchCutOwed > 0) {
+    expenses.push({ label: VENUE_MERCH_CUT, cents: venueMerchCutOwed, computed: true });
   }
 
   const totalIncome = income.reduce((sum, l) => sum + l.cents, 0);
@@ -103,7 +122,9 @@ export function computeShowPnl(booking: BookingLike, transactions: readonly TxnL
     totalExpenses,
     net: totalIncome - totalExpenses,
     merchGross,
-    venueMerchCut,
+    venueMerchCutOwed,
+    venueMerchCutSettled,
+    venueMerchCutVariance: venueMerchCutOwed - venueMerchCutSettled,
     expectedFee: booking.feeTransactionId ? null : booking.fee > 0 ? booking.fee : null,
   };
 }
@@ -120,6 +141,10 @@ export type TourSettlement = {
   unallocatedIncome: number;
   unallocatedExpenses: number;
   expectedIncome: number;
+  /** Venue merch cuts owed across the tour with nothing recorded as paid.
+   *  These are already inside `net` as derived expenses — this is how much
+   *  of the total rests on an estimate rather than a settled figure. */
+  unsettledVenueCuts: number;
   showsPlayed: number;
   showsRemaining: number;
 };
@@ -160,6 +185,7 @@ export function computeTourSettlement(
     unallocatedIncome,
     unallocatedExpenses,
     expectedIncome: shows.reduce((s, x) => s + (x.expectedFee ?? 0), 0),
+    unsettledVenueCuts: shows.reduce((s, x) => s + (x.venueMerchCutSettled === 0 ? x.venueMerchCutOwed : 0), 0),
     showsPlayed: bookings.filter((b) => b.date < now).length,
     showsRemaining: bookings.filter((b) => b.date >= now).length,
   };
