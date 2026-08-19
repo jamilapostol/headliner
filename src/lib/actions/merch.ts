@@ -206,6 +206,11 @@ export async function completeSale(
       }
 
       const sold: CompleteSaleResult["sold"] = [];
+      // One line per item that actually moved, priced as it was priced at
+      // this moment. Written inside this transaction, so it inherits the
+      // idempotency claim above — a replayed sale cannot double the goods
+      // any more than it can double the money.
+      const lines: Array<{ merchItemId: string; qty: number; unitPrice: number; unitCogs: number }> = [];
       let total = 0;
 
       // Every completeSale locks its cart's rows in the same order
@@ -225,9 +230,9 @@ export async function completeSale(
         // reads the old one. Capturing the old value explicitly is what lets
         // one statement do an atomic, stock-clamped decrement and report how
         // much it actually sold.
-        const rows = await tx.$queryRaw<Array<{ price: number; sold: number }>>`
+        const rows = await tx.$queryRaw<Array<{ price: number; cogs: number; sold: number }>>`
           WITH before AS (
-            SELECT stock, price FROM "MerchItem"
+            SELECT stock, price, cogs FROM "MerchItem"
             WHERE id = ${c.itemId} AND "workspaceId" = ${session.workspaceId}
             FOR UPDATE
           )
@@ -235,13 +240,14 @@ export async function completeSale(
           SET stock = "MerchItem".stock - LEAST(${c.qty}, before.stock)
           FROM before
           WHERE "MerchItem".id = ${c.itemId} AND "MerchItem"."workspaceId" = ${session.workspaceId}
-          RETURNING before.price, LEAST(${c.qty}, before.stock) AS sold
+          RETURNING before.price, before.cogs, LEAST(${c.qty}, before.stock) AS sold
         `;
         if (rows.length === 0) continue; // item deleted or not this workspace's — skip, don't fail the whole sale
 
         const qtySold = rows[0].sold;
         if (qtySold > 0) {
           total += qtySold * rows[0].price;
+          lines.push({ merchItemId: c.itemId, qty: qtySold, unitPrice: rows[0].price, unitCogs: rows[0].cogs });
         }
         if (qtySold !== c.qty) {
           sold.push({ itemId: c.itemId, requested: c.qty, sold: qtySold });
@@ -257,7 +263,7 @@ export async function completeSale(
         return { ok: false, kind: "permanent", error: "Everything in this sale is out of stock." };
       }
 
-      await tx.transaction.create({
+      const incomeTxn = await tx.transaction.create({
         data: {
           workspaceId: session.workspaceId,
           kind: "income",
@@ -266,6 +272,18 @@ export async function completeSale(
           source: "Point of sale",
           bookingId: attributedBookingId,
         },
+      });
+
+      await tx.merchSale.createMany({
+        data: lines.map((l) => ({
+          workspaceId: session.workspaceId,
+          merchItemId: l.merchItemId,
+          bookingId: attributedBookingId,
+          transactionId: incomeTxn.id,
+          qty: l.qty,
+          unitPrice: l.unitPrice,
+          unitCogs: l.unitCogs,
+        })),
       });
 
       const result: CompleteSaleResult = { total, sold };

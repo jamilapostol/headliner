@@ -100,6 +100,7 @@ model Workspace {
   merchItems   MerchItem[]
   splits       Split[]
   payouts      Payout[]
+  merchSales   MerchSale[]
   contracts    Contract[]
   fans         Fan[]
   campaigns    Campaign[]
@@ -341,7 +342,8 @@ model MerchItem {
   imageUrl    String? // public URL in the "merch" storage bucket
   createdAt   DateTime @default(now())
 
-  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspace Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  sales     MerchSale[]
 
   @@index([workspaceId])
 }
@@ -453,6 +455,34 @@ model Payout {
 
   @@index([workspaceId])
   @@index([splitId])
+}
+
+// One line of a merch sale — what actually left the table, not just what it
+// added up to. The Transaction it belongs to records the money; this records
+// the goods, which is the only way to answer which item sells, where, and at
+// what margin.
+//
+// unitPrice and unitCogs are SNAPSHOTS taken at the moment of sale. Prices
+// and costs move between tour legs, and margin on a shirt sold in March has
+// to reflect March's numbers — reading today's price off MerchItem would
+// quietly rewrite the history of every past show.
+model MerchSale {
+  id            String   @id @default(cuid())
+  workspaceId   String
+  merchItemId   String
+  bookingId     String? // which show, when the POS knew
+  transactionId String? // the income Transaction this line rolls up into
+  qty           Int
+  unitPrice     Int // cents, as sold
+  unitCogs      Int // cents, as costed
+  soldAt        DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  merchItem MerchItem @relation(fields: [merchItemId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, soldAt])
+  @@index([merchItemId])
+  @@index([bookingId])
 }
 
 model Liability {

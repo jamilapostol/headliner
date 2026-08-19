@@ -2,6 +2,7 @@
 
 import { useActionState, useRef, useState, useTransition } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { money } from "@/lib/format";
 import { createMerchItem, uploadMerchImage, type ActionState } from "@/lib/actions/merch";
 import { useMerchSyncQueue } from "@/lib/merch-offline";
@@ -42,6 +43,9 @@ export function MerchTable({ items }: { items: MerchItemDTO[] }) {
           <div className="font-mono text-[12px] text-text/45">
             {totalUnits} units in van · {money(retailValue)} retail
           </div>
+          <Link href="/app/merch/economics" className="text-[12.5px] text-accent hover:underline">
+            Economics →
+          </Link>
           <button onClick={() => setShowNew(true)} className="cursor-pointer rounded-lg bg-accent px-3.5 py-1.5 text-[12.5px] font-semibold text-ink">
             + New item
           </button>
