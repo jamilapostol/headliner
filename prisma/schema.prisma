@@ -84,6 +84,14 @@ model Workspace {
   referralRewardIssuedAt DateTime?
   referralCreditsEarned  Int       @default(0)
 
+  // Public tour listing. OFF until the artist turns it on, and there is no
+  // path that flips it on for them: publishing where someone will be on a
+  // given night is theirs to decide, and a default of "on" would make that
+  // decision for every workspace that never opened the settings page.
+  publicSlug    String? @unique
+  publicEnabled Boolean @default(false)
+  publicBio     String?
+
   // Whether merch income joins the pool that Split rows divide. Off is a
   // real and common arrangement — plenty of bands split show fees but leave
   // merch with whoever fronted the print run — so it is a stored choice
@@ -269,6 +277,7 @@ model Booking {
   // commonly take 20-35% off the top and it is rarely written down anywhere
   // the artist looks again, so it is stored per-show rather than assumed.
   merchCutBps      Int          @default(0)
+  ticketUrl        String? // where fans buy — the only outbound link a public listing carries
   // IANA zone for the venue, e.g. "America/Los_Angeles". Null means unknown,
   // which is the honest default: it cannot be inferred from a city name
   // without guessing. `date` above stays a plain calendar marker stored at

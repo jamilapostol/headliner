@@ -1,4 +1,5 @@
 import { requireWorkspace } from "@/lib/workspace";
+import { PublicProfileSettings } from "@/components/public-profile-settings";
 import { db } from "@/lib/db";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { TEAM_MANAGER_ROLES, SEAT_LIMITS } from "@/lib/roles";
@@ -13,10 +14,11 @@ import { referralLink } from "@/lib/referral";
 export default async function AccountPage() {
   const { user, workspace } = await requireWorkspace();
 
-  const [memberships, referredCount, convertedCount] = await Promise.all([
+  const [memberships, referredCount, convertedCount, confirmedCount] = await Promise.all([
     db.membership.findMany({ where: { workspaceId: workspace.id }, orderBy: { createdAt: "asc" } }),
     db.workspace.count({ where: { referredByWorkspaceId: workspace.id } }),
     db.workspace.count({ where: { referredByWorkspaceId: workspace.id, plan: { not: "free" } } }),
+    db.booking.count({ where: { workspaceId: workspace.id, stage: { in: ["Confirmed", "Paid"] } } }),
   ]);
   const admin = createAdminClient();
   const members: MemberRow[] = await Promise.all(
@@ -50,6 +52,13 @@ export default async function AccountPage() {
             postalCode: workspace.postalCode,
             country: workspace.country,
           }}
+        />
+        <PublicProfileSettings
+          name={workspace.name}
+          slug={workspace.publicSlug}
+          enabled={workspace.publicEnabled}
+          bio={workspace.publicBio}
+          confirmedCount={confirmedCount}
         />
         <TeamSection members={members} canManage={canManage} seatLabel={`${memberships.length} / ${limit} seats`} />
         <ReferFriendsSection
