@@ -4,6 +4,15 @@ import { SYSTEM_PAGES } from "@/lib/web-pages";
 import { withErrorFallback } from "@/lib/action-error";
 import { siteUrl } from "@/lib/site-url";
 
+// Regenerate hourly instead of at build time. This reads the database —
+// public artist pages and marketing pages both — so a build-time snapshot
+// goes stale the moment anyone enables a page, and would only refresh when
+// something unrelated happened to deploy. An artist who switches their
+// listing on should not wait on someone else's release to be crawlable.
+// Hourly rather than per-request: crawlers fetch this rarely, and there is
+// no reason to hit the database on every hit.
+export const revalidate = 3600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Only advertise pages that are actually public; a DB hiccup degrades to
   // the always-public auth/legal routes rather than failing the whole sitemap.
