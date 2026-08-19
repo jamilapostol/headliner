@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { requireWorkspace } from "@/lib/workspace";
 import { db } from "@/lib/db";
 import { planAtLeast } from "@/lib/plan-limits";
-import { calendarDay, fmtDateUTC } from "@/lib/format";
+import { calendarDay, fmtDateUTC, utcDayKey } from "@/lib/format";
 import { MerchTable, type MerchItemDTO } from "@/components/merch-table";
 import { PointOfSale, type ShowOptionDTO } from "@/components/point-of-sale";
 
@@ -87,7 +87,13 @@ export default async function MerchPage() {
             <br />
             Suggested float: <span className="font-mono text-text">$120 small bills</span>
           </div>
-          <PointOfSale items={dtos} shows={showOptions} defaultShowId={defaultShowId} />
+          <PointOfSale
+            items={dtos}
+            shows={showOptions}
+            defaultShowId={defaultShowId}
+            renderedDayKey={utcDayKey(now)}
+            renderedOnLabel={fmtDateUTC(now, { weekday: "long", month: "short", day: "numeric" })}
+          />
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { money } from "@/lib/format";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { money, utcDayKey } from "@/lib/format";
 import { useMerchSyncQueue } from "@/lib/merch-offline";
 import { effectiveStock } from "@/lib/merch-sync";
 import { SyncStatus } from "@/components/merch-sync-status";
@@ -9,14 +9,52 @@ import type { MerchItemDTO } from "@/components/merch-table";
 
 export type ShowOptionDTO = { id: string; city: string; venue: string; date: string; isToday: boolean };
 
+/**
+ * Whether the calendar day has moved on since the server rendered this page.
+ *
+ * A merch device is loaded once and then lives in a pocket — the tab can be
+ * days old by the time it is used, and everything the server worked out
+ * about "tonight" went stale silently. Re-checks on visibilitychange above
+ * all: waking the phone at the next venue is exactly the moment this needs
+ * to be right.
+ *
+ * Starts false and only decides inside the effect, so the first client
+ * render matches the server's and hydration stays quiet.
+ */
+function useDayStale(renderedDayKey: string): boolean {
+  const [stale, setStale] = useState(false);
+
+  useEffect(() => {
+    const check = () => setStale(utcDayKey(new Date()) !== renderedDayKey);
+    check();
+
+    const onVisible = () => {
+      if (document.visibilityState === "visible") check();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    const interval = window.setInterval(check, 60_000);
+
+    return () => {
+      document.removeEventListener("visibilitychange", onVisible);
+      window.clearInterval(interval);
+    };
+  }, [renderedDayKey]);
+
+  return stale;
+}
+
 export function PointOfSale({
   items,
   shows = [],
   defaultShowId = null,
+  renderedDayKey,
+  renderedOnLabel,
 }: {
   items: MerchItemDTO[];
   shows?: ShowOptionDTO[];
   defaultShowId?: string | null;
+  renderedDayKey: string;
+  renderedOnLabel: string;
 }) {
   const [open, setOpen] = useState(false);
   const [cart, setCart] = useState<Record<string, number>>({});
@@ -72,6 +110,23 @@ export function PointOfSale({
   // appearing in either list — that transition (present → gone) is exactly
   // "this sale reached the server", with no separate status field to keep
   // in sync with the queue's own state.
+  const dayStale = useDayStale(renderedDayKey);
+  const clearedForStale = useRef(false);
+
+  // Drop the auto-picked show the moment the date turns over, exactly once.
+  // A wrong attribution is the worse failure: it looks right, so nobody
+  // checks it, and it corrupts two nights' numbers at once — the show that
+  // gets money it didn't earn and the one that doesn't get what it did.
+  // No attribution is visible on its face and fixable from the show screen.
+  // After this one clear the seller is in charge; re-clearing a choice they
+  // made *after* seeing the warning would be its own bug.
+  useEffect(() => {
+    if (dayStale && !clearedForStale.current) {
+      clearedForStale.current = true;
+      setShowId(null);
+    }
+  }, [dayStale]);
+
   const selectedShow = shows.find((s) => s.id === showId) ?? null;
 
   const stillQueued = queuedKey !== null && [...sync.pending, ...sync.failed].some((o) => o.key === queuedKey);
@@ -143,6 +198,16 @@ export function PointOfSale({
                   </button>
                 </div>
 
+                {dayStale && shows.length > 0 && (
+                  <div className="mb-3 rounded-[10px] border border-orange/30 bg-orange/[.07] px-3.5 py-2.5 text-[12px] leading-relaxed">
+                    <div className="mb-0.5 font-semibold text-orange">This page loaded on {renderedOnLabel}</div>
+                    <div className="text-text/60">
+                      The date has changed since, so it can no longer tell which show is tonight&rsquo;s — pick one below before
+                      selling. Anything already queued is safe, and reloading refreshes the dates when you have signal.
+                    </div>
+                  </div>
+                )}
+
                 {/* Which night this money belongs to. Shown before the sale
                     rather than asked afterwards — nobody reconciles a merch
                     table at 1am, and an unattributed sale is one someone has
@@ -166,7 +231,9 @@ export function PointOfSale({
                                 {s.city}
                                 <span className="text-text/40"> · {s.venue}</span>
                               </span>
-                              <span className="flex-none font-mono text-[10.5px] text-text/40">{s.isToday ? "TONIGHT" : s.date}</span>
+                              <span className="flex-none font-mono text-[10.5px] text-text/40">
+                                {!dayStale && s.isToday ? "TONIGHT" : s.date}
+                              </span>
                             </button>
                           ))}
                           <button

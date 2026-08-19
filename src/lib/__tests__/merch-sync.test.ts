@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { opStockDeltas, effectiveStock, type QueuedMerchOp } from "../merch-sync";
+import { utcDayKey } from "../format";
 
 // The optimistic-display math for the merch offline queue. This is what a
 // seller sees on the screen while a device is offline — it has to agree
@@ -60,7 +61,7 @@ test("a sale queued before attribution existed still computes its stock deltas",
   // Ops already sitting in a device's IndexedDB carry no bookingId. The
   // field is optional precisely so those replay instead of throwing, and
   // the stock math must not notice its absence.
-  const legacy = { type: "completeSale", cart: [{ itemId: "shirt", qty: 2 }] } as const;
+  const legacy = { type: "completeSale" as const, cart: [{ itemId: "shirt", qty: 2 }] };
   assert.deepEqual(opStockDeltas(legacy), [{ itemId: "shirt", delta: -2 }]);
 });
 
@@ -73,6 +74,32 @@ test("attributing a sale to a show does not change what it does to stock", () =>
 test("a show-attributed sale still counts against optimistic stock", () => {
   const pending = [op({ type: "completeSale", cart: [{ itemId: "shirt", qty: 3 }], bookingId: "booking-1" })];
   assert.equal(effectiveStock(10, "shirt", pending), 7);
+});
+
+// --- day staleness --------------------------------------------------------
+//
+// The merch POS compares the day the server rendered against the day on the
+// device, to catch a tab that has been asleep in a pocket since the last
+// venue. Both sides derive the key the same way, so the comparison is only
+// as good as this being stable.
+
+test("a day key is the UTC calendar day, stable across times of day", () => {
+  assert.equal(utcDayKey(new Date("2026-08-19T00:00:00Z")), "2026-08-19");
+  assert.equal(utcDayKey(new Date("2026-08-19T23:59:59Z")), "2026-08-19");
+});
+
+test("day keys differ across midnight — the transition the warning fires on", () => {
+  const before = utcDayKey(new Date("2026-08-19T23:59:59Z"));
+  const after = utcDayKey(new Date("2026-08-20T00:00:01Z"));
+  assert.notEqual(before, after);
+  assert.equal(after, "2026-08-20");
+});
+
+test("day keys sort chronologically as plain strings", () => {
+  // Why a string and not a Date: it survives the server-to-client boundary
+  // without serialization, and still compares correctly.
+  const keys = ["2026-08-20", "2026-01-05", "2026-12-31"].sort();
+  assert.deepEqual(keys, ["2026-01-05", "2026-08-20", "2026-12-31"]);
 });
 
 // Not covered here: that the IndexedDB queue actually persists across a
