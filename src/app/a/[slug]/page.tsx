@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { fmtDateUTC } from "@/lib/format";
@@ -105,9 +106,9 @@ export default async function PublicTourPage({ params }: { params: Promise<{ slu
 
         <div className="mt-12 border-t border-border pt-5 text-[11.5px] text-text/30">
           Dates by{" "}
-          <a href="/" className="text-text/45 hover:text-text/70">
+          <Link href="/" className="text-text/45 hover:text-text/70">
             HEADLINE.WORLD
-          </a>
+          </Link>
         </div>
       </div>
     </div>
