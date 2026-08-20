@@ -65,8 +65,8 @@ export function BillingPlans({
               key={t.key}
               className="relative flex flex-col rounded-2xl p-6 px-[22px]"
               style={{
-                background: t.popular ? "rgba(63,232,122,.06)" : "var(--surface)",
-                border: `1px solid ${isCurrent ? "#3FCB86" : t.popular ? "rgba(63,232,122,.45)" : "rgba(var(--border-rgb),.08)"}`,
+                background: t.popular ? "rgba(63,203,134,.06)" : "var(--surface)",
+                border: `1px solid ${isCurrent ? "#3FCB86" : t.popular ? "rgba(63,203,134,.45)" : "rgba(var(--border-rgb),.08)"}`,
               }}
             >
               {t.popular && !isCurrent && (

@@ -38,7 +38,7 @@ export default async function BillingPage({
           style={
             redirectKey === "canceled"
               ? { borderColor: "rgba(var(--border-rgb),.15)", color: "rgba(var(--fg-rgb),.6)" }
-              : { borderColor: "rgba(63,232,122,.3)", background: "rgba(63,232,122,.07)", color: "rgba(var(--fg-rgb),.8)" }
+              : { borderColor: "rgba(63,203,134,.3)", background: "rgba(63,203,134,.07)", color: "rgba(var(--fg-rgb),.8)" }
           }
         >
           {redirectMessage}

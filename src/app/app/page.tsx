@@ -109,7 +109,7 @@ export default async function DashboardPage() {
                   <div
                     className="rounded-full px-2 py-[3px] font-mono text-[10.5px]"
                     style={{
-                      background: advanced ? "rgba(63,232,122,.12)" : "rgba(232,228,63,.1)",
+                      background: advanced ? "rgba(63,203,134,.12)" : "rgba(255,201,60,.1)",
                       color: advanced ? "#3FCB86" : "#FFC93C",
                     }}
                   >

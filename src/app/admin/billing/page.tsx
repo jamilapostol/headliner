@@ -3,7 +3,7 @@ import { stripe, stripeEnabled } from "@/lib/stripe";
 import { money } from "@/lib/format";
 
 const STATUS_STYLE: Record<string, { bg: string; color: string }> = {
-  active: { bg: "rgba(63,232,122,.1)", color: "#3FCB86" },
+  active: { bg: "rgba(63,203,134,.1)", color: "#3FCB86" },
   trialing: { bg: "rgba(63,180,232,.1)", color: "#38B6E8" },
   past_due: { bg: "rgba(232,163,63,.1)", color: "#FF7A2F" },
   unpaid: { bg: "rgba(232,83,63,.1)", color: "#F4356E" },

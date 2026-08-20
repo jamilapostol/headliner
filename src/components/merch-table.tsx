@@ -104,7 +104,7 @@ export function MerchTable({ items }: { items: MerchItemDTO[] }) {
               </div>
               <div
                 className="w-fit rounded-full px-2.5 py-[3px] font-mono text-[10.5px]"
-                style={{ background: low ? "rgba(232,152,63,.12)" : "rgba(63,232,122,.1)", color: low ? "#FF7A2F" : "#3FCB86" }}
+                style={{ background: low ? "rgba(255,122,47,.12)" : "rgba(63,203,134,.1)", color: low ? "#FF7A2F" : "#3FCB86" }}
               >
                 {low ? "LOW STOCK" : "OK"}
               </div>

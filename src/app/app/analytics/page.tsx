@@ -76,8 +76,8 @@ export default async function AnalyticsPage() {
           <div className="flex h-[150px] items-end gap-1 sm:gap-2">
             {monthlyBars.map((b, i) => (
               <div key={i} className="flex h-full flex-1 flex-col justify-end gap-0.5">
-                <div className="rounded-t-[3px]" style={{ background: i === 11 ? "#3FCB86" : "rgba(63,232,122,.35)", height: `${Math.round((b.performance / maxMonthly) * 100)}%` }} />
-                <div className="rounded-b-[2px]" style={{ background: "rgba(232,228,63,.35)", height: `${Math.round((b.merch / maxMonthly) * 100)}%` }} />
+                <div className="rounded-t-[3px]" style={{ background: i === 11 ? "#3FCB86" : "rgba(63,203,134,.35)", height: `${Math.round((b.performance / maxMonthly) * 100)}%` }} />
+                <div className="rounded-b-[2px]" style={{ background: "rgba(255,201,60,.35)", height: `${Math.round((b.merch / maxMonthly) * 100)}%` }} />
               </div>
             ))}
           </div>
@@ -91,7 +91,7 @@ export default async function AnalyticsPage() {
               Performance
             </span>
             <span>
-              <span className="mr-1.5 inline-block h-[9px] w-[9px] rounded-[2px]" style={{ background: "rgba(232,228,63,.6)" }} />
+              <span className="mr-1.5 inline-block h-[9px] w-[9px] rounded-[2px]" style={{ background: "rgba(255,201,60,.6)" }} />
               Merch
             </span>
           </div>

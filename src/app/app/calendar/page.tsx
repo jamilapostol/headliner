@@ -100,7 +100,7 @@ export default async function CalendarPage({
               <div
                 key={key}
                 className="min-h-[104px] border-b border-r border-text/[.05] p-2 last:border-r-0"
-                style={{ background: isToday(day) ? "rgba(63,232,122,.05)" : "transparent" }}
+                style={{ background: isToday(day) ? "rgba(63,203,134,.05)" : "transparent" }}
               >
                 <div className="mb-1.5 font-mono text-[11px]" style={{ color: inMonth ? (isToday(day) ? "#3FCB86" : "rgba(var(--fg-rgb),.6)") : "rgba(var(--fg-rgb),.2)" }}>
                   {format(day, "d")}

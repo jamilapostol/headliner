@@ -67,7 +67,7 @@ export function TourView({ tour, eligibleBookings }: { tour: TourDTO; eligibleBo
               <div
                 key={s.id}
                 className="group flex items-center gap-2 rounded-lg px-3 py-2.5 hover:bg-text/5"
-                style={{ background: i === selIdx ? "rgba(63,232,122,.09)" : "transparent" }}
+                style={{ background: i === selIdx ? "rgba(63,203,134,.09)" : "transparent" }}
               >
                 <div onClick={() => setSelIdx(i)} className="flex flex-1 cursor-pointer items-center gap-3">
                   <div className="w-[46px] font-mono text-[11px]" style={{ color: i === selIdx ? "#3FCB86" : "rgba(var(--fg-rgb),.5)" }}>

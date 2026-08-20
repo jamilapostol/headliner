@@ -119,7 +119,7 @@ export function FansView({ fans, plan }: { fans: FanDTO[]; plan: string }) {
             className="cursor-pointer rounded-[20px] px-3.5 py-[7px] text-[12px]"
             style={{
               border: `1px solid ${c === cat ? "#3FCB86" : "rgba(var(--border-rgb),.12)"}`,
-              background: c === cat ? "rgba(63,232,122,.1)" : "transparent",
+              background: c === cat ? "rgba(63,203,134,.1)" : "transparent",
               color: c === cat ? "#3FCB86" : "rgba(var(--fg-rgb),.65)",
             }}
           >

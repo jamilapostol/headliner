@@ -123,7 +123,7 @@ export function MobileDayView({
 
           <div
             className="mb-3.5 rounded-2xl border border-accent/30 p-4"
-            style={{ background: "linear-gradient(160deg, rgba(63,232,122,.14), rgba(63,232,122,.03))" }}
+            style={{ background: "linear-gradient(160deg, rgba(63,203,134,.14), rgba(63,203,134,.03))" }}
           >
             <div className="mb-1.5 font-label text-[10px] tracking-[.12em] text-accent">
               NEXT SHOW · {nextShow.dateLabel}

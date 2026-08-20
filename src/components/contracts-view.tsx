@@ -22,9 +22,9 @@ export type ContractDTO = {
 };
 
 const STATUS_STYLE: Record<string, { bg: string; color: string; label: string }> = {
-  SIGNED: { bg: "rgba(63,232,122,.1)", color: "#3FCB86", label: "SIGNED" },
-  ACTIVE: { bg: "rgba(63,232,122,.1)", color: "#3FCB86", label: "ACTIVE" },
-  AWAITING_SIGN: { bg: "rgba(232,228,63,.1)", color: "#FFC93C", label: "AWAITING SIGN" },
+  SIGNED: { bg: "rgba(63,203,134,.1)", color: "#3FCB86", label: "SIGNED" },
+  ACTIVE: { bg: "rgba(63,203,134,.1)", color: "#3FCB86", label: "ACTIVE" },
+  AWAITING_SIGN: { bg: "rgba(255,201,60,.1)", color: "#FFC93C", label: "AWAITING SIGN" },
   DRAFT: { bg: "rgba(var(--border-rgb),.06)", color: "rgba(var(--fg-rgb),.5)", label: "DRAFT" },
 };
 
@@ -184,7 +184,7 @@ function ContractRow({
   return (
     <div
       className="grid grid-cols-[1.8fr_.9fr_.7fr_.9fr_1.3fr_auto] items-center gap-3 border-b border-text/[.05] px-[18px] py-3 hover:bg-text/[.03]"
-      style={{ background: selected ? "rgba(63,232,122,.07)" : "transparent" }}
+      style={{ background: selected ? "rgba(63,203,134,.07)" : "transparent" }}
     >
       <div className="cursor-pointer" onClick={onSelect}>
         <div className="text-[13px] font-semibold">{contract.name}</div>

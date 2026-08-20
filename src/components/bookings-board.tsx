@@ -142,8 +142,8 @@ export function BookingsBoard({ bookings: bookingsProp, plan }: { bookings: Book
               onDrop={() => drop(stage.key)}
               className="min-h-[300px] w-[236px] flex-none rounded-card border p-3 transition-colors"
               style={{
-                background: isDragTarget ? "rgba(63,232,122,.06)" : "rgba(var(--fg-rgb),.03)",
-                borderColor: isDragTarget ? "rgba(63,232,122,.5)" : "rgba(var(--border-rgb),.06)",
+                background: isDragTarget ? "rgba(63,203,134,.06)" : "rgba(var(--fg-rgb),.03)",
+                borderColor: isDragTarget ? "rgba(63,203,134,.5)" : "rgba(var(--border-rgb),.06)",
               }}
             >
               <div className="mb-3 flex items-center gap-2 px-1">

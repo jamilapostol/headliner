@@ -41,7 +41,7 @@ export function RoadPhotoStrip() {
       {ROAD_PHOTOS.map((p) => (
         <div key={p.src} className="relative aspect-[4/5] overflow-hidden rounded-tile border border-border">
           <Image src={p.src} alt={p.alt} fill sizes="(max-width: 640px) 100vw, 33vw" className="object-cover brightness-[.92] saturate-[1.05]" style={{ objectPosition: p.position }} />
-          <div className="absolute inset-0" style={{ backgroundImage: "linear-gradient(180deg, transparent 55%, rgba(13,17,14,.55))" }} />
+          <div className="absolute inset-0" style={{ backgroundImage: "linear-gradient(180deg, transparent 55%, rgba(11,10,14,.55))" }} />
         </div>
       ))}
     </div>

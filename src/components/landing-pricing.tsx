@@ -80,14 +80,14 @@ export function LandingPricing({ heading, subheading }: { heading: string; subhe
             <button
               onClick={() => setAnnual(false)}
               className="cursor-pointer rounded-[7px] px-4 py-1.5 text-[12.5px] font-semibold"
-              style={{ background: annual ? "transparent" : "#3FCB86", color: annual ? "rgba(233,236,232,.6)" : "#0B0A0E" }}
+              style={{ background: annual ? "transparent" : "#FFC93C", color: annual ? "rgba(247,241,230,.6)" : "#0B0A0E" }}
             >
               Monthly
             </button>
             <button
               onClick={() => setAnnual(true)}
               className="cursor-pointer rounded-[7px] px-4 py-1.5 text-[12.5px] font-semibold"
-              style={{ background: annual ? "#3FCB86" : "transparent", color: annual ? "#0B0A0E" : "rgba(233,236,232,.6)" }}
+              style={{ background: annual ? "#FFC93C" : "transparent", color: annual ? "#0B0A0E" : "rgba(247,241,230,.6)" }}
             >
               Annual · −17%
             </button>
@@ -99,8 +99,8 @@ export function LandingPricing({ heading, subheading }: { heading: string; subhe
               key={t.name}
               className="relative flex flex-col rounded-2xl p-6 px-[22px]"
               style={{
-                background: t.popular ? "rgba(63,232,122,.06)" : "#131118",
-                border: `1px solid ${t.popular ? "rgba(63,232,122,.45)" : "rgba(255,255,255,.08)"}`,
+                background: t.popular ? "rgba(63,203,134,.06)" : "#131118",
+                border: `1px solid ${t.popular ? "rgba(63,203,134,.45)" : "rgba(255,255,255,.08)"}`,
               }}
             >
               {t.popular && (
@@ -126,9 +126,9 @@ export function LandingPricing({ heading, subheading }: { heading: string; subhe
                 href="/signup"
                 className="mt-auto rounded-[9px] p-[11px] text-center text-[13.5px] font-semibold"
                 style={{
-                  background: t.popular ? "#3FCB86" : "transparent",
-                  color: t.popular ? "#0B0A0E" : "rgba(233,236,232,.85)",
-                  border: `1px solid ${t.popular ? "#3FCB86" : "rgba(255,255,255,.18)"}`,
+                  background: t.popular ? "#FFC93C" : "transparent",
+                  color: t.popular ? "#0B0A0E" : "rgba(247,241,230,.85)",
+                  border: `1px solid ${t.popular ? "#FFC93C" : "rgba(247,241,230,.18)"}`,
                 }}
               >
                 {t.cta}

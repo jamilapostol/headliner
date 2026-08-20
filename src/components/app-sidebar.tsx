@@ -77,10 +77,19 @@ export function AppSidebar({ userName, plan, avatarUrl }: { userName: string; pl
                 key={nv.href}
                 href={nv.href}
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-2.5 rounded-lg px-3 py-[9px] text-[13.5px] font-medium hover:bg-text/5"
-                style={{ color: active ? "#0B0A0E" : "rgba(var(--fg-rgb),.75)", background: active ? "#3FCB86" : "transparent" }}
+                // BRAND.md §6: a rail's active item is cream with a 3px
+                // accent left border, not a filled pill. Oswald 500, tracked.
+                className={`flex items-center gap-2.5 py-[9px] pr-3 font-label text-[12.5px] transition-colors ${
+                  active ? "bg-surface text-text" : "text-text/55 hover:text-text"
+                }`}
+                style={{
+                  paddingLeft: 12,
+                  borderLeft: `3px solid ${active ? "currentColor" : "transparent"}`,
+                  borderRadius: "0 5px 5px 0",
+                  letterSpacing: "var(--hw-track-nav)",
+                }}
               >
-                <span className="w-4 font-mono text-[11px] opacity-70">{nv.glyph}</span>
+                <span className={`w-4 font-mono text-[11px] ${nv.tint}`}>{nv.glyph}</span>
                 {nv.label}
                 {nv.soon && <span className="ml-auto font-label text-[9px] tracking-[.08em] opacity-60">SOON</span>}
               </Link>
