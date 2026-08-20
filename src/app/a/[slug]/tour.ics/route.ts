@@ -29,10 +29,17 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
     headers: {
       "Content-Type": "text/calendar; charset=utf-8",
       "Content-Disposition": `inline; filename="${slug}-tour.ics"`,
-      // Calendar clients poll this on their own schedule; an hour keeps a
-      // newly announced date from taking a day to appear without inviting
-      // a poll every few minutes.
-      "Cache-Control": "public, max-age=3600",
+      // A minute, not an hour. Nothing here can purge the CDN when an
+      // artist switches their listing off, so this TTL IS the revocation
+      // delay: at an hour, a page turned off kept handing out that
+      // artist's dates for another hour, with nothing in the UI hinting
+      // that it would. Caught by disabling a live listing and finding the
+      // feed still serving it (x-vercel-cache: HIT, age 740).
+      //
+      // The cost runs the other way and is small — calendar clients poll
+      // on their own slow schedule, so this absorbs bursts rather than
+      // sustained traffic, and a minute still does that.
+      "Cache-Control": "public, max-age=60, must-revalidate",
     },
   });
 }
