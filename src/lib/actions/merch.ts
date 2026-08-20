@@ -149,13 +149,13 @@ export async function adjustStock(
         UPDATE "MerchItem"
         SET stock = GREATEST(stock + ${delta}, 0)
         WHERE id = ${itemId} AND "workspaceId" = ${session.workspaceId}
-        RETURNING stock
+        RETURNING stock::int
       `;
       if (rows.length === 0) {
         return { ok: false, kind: "permanent", error: "Item not found." };
       }
 
-      const result: AdjustStockResult = { itemId, stock: rows[0].stock };
+      const result: AdjustStockResult = { itemId, stock: Number(rows[0].stock) };
       await tx.merchSyncOperation.update({ where: { id: claim.opId }, data: { resultJson: JSON.stringify(result) } });
       return { ok: true, result };
     });
@@ -240,14 +240,24 @@ export async function completeSale(
           SET stock = "MerchItem".stock - LEAST(${c.qty}, before.stock)
           FROM before
           WHERE "MerchItem".id = ${c.itemId} AND "MerchItem"."workspaceId" = ${session.workspaceId}
-          RETURNING before.price, before.cogs, LEAST(${c.qty}, before.stock) AS sold
+          RETURNING before.price, before.cogs, LEAST(${c.qty}, before.stock)::int AS sold
         `;
         if (rows.length === 0) continue; // item deleted or not this workspace's — skip, don't fail the whole sale
 
-        const qtySold = rows[0].sold;
+        // Number() as well as the ::int above: Prisma binds JS numbers as
+        // bigint, so any arithmetic expression mixing a bound parameter with
+        // an int column comes back as a JS BigInt, and BigInt * Number
+        // throws rather than coercing. Belt and braces, because this exact
+        // seam silently broke every sale once already.
+        const qtySold = Number(rows[0].sold);
         if (qtySold > 0) {
-          total += qtySold * rows[0].price;
-          lines.push({ merchItemId: c.itemId, qty: qtySold, unitPrice: rows[0].price, unitCogs: rows[0].cogs });
+          total += qtySold * Number(rows[0].price);
+          lines.push({
+            merchItemId: c.itemId,
+            qty: qtySold,
+            unitPrice: Number(rows[0].price),
+            unitCogs: Number(rows[0].cogs),
+          });
         }
         if (qtySold !== c.qty) {
           sold.push({ itemId: c.itemId, requested: c.qty, sold: qtySold });
@@ -359,7 +369,7 @@ export async function recordStockCount(formData: FormData) {
           SET stock = ${entry.counted}
           FROM before
           WHERE "MerchItem".id = ${entry.itemId} AND "MerchItem"."workspaceId" = ${session.workspaceId}
-          RETURNING before.stock AS expected, before.cogs AS cogs
+          RETURNING before.stock::int AS expected, before.cogs::int AS cogs
         `;
         if (rows.length === 0) continue; // not this workspace's item
 
@@ -368,9 +378,9 @@ export async function recordStockCount(formData: FormData) {
             workspaceId: session.workspaceId,
             merchItemId: entry.itemId,
             bookingId,
-            expected: rows[0].expected,
+            expected: Number(rows[0].expected),
             counted: entry.counted,
-            unitCogs: rows[0].cogs,
+            unitCogs: Number(rows[0].cogs),
             note: note || null,
           },
         });
