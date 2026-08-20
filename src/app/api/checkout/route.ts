@@ -3,6 +3,7 @@ import Stripe from "stripe";
 import { BUNDLES, bySlug } from "@content/products";
 import { stripe } from "@/lib/stripe";
 import { absoluteUrl } from "@/lib/site-url";
+import { signProductFiles } from "@/lib/store/supabase";
 
 export const runtime = "nodejs";
 
@@ -44,6 +45,21 @@ export async function POST(request: Request) {
   if (!product.stripePriceId) {
     return NextResponse.json(
       { ok: false, error: "This product isn't available for purchase yet." },
+      { status: 503 }
+    );
+  }
+
+  // Refuse to take money for something we cannot hand over. A missing file
+  // in the private bucket is invisible until the webhook tries to sign it —
+  // by which point the customer has paid and the only remedies are a refund
+  // and an apology. One storage call per checkout is a cheap way to never
+  // have that conversation.
+  const signed = await signProductFiles(product.files);
+  const unsignable = signed.filter((f) => !f.url);
+  if (unsignable.length > 0) {
+    console.error("checkout: blocked, files not in storage", { slug, missing: unsignable.map((f) => f.path) });
+    return NextResponse.json(
+      { ok: false, error: "This one isn't ready to download yet — we're fixing it." },
       { status: 503 }
     );
   }
