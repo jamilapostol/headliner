@@ -69,3 +69,16 @@ export function MetaRow({ items }: { items: Array<[string, string]> }) {
     </dl>
   );
 }
+
+/**
+ * Catalogue prices are dollars-as-floats (19, 15.99), not cents, so
+ * subtracting them produces the usual binary-fraction noise — a $113.99
+ * saving renders as $113.99000000000001 straight out of the arithmetic.
+ * Every price on these pages goes through here.
+ *
+ * Whole dollars stay whole: "$89", not "$89.00".
+ */
+export function usd(amount: number): string {
+  const rounded = Math.round(amount * 100) / 100;
+  return Number.isInteger(rounded) ? `$${rounded}` : `$${rounded.toFixed(2)}`;
+}

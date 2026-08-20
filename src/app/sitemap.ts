@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { SYSTEM_PAGES } from "@/lib/web-pages";
 import { withErrorFallback } from "@/lib/action-error";
 import { siteUrl } from "@/lib/site-url";
+import { BUNDLES, FREE_TOOLS, PACKS } from "@content/products";
 
 // Regenerate hourly instead of at build time. This reads the database —
 // public artist pages and marketing pages both — so a build-time snapshot
@@ -48,7 +49,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   });
 
   const base = siteUrl();
-  const routes = [...new Set([...marketingRoutes, "/login", "/signup", "/terms", "/privacy"])];
+
+  // The store and the free tools come straight from the catalogue, so a new
+  // entry in products.ts is crawlable without touching this file.
+  const storeRoutes = [
+    "/artist-operator/packs",
+    ...PACKS.map((p) => `/artist-operator/packs/${p.slug}`),
+    ...BUNDLES.map((b) => `/artist-operator/bundles/${b.slug}`),
+    "/free",
+    ...FREE_TOOLS.map((t) => `/free/${t.slug}`),
+  ];
+
+  const routes = [...new Set([...marketingRoutes, ...storeRoutes, "/login", "/signup", "/terms", "/privacy"])];
 
   return [
     ...routes.map((route) => ({
