@@ -95,7 +95,7 @@ export function ShowSettlementControls({
 
         {untagged.length > 0 && (
           <>
-            <div className="mt-4 mb-2 font-mono text-[10.5px] tracking-[.1em] text-text/35">NEARBY, NOT ASSIGNED</div>
+            <div className="mt-4 mb-2 font-label text-[10.5px] tracking-[.1em] text-text/35">NEARBY, NOT ASSIGNED</div>
             {untagged.map((t) => (
               <Row key={t.id} txn={t} action="Add" onAction={() => tagTransaction(t.id, bookingId)} accent />
             ))}

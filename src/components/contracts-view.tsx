@@ -22,9 +22,9 @@ export type ContractDTO = {
 };
 
 const STATUS_STYLE: Record<string, { bg: string; color: string; label: string }> = {
-  SIGNED: { bg: "rgba(63,232,122,.1)", color: "#3fe87a", label: "SIGNED" },
-  ACTIVE: { bg: "rgba(63,232,122,.1)", color: "#3fe87a", label: "ACTIVE" },
-  AWAITING_SIGN: { bg: "rgba(232,228,63,.1)", color: "#e8e43f", label: "AWAITING SIGN" },
+  SIGNED: { bg: "rgba(63,232,122,.1)", color: "#3FCB86", label: "SIGNED" },
+  ACTIVE: { bg: "rgba(63,232,122,.1)", color: "#3FCB86", label: "ACTIVE" },
+  AWAITING_SIGN: { bg: "rgba(232,228,63,.1)", color: "#FFC93C", label: "AWAITING SIGN" },
   DRAFT: { bg: "rgba(var(--border-rgb),.06)", color: "rgba(var(--fg-rgb),.5)", label: "DRAFT" },
 };
 
@@ -68,7 +68,7 @@ export function ContractsView({ contracts, plan }: { contracts: ContractDTO[]; p
       <div className="grid grid-cols-1 items-start gap-3.5 lg:grid-cols-[1.6fr_1fr]">
         <div className="overflow-x-auto rounded-card border border-border bg-surface">
           <div className="min-w-[680px]">
-          <div className="grid grid-cols-[1.8fr_.9fr_.7fr_.9fr_1.3fr_auto] gap-3 border-b border-border px-[18px] py-[11px] font-mono text-[10.5px] tracking-[.1em] text-text/40">
+          <div className="grid grid-cols-[1.8fr_.9fr_.7fr_.9fr_1.3fr_auto] gap-3 border-b border-border px-[18px] py-[11px] font-label text-[10.5px] tracking-[.1em] text-text/40">
             <div>AGREEMENT</div>
             <div>COUNTERPARTY</div>
             <div>VALUE</div>
@@ -102,7 +102,7 @@ export function ContractsView({ contracts, plan }: { contracts: ContractDTO[]; p
                   {summary && summary.contractId === selected.id ? (
                     summary.facts.map((f, i) => (
                       <div key={i} className="flex gap-2.5 text-[12.5px] leading-snug">
-                        <span className="flex-none font-mono" style={{ color: f.flag === "✓" ? "#3fe87a" : "#e8983f" }}>
+                        <span className="flex-none font-mono" style={{ color: f.flag === "✓" ? "#3FCB86" : "#FF7A2F" }}>
                           {f.flag}
                         </span>
                         <span className="text-text/80">{f.text}</span>
@@ -134,7 +134,7 @@ export function ContractsView({ contracts, plan }: { contracts: ContractDTO[]; p
               return (
                 <div key={r.id} className="flex items-center justify-between border-b border-text/[.05] py-1.5 last:border-b-0">
                   <div className="text-[13px]">{r.name}</div>
-                  <div className="font-mono text-[11px]" style={{ color: soon ? "#e8983f" : "rgba(var(--fg-rgb),.5)" }}>
+                  <div className="font-mono text-[11px]" style={{ color: soon ? "#FF7A2F" : "rgba(var(--fg-rgb),.5)" }}>
                     {label}
                   </div>
                 </div>

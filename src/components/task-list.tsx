@@ -41,7 +41,7 @@ export function TaskList({ tasks: tasksProp }: { tasks: Task[] }) {
           <div
             onClick={() => toggle(t.id, t.done)}
             className="grid h-[17px] w-[17px] flex-none cursor-pointer place-items-center rounded-[5px] border-[1.5px] text-[11px] font-bold text-ink"
-            style={{ borderColor: t.done ? "#3fe87a" : "rgba(var(--fg-rgb),.3)", background: t.done ? "#3fe87a" : "transparent" }}
+            style={{ borderColor: t.done ? "#3FCB86" : "rgba(var(--fg-rgb),.3)", background: t.done ? "#3FCB86" : "transparent" }}
           >
             {t.done ? "✓" : ""}
           </div>
@@ -53,7 +53,7 @@ export function TaskList({ tasks: tasksProp }: { tasks: Task[] }) {
             {t.title}
           </div>
           {t.dueLabel && (
-            <div className="ml-auto font-mono text-[10.5px]" style={{ color: t.dueLabel === "today" && !t.done ? "#e8983f" : "rgba(var(--fg-rgb),.4)" }}>
+            <div className="ml-auto font-mono text-[10.5px]" style={{ color: t.dueLabel === "today" && !t.done ? "#FF7A2F" : "rgba(var(--fg-rgb),.4)" }}>
               {t.dueLabel}
             </div>
           )}

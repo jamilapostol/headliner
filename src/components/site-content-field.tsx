@@ -64,7 +64,7 @@ function TextField({
     <div className="border-b border-text/[.05] py-3.5 last:border-b-0">
       <div className="mb-1.5 flex items-center justify-between">
         <span className="text-[12px] font-medium text-text/50">{label}</span>
-        {isOverridden && <span className="font-mono text-[9.5px] tracking-[.08em] text-orange">EDITED</span>}
+        {isOverridden && <span className="font-label text-[9.5px] tracking-[.08em] text-orange">EDITED</span>}
       </div>
       <Input
         value={draft}
@@ -112,7 +112,7 @@ function ImageField({
     <div className="border-b border-text/[.05] py-3.5 last:border-b-0">
       <div className="mb-1.5 flex items-center justify-between">
         <span className="text-[12px] font-medium text-text/50">{label}</span>
-        {isOverridden && <span className="font-mono text-[9.5px] tracking-[.08em] text-orange">EDITED</span>}
+        {isOverridden && <span className="font-label text-[9.5px] tracking-[.08em] text-orange">EDITED</span>}
       </div>
       <div className="flex items-center gap-4">
         <Image src={value} alt="" width={96} height={64} className="h-16 w-24 flex-none rounded-lg border border-border object-cover" unoptimized />

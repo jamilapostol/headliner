@@ -80,14 +80,14 @@ export function LandingPricing({ heading, subheading }: { heading: string; subhe
             <button
               onClick={() => setAnnual(false)}
               className="cursor-pointer rounded-[7px] px-4 py-1.5 text-[12.5px] font-semibold"
-              style={{ background: annual ? "transparent" : "#3fe87a", color: annual ? "rgba(233,236,232,.6)" : "#0d110e" }}
+              style={{ background: annual ? "transparent" : "#3FCB86", color: annual ? "rgba(233,236,232,.6)" : "#0B0A0E" }}
             >
               Monthly
             </button>
             <button
               onClick={() => setAnnual(true)}
               className="cursor-pointer rounded-[7px] px-4 py-1.5 text-[12.5px] font-semibold"
-              style={{ background: annual ? "#3fe87a" : "transparent", color: annual ? "#0d110e" : "rgba(233,236,232,.6)" }}
+              style={{ background: annual ? "#3FCB86" : "transparent", color: annual ? "#0B0A0E" : "rgba(233,236,232,.6)" }}
             >
               Annual · −17%
             </button>
@@ -99,12 +99,12 @@ export function LandingPricing({ heading, subheading }: { heading: string; subhe
               key={t.name}
               className="relative flex flex-col rounded-2xl p-6 px-[22px]"
               style={{
-                background: t.popular ? "rgba(63,232,122,.06)" : "#151b16",
+                background: t.popular ? "rgba(63,232,122,.06)" : "#131118",
                 border: `1px solid ${t.popular ? "rgba(63,232,122,.45)" : "rgba(255,255,255,.08)"}`,
               }}
             >
               {t.popular && (
-                <div className="absolute -top-[11px] left-1/2 -translate-x-1/2 whitespace-nowrap rounded-[20px] bg-yellow px-3 py-1 font-mono text-[10px] font-semibold tracking-[.1em] text-canvas">
+                <div className="absolute -top-[11px] left-1/2 -translate-x-1/2 whitespace-nowrap rounded-[20px] bg-yellow px-3 py-1 font-label text-[10px] font-semibold tracking-[.1em] text-canvas">
                   MOST POPULAR
                 </div>
               )}
@@ -126,9 +126,9 @@ export function LandingPricing({ heading, subheading }: { heading: string; subhe
                 href="/signup"
                 className="mt-auto rounded-[9px] p-[11px] text-center text-[13.5px] font-semibold"
                 style={{
-                  background: t.popular ? "#3fe87a" : "transparent",
-                  color: t.popular ? "#0d110e" : "rgba(233,236,232,.85)",
-                  border: `1px solid ${t.popular ? "#3fe87a" : "rgba(255,255,255,.18)"}`,
+                  background: t.popular ? "#3FCB86" : "transparent",
+                  color: t.popular ? "#0B0A0E" : "rgba(233,236,232,.85)",
+                  border: `1px solid ${t.popular ? "#3FCB86" : "rgba(255,255,255,.18)"}`,
                 }}
               >
                 {t.cta}
@@ -142,7 +142,7 @@ export function LandingPricing({ heading, subheading }: { heading: string; subhe
       <div className="mx-auto max-w-[900px] px-4 pt-6 pb-[72px] sm:px-10">
         <div className="overflow-x-auto rounded-tile border border-border bg-surface">
           <div className="min-w-[560px]">
-            <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr] border-b border-white/[.08] px-5 py-3 font-mono text-[10.5px] tracking-[.1em] text-white/45">
+            <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr] border-b border-white/[.08] px-5 py-3 font-label text-[10.5px] tracking-[.1em] text-white/45">
               <div>FEATURE</div>
               <div className="text-center">FREE</div>
               <div className="text-center">PRO</div>

@@ -9,10 +9,10 @@ import { runIntegrationProbes, type ProbeStatus } from "@/lib/integration-health
 export const dynamic = "force-dynamic";
 
 const TONE: Record<ProbeStatus, { dot: string; label: string; className: string }> = {
-  ok: { dot: "#3fe87a", label: "OK", className: "text-accent" },
-  degraded: { dot: "#e8983f", label: "DEGRADED", className: "text-orange" },
+  ok: { dot: "#3FCB86", label: "OK", className: "text-accent" },
+  degraded: { dot: "#FF7A2F", label: "DEGRADED", className: "text-orange" },
   off: { dot: "rgba(var(--fg-rgb),.3)", label: "OFF", className: "text-text/45" },
-  error: { dot: "#e85f5f", label: "ERROR", className: "text-pink" },
+  error: { dot: "#F4356E", label: "ERROR", className: "text-pink" },
 };
 
 export default async function AdminHealthPage() {
@@ -50,7 +50,7 @@ export default async function AdminHealthPage() {
               <div className="mb-1.5 flex items-center gap-2.5">
                 <span className="h-[7px] w-[7px] flex-none rounded-full" style={{ background: tone.dot }} />
                 <span className="text-[14px] font-semibold">{p.name}</span>
-                <span className={`ml-auto font-mono text-[10.5px] tracking-[.1em] ${tone.className}`}>{tone.label}</span>
+                <span className={`ml-auto font-label text-[10.5px] tracking-[.1em] ${tone.className}`}>{tone.label}</span>
               </div>
               <div className="text-[13px] leading-relaxed text-text/65">{p.detail}</div>
               {p.fix && <div className="mt-1.5 text-[12.5px] text-text/45">Fix: {p.fix}</div>}

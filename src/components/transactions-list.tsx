@@ -65,9 +65,9 @@ export function TransactionsList({ transactions }: { transactions: TransactionRo
                 onClick={() => setKindFilter(c)}
                 className="cursor-pointer rounded-[20px] px-3 py-1 text-[11.5px]"
                 style={{
-                  border: `1px solid ${c === kindFilter ? "#3fe87a" : "rgba(var(--border-rgb),.12)"}`,
+                  border: `1px solid ${c === kindFilter ? "#3FCB86" : "rgba(var(--border-rgb),.12)"}`,
                   background: c === kindFilter ? "rgba(63,232,122,.1)" : "transparent",
-                  color: c === kindFilter ? "#3fe87a" : "rgba(var(--fg-rgb),.6)",
+                  color: c === kindFilter ? "#3FCB86" : "rgba(var(--fg-rgb),.6)",
                 }}
               >
                 {c}

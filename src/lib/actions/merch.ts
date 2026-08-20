@@ -11,7 +11,9 @@ import { isAllowedImage } from "@/lib/file-validation";
 import { requireMinPlan } from "@/lib/plan-limits-server";
 import type { AdjustStockResult, CompleteSaleResult, MerchSyncOutcome } from "@/lib/merch-sync";
 
-const GLYPH_COLORS = ["#3fe87a", "#e8e43f", "#e8983f", "#7ab8e8", "#c99df5", "#e87a9a"];
+// The seven, in canonical order — brand fixes both the colors and the
+// sequence, so series and avatars stay recognisable across the product.
+const GLYPH_COLORS = ["#F4356E", "#FF7A2F", "#FFC93C", "#3FCB86", "#38B6E8", "#8B5CF6", "#FF4FA3"];
 
 export type ActionState = { error?: string; success?: string };
 

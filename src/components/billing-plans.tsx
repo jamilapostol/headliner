@@ -43,14 +43,14 @@ export function BillingPlans({
           <button
             onClick={() => setAnnual(false)}
             className="cursor-pointer rounded-[7px] px-4 py-1.5 text-[12.5px] font-semibold"
-            style={{ background: annual ? "transparent" : "#3fe87a", color: annual ? "rgba(var(--fg-rgb),.6)" : "#0d110e" }}
+            style={{ background: annual ? "transparent" : "#3FCB86", color: annual ? "rgba(var(--fg-rgb),.6)" : "#0B0A0E" }}
           >
             Monthly
           </button>
           <button
             onClick={() => setAnnual(true)}
             className="cursor-pointer rounded-[7px] px-4 py-1.5 text-[12.5px] font-semibold"
-            style={{ background: annual ? "#3fe87a" : "transparent", color: annual ? "#0d110e" : "rgba(var(--fg-rgb),.6)" }}
+            style={{ background: annual ? "#3FCB86" : "transparent", color: annual ? "#0B0A0E" : "rgba(var(--fg-rgb),.6)" }}
           >
             Annual · −17%
           </button>
@@ -66,18 +66,18 @@ export function BillingPlans({
               className="relative flex flex-col rounded-2xl p-6 px-[22px]"
               style={{
                 background: t.popular ? "rgba(63,232,122,.06)" : "var(--surface)",
-                border: `1px solid ${isCurrent ? "#3fe87a" : t.popular ? "rgba(63,232,122,.45)" : "rgba(var(--border-rgb),.08)"}`,
+                border: `1px solid ${isCurrent ? "#3FCB86" : t.popular ? "rgba(63,232,122,.45)" : "rgba(var(--border-rgb),.08)"}`,
               }}
             >
               {t.popular && !isCurrent && (
-                <div className="absolute -top-[11px] left-1/2 -translate-x-1/2 whitespace-nowrap rounded-[20px] bg-yellow px-3 py-1 font-mono text-[10px] font-semibold tracking-[.1em] text-ink">
+                <div className="absolute -top-[11px] left-1/2 -translate-x-1/2 whitespace-nowrap rounded-[20px] bg-yellow px-3 py-1 font-label text-[10px] font-semibold tracking-[.1em] text-ink">
                   MOST POPULAR
                 </div>
               )}
               {isCurrent && (
                 <div
-                  className="absolute -top-[11px] left-1/2 -translate-x-1/2 whitespace-nowrap rounded-[20px] px-3 py-1 font-mono text-[10px] font-semibold tracking-[.1em] text-ink"
-                  style={{ background: cancelAtPeriodEnd ? "#e8983f" : "#3fe87a" }}
+                  className="absolute -top-[11px] left-1/2 -translate-x-1/2 whitespace-nowrap rounded-[20px] px-3 py-1 font-label text-[10px] font-semibold tracking-[.1em] text-ink"
+                  style={{ background: cancelAtPeriodEnd ? "#FF7A2F" : "#3FCB86" }}
                 >
                   {cancelAtPeriodEnd ? "DOWNGRADING SOON" : "CURRENT PLAN"}
                 </div>
@@ -105,9 +105,9 @@ export function BillingPlans({
                     onClick={() => pick(t.key)}
                     className="mt-auto cursor-pointer rounded-[9px] p-[11px] text-center text-[13.5px] font-semibold disabled:cursor-default disabled:opacity-70"
                     style={{
-                      background: isCurrent ? "transparent" : t.popular ? "#3fe87a" : "transparent",
-                      color: isCurrent ? "rgba(var(--fg-rgb),.5)" : t.popular ? "#0d110e" : "rgba(var(--fg-rgb),.85)",
-                      border: `1px solid ${isCurrent ? "rgba(var(--border-rgb),.12)" : t.popular ? "#3fe87a" : "rgba(var(--border-rgb),.18)"}`,
+                      background: isCurrent ? "transparent" : t.popular ? "#3FCB86" : "transparent",
+                      color: isCurrent ? "rgba(var(--fg-rgb),.5)" : t.popular ? "#0B0A0E" : "rgba(var(--fg-rgb),.85)",
+                      border: `1px solid ${isCurrent ? "rgba(var(--border-rgb),.12)" : t.popular ? "#3FCB86" : "rgba(var(--border-rgb),.18)"}`,
                     }}
                   >
                     {isCurrent

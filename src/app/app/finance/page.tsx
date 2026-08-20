@@ -18,7 +18,9 @@ const TRANSACTION_CSV_COLUMNS: CsvColumn[] = [
   { key: "occurredAt", label: "Date", required: true, aliases: ["date", "occurred at"] },
 ];
 
-const SOURCE_COLORS = ["#3fe87a", "#e8e43f", "#7ab8e8", "#e8983f", "#c99df5", "#e87a9a"];
+// The seven, in canonical order — brand fixes both the colors and the
+// sequence, so series and avatars stay recognisable across the product.
+const SOURCE_COLORS = ["#F4356E", "#FF7A2F", "#FFC93C", "#3FCB86", "#38B6E8", "#8B5CF6", "#FF4FA3"];
 
 export default async function FinancePage() {
   const { workspace } = await requireWorkspace();
@@ -130,12 +132,12 @@ export default async function FinancePage() {
             <div className="mb-3 text-[11px] text-text/40">
               A simplified snapshot from your logged transactions, outstanding fees and merch stock — not a formal accountant&rsquo;s statement.
             </div>
-            <div className="mb-1.5 font-mono text-[10px] tracking-[.1em] text-text/40">ASSETS</div>
+            <div className="mb-1.5 font-label text-[10px] tracking-[.1em] text-text/40">ASSETS</div>
             <Row label="Cash (all-time net)" value={money(cash)} />
             <Row label="Accounts receivable" value={money(receivable)} />
             <Row label="Merch inventory (at cost)" value={money(merchInventoryValue)} />
             <Row label="Total assets" value={money(totalAssets)} weight="font-semibold" />
-            <div className="mt-3 mb-1.5 font-mono text-[10px] tracking-[.1em] text-text/40">LIABILITIES</div>
+            <div className="mt-3 mb-1.5 font-label text-[10px] tracking-[.1em] text-text/40">LIABILITIES</div>
             <LiabilitiesList liabilities={liabilities.map((l) => ({ id: l.id, name: l.name, amount: l.amount }))} />
             {totalLiabilities > 0 && (
               <div className="mt-1.5 flex justify-between border-t border-text/[.05] pt-[7px] text-[13px]">

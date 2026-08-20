@@ -9,7 +9,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <div className="w-[200px] flex-none border-r border-border px-4 py-6">
         <div className="mb-6 px-2">
           <div className="text-[13px] font-bold">HEADLINE.WORLD</div>
-          <div className="font-mono text-[10px] tracking-[.14em] text-orange">ADMIN</div>
+          <div className="font-label text-[10px] tracking-[.14em] text-orange">ADMIN</div>
         </div>
         <nav className="flex flex-col gap-0.5">
           <Link href="/admin" className="rounded-lg px-2.5 py-2 text-[13px] font-medium hover:bg-text/5">

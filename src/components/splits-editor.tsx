@@ -18,7 +18,9 @@ type Row = {
   payouts: PayoutRow[];
 };
 
-const SWATCHES = ["#3fe87a", "#7ab8e8", "#c99df5", "#e8e43f", "#e8983f", "#e87a9a"];
+// The seven, in canonical order — brand fixes both the colors and the
+// sequence, so series and avatars stay recognisable across the product.
+const SWATCHES = ["#F4356E", "#FF7A2F", "#FFC93C", "#3FCB86", "#38B6E8", "#8B5CF6", "#FF4FA3"];
 
 export function SplitsEditor({
   splits,
@@ -180,7 +182,7 @@ export function SplitsEditor({
       </div>
 
       <div className="rounded-card border border-accent/25 bg-accent-soft px-5 py-[18px]">
-        <div className="mb-1 font-mono text-[10.5px] tracking-[.1em] text-accent/70">POOL TO SPLIT</div>
+        <div className="mb-1 font-label text-[10.5px] tracking-[.1em] text-accent/70">POOL TO SPLIT</div>
         <div className={`mb-1.5 font-mono text-[24px] font-bold ${poolNet > 0 ? "text-accent" : "text-text/40"}`}>
           {poolNet > 0 ? money(poolNet) : money(0)}
         </div>

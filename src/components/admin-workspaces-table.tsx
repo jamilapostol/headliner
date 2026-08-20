@@ -58,7 +58,7 @@ export function AdminWorkspacesTable({ workspaces }: { workspaces: WorkspaceRow[
 
       <div className="overflow-x-auto rounded-card border border-border bg-surface">
         <div className="min-w-[980px]">
-          <div className="grid grid-cols-[1.6fr_1fr_1.6fr_1fr_1fr_auto] gap-3 border-b border-border px-[18px] py-[11px] font-mono text-[10.5px] tracking-[.1em] text-text/40">
+          <div className="grid grid-cols-[1.6fr_1fr_1.6fr_1fr_1fr_auto] gap-3 border-b border-border px-[18px] py-[11px] font-label text-[10.5px] tracking-[.1em] text-text/40">
             <div>WORKSPACE</div>
             <div>MEMBERS</div>
             <div>OWNER</div>

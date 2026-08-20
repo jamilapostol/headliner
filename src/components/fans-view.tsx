@@ -35,7 +35,9 @@ export type FanDTO = {
   notes: string | null;
 };
 
-const AVATAR_COLORS = ["#3fe87a", "#e8e43f", "#7ab8e8", "#e8983f", "#c99df5"];
+// The seven, in canonical order — brand fixes both the colors and the
+// sequence, so series and avatars stay recognisable across the product.
+const AVATAR_COLORS = ["#F4356E", "#FF7A2F", "#FFC93C", "#3FCB86", "#38B6E8", "#8B5CF6", "#FF4FA3"];
 const CHIPS = ["All", "VIP", "Patron", "Donor", "Fan"];
 
 const SORTS = [
@@ -116,9 +118,9 @@ export function FansView({ fans, plan }: { fans: FanDTO[]; plan: string }) {
             onClick={() => setCat(c)}
             className="cursor-pointer rounded-[20px] px-3.5 py-[7px] text-[12px]"
             style={{
-              border: `1px solid ${c === cat ? "#3fe87a" : "rgba(var(--border-rgb),.12)"}`,
+              border: `1px solid ${c === cat ? "#3FCB86" : "rgba(var(--border-rgb),.12)"}`,
               background: c === cat ? "rgba(63,232,122,.1)" : "transparent",
-              color: c === cat ? "#3fe87a" : "rgba(var(--fg-rgb),.65)",
+              color: c === cat ? "#3FCB86" : "rgba(var(--fg-rgb),.65)",
             }}
           >
             {c === "All" ? "All" : c + "s"}
@@ -139,7 +141,7 @@ export function FansView({ fans, plan }: { fans: FanDTO[]; plan: string }) {
 
       <div className="overflow-x-auto rounded-card border border-border bg-surface">
         <div className="min-w-[880px]">
-          <div className="grid grid-cols-[2fr_1fr_.9fr_1fr_.8fr_1fr_1.1fr] gap-3 border-b border-border px-[18px] py-[11px] font-mono text-[10.5px] tracking-[.1em] text-text/40">
+          <div className="grid grid-cols-[2fr_1fr_.9fr_1fr_.8fr_1fr_1.1fr] gap-3 border-b border-border px-[18px] py-[11px] font-label text-[10.5px] tracking-[.1em] text-text/40">
             <div>FAN</div>
             <div>PHONE</div>
             <div>CITY</div>
@@ -162,7 +164,7 @@ export function FansView({ fans, plan }: { fans: FanDTO[]; plan: string }) {
                   </div>
                   <div>
                     <div className="text-[13px] font-semibold">{f.name}</div>
-                    <div className="text-[11px]" style={{ color: f.tier === "VIP" ? "#e8e43f" : "rgba(var(--fg-rgb),.45)" }}>
+                    <div className="text-[11px]" style={{ color: f.tier === "VIP" ? "#FFC93C" : "rgba(var(--fg-rgb),.45)" }}>
                       {f.tier}
                       {f.tierNote ? ` · ${f.tierNote}` : ""}
                     </div>

@@ -110,7 +110,7 @@ export function OnboardingWizard() {
 
         <div className="mb-11 flex gap-1.5">
           {[1, 2, 3].map((n) => (
-            <div key={n} className="h-[3px] flex-1 rounded" style={{ background: n <= step ? "#3fe87a" : "rgba(var(--border-rgb),.1)" }} />
+            <div key={n} className="h-[3px] flex-1 rounded" style={{ background: n <= step ? "#3FCB86" : "rgba(var(--border-rgb),.1)" }} />
           ))}
         </div>
 
@@ -174,7 +174,7 @@ export function OnboardingWizard() {
             <h1 className="mb-2 text-[30px] tracking-[-.02em]">Your roadie recommends</h1>
             <p className="mb-7 text-[14.5px] text-text/55">{rec.reason}</p>
             <div className="relative mb-3.5 rounded-2xl border border-accent/45 bg-accent-soft p-6">
-              <div className="absolute -top-[11px] left-6 rounded-[20px] bg-yellow px-3 py-1 font-mono text-[10px] font-semibold tracking-[.1em] text-ink">
+              <div className="absolute -top-[11px] left-6 rounded-[20px] bg-yellow px-3 py-1 font-label text-[10px] font-semibold tracking-[.1em] text-ink">
                 RECOMMENDED
               </div>
               <div className="mb-3.5 flex items-baseline justify-between">
@@ -226,8 +226,8 @@ export function OnboardingWizard() {
               onClick={() => canNext && setStep(step + 1)}
               className="rounded-[10px] px-[26px] py-[11px] text-[14px] font-semibold"
               style={{
-                background: canNext ? "#3fe87a" : "rgba(var(--border-rgb),.08)",
-                color: canNext ? "#0d110e" : "rgba(var(--fg-rgb),.3)",
+                background: canNext ? "#3FCB86" : "rgba(var(--border-rgb),.08)",
+                color: canNext ? "#0B0A0E" : "rgba(var(--fg-rgb),.3)",
                 cursor: canNext ? "pointer" : "default",
               }}
             >

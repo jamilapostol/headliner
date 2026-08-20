@@ -122,7 +122,7 @@ export function SecuritySection() {
               onChange={(e) => setCode(e.target.value.replace(/[^0-9]/g, "").slice(0, 6))}
               inputMode="numeric"
               placeholder="000000"
-              className="w-[140px] rounded-[10px] border border-border bg-canvas px-3.5 py-2.5 text-center font-mono text-[16px] tracking-[.3em] text-text outline-none focus:border-accent/50"
+              className="w-[140px] rounded-[10px] border border-border bg-canvas px-3.5 py-2.5 text-center font-label text-[16px] tracking-[.3em] text-text outline-none focus:border-accent/50"
             />
             <button
               type="submit"

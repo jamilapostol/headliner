@@ -70,7 +70,7 @@ export function TourView({ tour, eligibleBookings }: { tour: TourDTO; eligibleBo
                 style={{ background: i === selIdx ? "rgba(63,232,122,.09)" : "transparent" }}
               >
                 <div onClick={() => setSelIdx(i)} className="flex flex-1 cursor-pointer items-center gap-3">
-                  <div className="w-[46px] font-mono text-[11px]" style={{ color: i === selIdx ? "#3fe87a" : "rgba(var(--fg-rgb),.5)" }}>
+                  <div className="w-[46px] font-mono text-[11px]" style={{ color: i === selIdx ? "#3FCB86" : "rgba(var(--fg-rgb),.5)" }}>
                     {fmtDate(s.date)}
                   </div>
                   <div className="flex-1">
@@ -186,7 +186,7 @@ function StopDetail({ stop }: { stop: TourStopDTO }) {
       </div>
       <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-3">
         <div className="rounded-card border border-border bg-surface px-4 py-3.5">
-          <div className="mb-1.5 font-mono text-[10px] tracking-[.1em] text-text/45">GUARANTEE</div>
+          <div className="mb-1.5 font-label text-[10px] tracking-[.1em] text-text/45">GUARANTEE</div>
           <div className="text-[19px] font-bold text-accent">{money(stop.fee)}</div>
         </div>
         <EditableStat
@@ -241,7 +241,7 @@ function EditableStat({
 
   return (
     <div className="rounded-card border border-border bg-surface px-4 py-3.5">
-      <div className="mb-1.5 font-mono text-[10px] tracking-[.1em] text-text/45">{label}</div>
+      <div className="mb-1.5 font-label text-[10px] tracking-[.1em] text-text/45">{label}</div>
       {editing ? (
         <input
           autoFocus

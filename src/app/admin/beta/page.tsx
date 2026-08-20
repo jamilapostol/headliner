@@ -34,7 +34,7 @@ export default async function AdminBetaPage() {
       <div className="mb-8 grid grid-cols-2 gap-3.5 lg:grid-cols-4">
         {stats.map((s) => (
           <div key={s.label} className="rounded-card border border-border bg-surface px-[18px] py-4">
-            <div className="mb-2 font-mono text-[10.5px] tracking-[.1em] text-text/45">{s.label}</div>
+            <div className="mb-2 font-label text-[10.5px] tracking-[.1em] text-text/45">{s.label}</div>
             <div className="text-[24px] font-bold tracking-[-.02em]">{s.value}</div>
             {s.hint && <div className="mt-1 text-[11.5px] text-text/40">{s.hint}</div>}
           </div>
@@ -49,7 +49,7 @@ export default async function AdminBetaPage() {
         <div className="overflow-x-auto rounded-card border border-border bg-surface">
           <table className="w-full min-w-[860px] text-[13px]">
             <thead>
-              <tr className="border-b border-border text-left font-mono text-[10.5px] tracking-[.1em] text-text/45">
+              <tr className="border-b border-border text-left font-label text-[10.5px] tracking-[.1em] text-text/45">
                 <th className="px-4 py-3 font-normal">WORKSPACE</th>
                 <th className="px-4 py-3 font-normal">JOINED</th>
                 <th className="px-4 py-3 font-normal">BOOKINGS</th>

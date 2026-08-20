@@ -63,7 +63,7 @@ export function MerchTable({ items }: { items: MerchItemDTO[] }) {
 
       <div className="overflow-x-auto rounded-card border border-border bg-surface">
         <div className="min-w-[560px]">
-        <div className="grid grid-cols-[1.8fr_.8fr_.8fr_1.1fr_1fr] gap-2.5 border-b border-border px-[18px] py-[11px] font-mono text-[10.5px] tracking-[.1em] text-text/40">
+        <div className="grid grid-cols-[1.8fr_.8fr_.8fr_1.1fr_1fr] gap-2.5 border-b border-border px-[18px] py-[11px] font-label text-[10.5px] tracking-[.1em] text-text/40">
           <div>ITEM</div>
           <div>PRICE</div>
           <div>MARGIN</div>
@@ -99,12 +99,12 @@ export function MerchTable({ items }: { items: MerchItemDTO[] }) {
                   </button>
                 </div>
                 <div className="h-1 w-14 rounded-full bg-text/[.07]">
-                  <div className="h-1 rounded-full" style={{ width: `${Math.round(pct * 100)}%`, background: low ? "#e8983f" : "#3fe87a" }} />
+                  <div className="h-1 rounded-full" style={{ width: `${Math.round(pct * 100)}%`, background: low ? "#FF7A2F" : "#3FCB86" }} />
                 </div>
               </div>
               <div
                 className="w-fit rounded-full px-2.5 py-[3px] font-mono text-[10.5px]"
-                style={{ background: low ? "rgba(232,152,63,.12)" : "rgba(63,232,122,.1)", color: low ? "#e8983f" : "#3fe87a" }}
+                style={{ background: low ? "rgba(232,152,63,.12)" : "rgba(63,232,122,.1)", color: low ? "#FF7A2F" : "#3FCB86" }}
               >
                 {low ? "LOW STOCK" : "OK"}
               </div>

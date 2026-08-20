@@ -33,7 +33,7 @@ export default async function AdminModelPage({ params }: { params: Promise<{ mod
           <thead>
             <tr className="border-b border-border">
               {columns.map((f) => (
-                <th key={f.name} className="whitespace-nowrap px-3 py-2.5 text-left font-mono text-[10px] tracking-[.08em] text-text/40">
+                <th key={f.name} className="whitespace-nowrap px-3 py-2.5 text-left font-label text-[10px] tracking-[.08em] text-text/40">
                   {f.name.toUpperCase()}
                 </th>
               ))}

@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { LogoGlyph } from "@/components/logo-glyph";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -48,7 +49,7 @@ export function AppSidebar({ userName, plan, avatarUrl }: { userName: string; pl
           ☰
         </button>
         <div className="flex items-center gap-2">
-          <Image src="/logo.svg" alt="HEADLINE.WORLD" width={24} height={24} />
+          <LogoGlyph size={24} />
           <span className="text-[15px] font-bold tracking-[-.02em]">HEADLINE.WORLD</span>
         </div>
         {avatarSm}
@@ -65,7 +66,7 @@ export function AppSidebar({ userName, plan, avatarUrl }: { userName: string; pl
         className={`fixed inset-y-0 left-0 z-40 flex w-[240px] flex-none -translate-x-full flex-col border-r border-border bg-sidebar transition-transform duration-200 md:static md:z-auto md:w-[216px] md:translate-x-0 ${open ? "translate-x-0" : ""}`}
       >
         <div className="hidden items-center gap-2.5 px-[18px] pt-5 pb-4 md:flex">
-          <Image src="/logo.svg" alt="HEADLINE.WORLD" width={30} height={30} />
+          <LogoGlyph size={30} />
           <div className="text-[16px] font-bold tracking-[-.02em]">HEADLINE.WORLD</div>
         </div>
         <div className="flex flex-col gap-0.5 overflow-y-auto px-3 pt-4 md:pt-0">
@@ -77,11 +78,11 @@ export function AppSidebar({ userName, plan, avatarUrl }: { userName: string; pl
                 href={nv.href}
                 onClick={() => setOpen(false)}
                 className="flex items-center gap-2.5 rounded-lg px-3 py-[9px] text-[13.5px] font-medium hover:bg-text/5"
-                style={{ color: active ? "#0d110e" : "rgba(var(--fg-rgb),.75)", background: active ? "#3fe87a" : "transparent" }}
+                style={{ color: active ? "#0B0A0E" : "rgba(var(--fg-rgb),.75)", background: active ? "#3FCB86" : "transparent" }}
               >
                 <span className="w-4 font-mono text-[11px] opacity-70">{nv.glyph}</span>
                 {nv.label}
-                {nv.soon && <span className="ml-auto font-mono text-[9px] tracking-[.08em] opacity-60">SOON</span>}
+                {nv.soon && <span className="ml-auto font-label text-[9px] tracking-[.08em] opacity-60">SOON</span>}
               </Link>
             );
           })}

@@ -77,7 +77,7 @@ export default async function CalendarPage({
         {STAGES.map((s) => (
           <div key={s.key} className="flex items-center gap-1.5">
             <span className="h-[7px] w-[7px] flex-none rounded-full" style={{ background: s.dot }} />
-            <span className="font-mono text-[10.5px] tracking-[.08em] text-text/45">{s.label}</span>
+            <span className="font-label text-[10.5px] tracking-[.08em] text-text/45">{s.label}</span>
           </div>
         ))}
       </div>
@@ -86,7 +86,7 @@ export default async function CalendarPage({
         <div className="min-w-[560px]">
         <div className="grid grid-cols-7 border-b border-border">
           {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((d) => (
-            <div key={d} className="px-3 py-2 font-mono text-[10.5px] tracking-[.1em] text-text/40">
+            <div key={d} className="px-3 py-2 font-label text-[10.5px] tracking-[.1em] text-text/40">
               {d}
             </div>
           ))}
@@ -102,7 +102,7 @@ export default async function CalendarPage({
                 className="min-h-[104px] border-b border-r border-text/[.05] p-2 last:border-r-0"
                 style={{ background: isToday(day) ? "rgba(63,232,122,.05)" : "transparent" }}
               >
-                <div className="mb-1.5 font-mono text-[11px]" style={{ color: inMonth ? (isToday(day) ? "#3fe87a" : "rgba(var(--fg-rgb),.6)") : "rgba(var(--fg-rgb),.2)" }}>
+                <div className="mb-1.5 font-mono text-[11px]" style={{ color: inMonth ? (isToday(day) ? "#3FCB86" : "rgba(var(--fg-rgb),.6)") : "rgba(var(--fg-rgb),.2)" }}>
                   {format(day, "d")}
                 </div>
                 <div className="flex flex-col gap-1">

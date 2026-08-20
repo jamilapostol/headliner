@@ -52,7 +52,7 @@ export function MfaVerifyForm({ next }: { next?: string }) {
         autoComplete="one-time-code"
         placeholder="000000"
         autoFocus
-        className="rounded-[10px] border border-border bg-surface px-3.5 py-3 text-center font-mono text-[22px] tracking-[.4em] text-text outline-none focus:border-accent/50"
+        className="rounded-[10px] border border-border bg-surface px-3.5 py-3 text-center font-label text-[22px] tracking-[.4em] text-text outline-none focus:border-accent/50"
       />
       {error && (
         <div className="rounded-lg border border-orange/30 bg-orange-soft px-3 py-2 text-[13px] text-orange">{error}</div>

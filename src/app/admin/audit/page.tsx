@@ -19,7 +19,7 @@ export default async function AdminAuditPage() {
 
       <div className="overflow-x-auto rounded-card border border-border bg-surface">
         <div className="min-w-[820px]">
-          <div className="grid grid-cols-[1fr_1.4fr_1.6fr_2.4fr_1fr] gap-3 border-b border-border px-[18px] py-[11px] font-mono text-[10.5px] tracking-[.1em] text-text/40">
+          <div className="grid grid-cols-[1fr_1.4fr_1.6fr_2.4fr_1fr] gap-3 border-b border-border px-[18px] py-[11px] font-label text-[10.5px] tracking-[.1em] text-text/40">
             <div>WHEN</div>
             <div>ADMIN</div>
             <div>ACTION</div>

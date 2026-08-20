@@ -83,7 +83,7 @@ function BlockRow({ block, isFirst, isLast }: { block: Block; isFirst: boolean; 
   return (
     <div className="border-b border-text/[.05] py-3.5 last:border-b-0">
       <div className="mb-1.5 flex items-center justify-between">
-        <span className="font-mono text-[9.5px] tracking-[.08em] text-text/40">{block.type === "text" ? "TEXT BLOCK" : "IMAGE BLOCK"}</span>
+        <span className="font-label text-[9.5px] tracking-[.08em] text-text/40">{block.type === "text" ? "TEXT BLOCK" : "IMAGE BLOCK"}</span>
         <div className="flex items-center gap-2">
           <button disabled={pending || isFirst} onClick={() => startTransition(() => moveLandingBlock(block.id, "up"))} className="cursor-pointer text-[12px] text-text/50 hover:text-text disabled:opacity-25">
             ↑

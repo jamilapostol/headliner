@@ -127,7 +127,7 @@ export default async function SettlementPage() {
 
       <div className="mb-3.5 overflow-x-auto rounded-card border border-border bg-surface">
         <div className="min-w-[620px]">
-          <div className="grid grid-cols-[1.6fr_.9fr_.9fr_.9fr_.5fr] gap-2.5 border-b border-border px-[18px] py-[11px] font-mono text-[10.5px] tracking-[.1em] text-text/40">
+          <div className="grid grid-cols-[1.6fr_.9fr_.9fr_.9fr_.5fr] gap-2.5 border-b border-border px-[18px] py-[11px] font-label text-[10.5px] tracking-[.1em] text-text/40">
             <div>SHOW</div>
             <div className="text-right">IN</div>
             <div className="text-right">OUT</div>
@@ -244,7 +244,7 @@ function Stat({ label, value, sub, tone }: { label: string; value: string; sub?:
   const color = tone === "accent" ? "text-accent" : tone === "orange" ? "text-orange" : tone === "pink" ? "text-pink" : "text-text";
   return (
     <div className="rounded-card border border-border bg-surface px-[18px] py-3.5">
-      <div className="mb-1.5 font-mono text-[10.5px] tracking-[.1em] text-text/40">{label.toUpperCase()}</div>
+      <div className="mb-1.5 font-label text-[10.5px] tracking-[.1em] text-text/40">{label.toUpperCase()}</div>
       <div className={`font-mono text-[20px] font-bold ${color}`}>{value}</div>
       {sub && <div className="mt-1 text-[11px] text-text/40">{sub}</div>}
     </div>

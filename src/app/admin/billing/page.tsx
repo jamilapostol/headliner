@@ -3,13 +3,13 @@ import { stripe, stripeEnabled } from "@/lib/stripe";
 import { money } from "@/lib/format";
 
 const STATUS_STYLE: Record<string, { bg: string; color: string }> = {
-  active: { bg: "rgba(63,232,122,.1)", color: "#3fe87a" },
-  trialing: { bg: "rgba(63,180,232,.1)", color: "#3fb4e8" },
-  past_due: { bg: "rgba(232,163,63,.1)", color: "#e8a33f" },
-  unpaid: { bg: "rgba(232,83,63,.1)", color: "#e8533f" },
+  active: { bg: "rgba(63,232,122,.1)", color: "#3FCB86" },
+  trialing: { bg: "rgba(63,180,232,.1)", color: "#38B6E8" },
+  past_due: { bg: "rgba(232,163,63,.1)", color: "#FF7A2F" },
+  unpaid: { bg: "rgba(232,83,63,.1)", color: "#F4356E" },
   canceled: { bg: "rgba(var(--border-rgb),.1)", color: "rgba(var(--fg-rgb),.5)" },
-  incomplete: { bg: "rgba(232,83,63,.1)", color: "#e8533f" },
-  incomplete_expired: { bg: "rgba(232,83,63,.1)", color: "#e8533f" },
+  incomplete: { bg: "rgba(232,83,63,.1)", color: "#F4356E" },
+  incomplete_expired: { bg: "rgba(232,83,63,.1)", color: "#F4356E" },
 };
 
 type Row = {
@@ -106,7 +106,7 @@ export default async function AdminBillingPage() {
       {stripeEnabled && workspaces.length > 0 && (
         <div className="overflow-x-auto rounded-card border border-border bg-surface">
           <div className="min-w-[900px]">
-            <div className="grid grid-cols-[1.6fr_1fr_1fr_1fr_1fr_1fr] gap-3 border-b border-border px-[18px] py-[11px] font-mono text-[10.5px] tracking-[.1em] text-text/40">
+            <div className="grid grid-cols-[1.6fr_1fr_1fr_1fr_1fr_1fr] gap-3 border-b border-border px-[18px] py-[11px] font-label text-[10.5px] tracking-[.1em] text-text/40">
               <div>WORKSPACE</div>
               <div>PLAN</div>
               <div>STATUS</div>
@@ -123,7 +123,7 @@ export default async function AdminBillingPage() {
                 <div className="text-[12.5px] text-text/60">{r.plan}</div>
                 <div>
                   <span
-                    className="inline-block rounded-full px-2.5 py-[3px] font-mono text-[10px] tracking-[.05em]"
+                    className="inline-block rounded-full px-2.5 py-[3px] font-label text-[10px] tracking-[.05em]"
                     style={{ background: (STATUS_STYLE[r.status] ?? STATUS_STYLE.canceled).bg, color: (STATUS_STYLE[r.status] ?? STATUS_STYLE.canceled).color }}
                   >
                     {r.status.replace("_", " ").toUpperCase()}

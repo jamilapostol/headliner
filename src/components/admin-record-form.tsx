@@ -30,7 +30,7 @@ export function AdminRecordForm({
           if (!record) return null;
           return (
             <div key={field.name} className="flex flex-col gap-1">
-              <span className="font-mono text-[10.5px] tracking-[.08em] text-text/40">{field.name.toUpperCase()}</span>
+              <span className="font-label text-[10.5px] tracking-[.08em] text-text/40">{field.name.toUpperCase()}</span>
               <span className="text-[12.5px] text-text/55">{toInputValue(field.type, value) || "—"}</span>
             </div>
           );

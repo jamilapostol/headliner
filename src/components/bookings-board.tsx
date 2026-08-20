@@ -148,7 +148,7 @@ export function BookingsBoard({ bookings: bookingsProp, plan }: { bookings: Book
             >
               <div className="mb-3 flex items-center gap-2 px-1">
                 <span className="h-[7px] w-[7px] rounded-full" style={{ background: stage.dot }} />
-                <span className="font-mono text-[11px] tracking-[.1em] text-text/60">{stage.label}</span>
+                <span className="font-label text-[11px] tracking-[.1em] text-text/60">{stage.label}</span>
                 <span className="ml-auto font-mono text-[11px] text-text/35">{cards.length}</span>
               </div>
               <div className="flex flex-col gap-2">
@@ -230,7 +230,7 @@ export function BookingsBoard({ bookings: bookingsProp, plan }: { bookings: Book
             </div>
           </div>
           <div className="mb-5">
-            <div className="mb-2 font-mono text-[10.5px] tracking-[.1em] text-text/40">STAGE</div>
+            <div className="mb-2 font-label text-[10.5px] tracking-[.1em] text-text/40">STAGE</div>
             <select
               value={open.stage}
               onChange={(e) => moveStage(open.id, e.target.value as Stage)}
@@ -243,7 +243,7 @@ export function BookingsBoard({ bookings: bookingsProp, plan }: { bookings: Book
               ))}
             </select>
           </div>
-          <div className="mb-2 font-mono text-[10.5px] tracking-[.1em] text-text/40">CHECKLIST</div>
+          <div className="mb-2 font-label text-[10.5px] tracking-[.1em] text-text/40">CHECKLIST</div>
           <div className="mb-5 flex flex-col gap-[7px]">
             {checklist.map((c) => (
               <ChecklistItem key={c.label} label={c.label} field={c.field} initialOn={c.on} bookingId={open.id} />
@@ -444,7 +444,7 @@ function ChecklistItem({
 
   return (
     <div onClick={toggle} className="flex cursor-pointer items-center gap-2.5 text-[13px] hover:opacity-80">
-      <span className="font-mono text-[12px]" style={{ color: on ? "#3fe87a" : "rgba(var(--fg-rgb),.3)" }}>
+      <span className="font-mono text-[12px]" style={{ color: on ? "#3FCB86" : "rgba(var(--fg-rgb),.3)" }}>
         {on ? "✓" : "○"}
       </span>
       <span style={{ color: on ? "var(--text)" : "rgba(var(--fg-rgb),.5)" }}>{label}</span>

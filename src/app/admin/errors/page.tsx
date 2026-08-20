@@ -27,7 +27,7 @@ export default async function AdminErrorsPage() {
       </div>
 
       <div className="mb-6 rounded-card border border-border bg-surface px-[18px] py-4">
-        <div className="mb-2 font-mono text-[10.5px] tracking-[.1em] text-text/45">LAST 7 DAYS</div>
+        <div className="mb-2 font-label text-[10.5px] tracking-[.1em] text-text/45">LAST 7 DAYS</div>
         {total === 0 ? (
           <div className="text-[13.5px] text-text/55">No server-action failures. Either it&rsquo;s genuinely quiet or nobody&rsquo;s using it — check the beta cohort to tell which.</div>
         ) : (

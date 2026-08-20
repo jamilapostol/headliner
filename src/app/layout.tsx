@@ -1,19 +1,24 @@
 import type { Metadata, Viewport } from "next";
 import { siteUrl } from "@/lib/site-url";
-import { Space_Grotesk, Inter } from "next/font/google";
+import { Archivo, Oswald } from "next/font/google";
 import { CookieConsentBanner } from "@/components/cookie-consent-banner";
 import "./globals.css";
 
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
+// The brand's two families and no others. Archivo carries statements,
+// headings, numbers and body; Oswald carries labels and is always uppercase
+// and tracked. See .claude/skills/headline-brand/BRAND.md §4.
+const archivo = Archivo({
+  variable: "--font-archivo",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "700", "800", "900"],
+  display: "swap",
 });
 
-const inter = Inter({
-  variable: "--font-inter",
+const oswald = Oswald({
+  variable: "--font-oswald",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["300", "400", "500"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -70,7 +75,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0d110e",
+  themeColor: "#0B0A0E",
   viewportFit: "cover",
 };
 
@@ -80,7 +85,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable} h-full`} suppressHydrationWarning>
+    <html lang="en" className={`${archivo.variable} ${oswald.variable} h-full`} suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{

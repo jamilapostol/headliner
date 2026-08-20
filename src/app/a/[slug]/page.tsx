@@ -107,7 +107,7 @@ export default async function PublicTourPage({ params }: { params: Promise<{ slu
         )}
 
         <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2 border-b border-border pb-2.5">
-          <div className="font-mono text-[11px] tracking-[.12em] text-text/40">
+          <div className="font-label text-[11px] tracking-[.12em] text-text/40">
             {shows.length > 0 ? `${shows.length} UPCOMING SHOW${shows.length === 1 ? "" : "S"}` : "TOUR DATES"}
           </div>
           {shows.length > 0 && (
@@ -143,7 +143,7 @@ function ShowRow({ show }: { show: PublicShow }) {
   return (
     <div className="flex items-center gap-4 border-b border-text/[.06] py-3.5">
       <div className="w-[62px] flex-none">
-        <div className="font-mono text-[11px] tracking-[.08em] text-text/40">
+        <div className="font-label text-[11px] tracking-[.08em] text-text/40">
           {fmtDateUTC(date, { month: "short" }).toUpperCase()}
         </div>
         <div className="font-mono text-[19px] leading-tight">{fmtDateUTC(date, { day: "numeric" })}</div>

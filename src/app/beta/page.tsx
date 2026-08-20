@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { BENEFITS, FEATURES } from "@/lib/landing-content";
@@ -79,7 +78,7 @@ export default async function BetaPage() {
       <header className="sticky top-0 z-20 border-b border-border bg-canvas/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-[980px] items-center justify-between px-6 py-3.5">
           <BrandLockup />
-          <a href="#steps" className="rounded-card bg-accent px-4.5 py-2.5 text-[14px] font-semibold text-ink">
+          <a href="#steps" className="rounded-card border-[1.5px] border-border px-4.5 py-2.5 text-[14px] font-semibold text-text transition-colors hover:border-text">
             I have a code
           </a>
         </div>

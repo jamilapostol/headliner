@@ -31,7 +31,7 @@ export function IntegrationsPanel() {
               <div className="text-[13.5px] font-semibold">{ig.label}</div>
               <div className="text-[11px] text-text/45">{ig.sub}</div>
             </div>
-            <div className="rounded-full border border-border px-2.5 py-1 font-mono text-[10px] tracking-[.08em] text-text/45">SOON</div>
+            <div className="rounded-full border border-border px-2.5 py-1 font-label text-[10px] tracking-[.08em] text-text/45">SOON</div>
           </div>
         ))}
       </div>

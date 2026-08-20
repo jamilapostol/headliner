@@ -76,7 +76,7 @@ export default async function DashboardPage() {
       <div className="mb-[22px] grid grid-cols-2 gap-3.5 lg:grid-cols-4">
         {stats.map((s) => (
           <div key={s.label} className="rounded-card border border-border bg-surface px-[18px] py-4">
-            <div className="mb-2 font-mono text-[10.5px] tracking-[.1em] text-text/45">{s.label}</div>
+            <div className="mb-2 font-label text-[10.5px] tracking-[.1em] text-text/45">{s.label}</div>
             <div className="text-[24px] font-bold tracking-[-.02em]">{s.value}</div>
             <div className={`mt-1 text-[11.5px] ${s.color}`}>{s.delta}</div>
           </div>
@@ -110,7 +110,7 @@ export default async function DashboardPage() {
                     className="rounded-full px-2 py-[3px] font-mono text-[10.5px]"
                     style={{
                       background: advanced ? "rgba(63,232,122,.12)" : "rgba(232,228,63,.1)",
-                      color: advanced ? "#3fe87a" : "#e8e43f",
+                      color: advanced ? "#3FCB86" : "#FFC93C",
                     }}
                   >
                     {advanced ? "ADVANCED" : "PENDING"}

@@ -40,7 +40,9 @@ const SORTS = [
   { key: "recent", label: "Last contact" },
 ] as const;
 type SortKey = (typeof SORTS)[number]["key"];
-const AVATAR_COLORS = ["#3fe87a", "#e8e43f", "#7ab8e8", "#e8983f", "#c99df5"];
+// The seven, in canonical order — brand fixes both the colors and the
+// sequence, so series and avatars stay recognisable across the product.
+const AVATAR_COLORS = ["#F4356E", "#FF7A2F", "#FFC93C", "#3FCB86", "#38B6E8", "#8B5CF6", "#FF4FA3"];
 
 function daysAgoLabel(iso: string | null) {
   if (!iso) return { label: "—", stale: false };
@@ -134,9 +136,9 @@ export function ContactsTable({ contacts, plan }: { contacts: ContactDTO[]; plan
             onClick={() => setCat(c)}
             className="cursor-pointer rounded-[20px] px-3.5 py-[7px] text-[12px]"
             style={{
-              border: `1px solid ${c === cat ? "#3fe87a" : "rgba(var(--border-rgb),.12)"}`,
+              border: `1px solid ${c === cat ? "#3FCB86" : "rgba(var(--border-rgb),.12)"}`,
               background: c === cat ? "rgba(63,232,122,.1)" : "transparent",
-              color: c === cat ? "#3fe87a" : "rgba(var(--fg-rgb),.65)",
+              color: c === cat ? "#3FCB86" : "rgba(var(--fg-rgb),.65)",
             }}
           >
             {c}
@@ -157,7 +159,7 @@ export function ContactsTable({ contacts, plan }: { contacts: ContactDTO[]; plan
 
       <div className="overflow-x-auto rounded-card border border-border bg-surface">
         <div className="min-w-[620px]">
-          <div className="grid grid-cols-[2fr_1.2fr_1.2fr_1fr_.8fr] gap-3 border-b border-border px-[18px] py-[11px] font-mono text-[10.5px] tracking-[.1em] text-text/40">
+          <div className="grid grid-cols-[2fr_1.2fr_1.2fr_1fr_.8fr] gap-3 border-b border-border px-[18px] py-[11px] font-label text-[10.5px] tracking-[.1em] text-text/40">
             <div>NAME</div>
             <div>ROLE</div>
             <div>CITY</div>
@@ -187,12 +189,12 @@ export function ContactsTable({ contacts, plan }: { contacts: ContactDTO[]; plan
                 </div>
                 <div className="text-[12.5px] text-text/70">{c.role}</div>
                 <div className="text-[12.5px] text-text/70">{c.city}</div>
-                <div className="font-mono text-[11.5px]" style={{ color: last.stale ? "#e8983f" : "rgba(var(--fg-rgb),.5)" }}>
+                <div className="font-mono text-[11.5px]" style={{ color: last.stale ? "#FF7A2F" : "rgba(var(--fg-rgb),.5)" }}>
                   {last.label}
                 </div>
                 <div className="flex gap-[3px]">
                   {[1, 2, 3, 4, 5].map((n) => (
-                    <span key={n} className="h-2 w-2 rounded-full" style={{ background: n <= c.strength ? "#3fe87a" : "rgba(var(--border-rgb),.1)" }} />
+                    <span key={n} className="h-2 w-2 rounded-full" style={{ background: n <= c.strength ? "#3FCB86" : "rgba(var(--border-rgb),.1)" }} />
                   ))}
                 </div>
               </div>
@@ -314,7 +316,7 @@ function ContactDrawer({ contact, onClose }: { contact: ContactDTO; onClose: () 
         </div>
         <div className="rounded-[10px] border border-text/[.08] bg-surface-nested p-3">
           <div className="mb-1 font-mono text-[10px] text-text/45">LAST CONTACT</div>
-          <div className="text-[13px] font-semibold leading-tight" style={{ color: last.stale ? "#e8983f" : "var(--text)" }}>
+          <div className="text-[13px] font-semibold leading-tight" style={{ color: last.stale ? "#FF7A2F" : "var(--text)" }}>
             {last.label}
           </div>
         </div>
@@ -337,7 +339,7 @@ function ContactDrawer({ contact, onClose }: { contact: ContactDTO; onClose: () 
         />
       </div>
 
-      <div className="mb-2 font-mono text-[10.5px] tracking-[.1em] text-text/40">STRENGTH</div>
+      <div className="mb-2 font-label text-[10.5px] tracking-[.1em] text-text/40">STRENGTH</div>
       <StrengthPicker contactId={contact.id} strength={contact.strength} />
 
       <EditableField
@@ -374,7 +376,7 @@ function StrengthPicker({ contactId, strength }: { contactId: string; strength: 
             onClick={() => pick(n)}
             onMouseEnter={() => setHovered(n)}
             className="h-2.5 w-2.5 cursor-pointer rounded-full transition-transform hover:scale-125"
-            style={{ background: n <= shown ? "#3fe87a" : "rgba(var(--border-rgb),.15)" }}
+            style={{ background: n <= shown ? "#3FCB86" : "rgba(var(--border-rgb),.15)" }}
           />
         ))}
       </div>

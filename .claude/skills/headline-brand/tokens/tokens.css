@@ -1,0 +1,149 @@
+/* HEADLINE.WORLD design tokens · v1.0 · source of truth: BRAND.md
+   Usage: import globally. Dark ("stage") is default; add .theme-paper (or
+   [data-theme="paper"]) on <html> for light mode.
+   Tailwind v4: these variables can be referenced from an @theme block. */
+
+:root {
+  /* ---- core ---- */
+  --hw-ink: #0B0A0E;
+  --hw-ink-2: #131118;          /* elevated dark surface */
+  --hw-cream: #F7F1E6;
+  --hw-gold: #FFC93C;
+
+  /* ---- the seven (canonical order — also chart series order) ---- */
+  --hw-pal-1: #F4356E;  --hw-pink: #F4356E;     /* CREATE · destructive · live */
+  --hw-pal-2: #FF7A2F;  --hw-orange: #FF7A2F;   /* BUILD · warning · merch */
+  --hw-pal-3: #FFC93C;  /* gold */               /* DISTRIBUTE · primary · booking */
+  --hw-pal-4: #3FCB86;  --hw-green: #3FCB86;    /* CONNECT · success · fans */
+  --hw-pal-5: #38B6E8;  --hw-blue: #38B6E8;     /* MONETIZE · info · money */
+  --hw-pal-6: #8B5CF6;  --hw-purple: #8B5CF6;   /* SERVE · premium · contracts */
+  --hw-pal-7: #FF4FA3;  --hw-magenta: #FF4FA3;  /* community */
+
+  /* ---- light-mode text-safe accents (>=4.6:1 on cream) ---- */
+  --hw-pink-deep: #D70645;
+  --hw-orange-deep: #BD4400;
+  --hw-gold-deep: #8C6500;
+  --hw-green-deep: #1E7B4D;
+  --hw-blue-deep: #0E749D;
+  --hw-purple-deep: #7B43F9;
+  --hw-magenta-deep: #D60066;
+
+  /* ---- warm neutral ramp (on ink) ---- */
+  --hw-gray-100: #F7F1E6;
+  --hw-gray-200: #D9D2C6;
+  --hw-gray-300: #CFC8BC;
+  --hw-gray-400: #B9B1A4;
+  --hw-gray-500: #9A9286;
+  --hw-gray-600: #8E877C;
+  --hw-gray-700: #6E675C;   /* decoration only */
+  --hw-gray-800: #4A443C;   /* hairlines, borders */
+  --hw-rule-paper: #C9C2B4; /* printed rule lines on white write-surfaces */
+
+  /* ---- semantic (dark default) ---- */
+  --hw-bg: var(--hw-ink);
+  --hw-bg-raised: var(--hw-ink-2);
+  --hw-surface-1: rgba(247, 241, 230, 0.045);
+  --hw-surface-2: rgba(247, 241, 230, 0.07);
+  --hw-text: var(--hw-cream);
+  --hw-text-2: var(--hw-gray-300);
+  --hw-text-3: var(--hw-gray-400);
+  --hw-text-muted: var(--hw-gray-500);
+  --hw-border: var(--hw-gray-800);
+  --hw-accent: var(--hw-gold);
+  --hw-accent-contrast: var(--hw-ink);   /* text on gold */
+  --hw-success: var(--hw-green);
+  --hw-warning: var(--hw-orange);
+  --hw-danger: var(--hw-pink);
+  --hw-info: var(--hw-blue);
+  --hw-focus-ring: var(--hw-gold);
+
+  /* ---- type ---- */
+  --hw-font-display: 'Archivo', system-ui, sans-serif;
+  --hw-font-label: 'Oswald', 'Archivo Narrow', sans-serif;
+  --hw-track-eyebrow: 0.26em;
+  --hw-track-label: 0.20em;
+  --hw-track-nav: 0.16em;
+  --hw-track-display: -0.015em;
+
+  /* ---- shape & space (4px grid) ---- */
+  --hw-radius: 6px;
+  --hw-radius-card: 0 5px 5px 0;   /* left-border card */
+  --hw-accent-border: 3px;         /* card left border; 4px for emphasis */
+  --hw-rule-w: 64px;               /* the accent rule under H1 */
+  --hw-rule-h: 3px;
+  --hw-space-1: 4px;  --hw-space-2: 8px;  --hw-space-3: 12px;
+  --hw-space-4: 16px; --hw-space-5: 24px; --hw-space-6: 32px;
+  --hw-space-7: 48px; --hw-space-8: 64px;
+
+  /* ---- motion ---- */
+  --hw-ease: cubic-bezier(0.2, 0.7, 0.3, 1);
+  --hw-dur-fast: 160ms;
+  --hw-dur-enter: 280ms;
+}
+
+/* ---- paper (light) mode ---- */
+.theme-paper, [data-theme="paper"] {
+  --hw-bg: var(--hw-cream);
+  --hw-bg-raised: #FFFFFF;
+  --hw-surface-1: rgba(11, 10, 14, 0.04);
+  --hw-surface-2: rgba(11, 10, 14, 0.07);
+  --hw-text: var(--hw-ink);
+  --hw-text-2: #3A362F;
+  --hw-text-3: #5C564C;
+  --hw-text-muted: #7C7568;
+  --hw-border: #DDD5C6;
+  --hw-accent: var(--hw-gold);           /* fills/borders stay bright */
+  --hw-accent-contrast: var(--hw-ink);
+  --hw-success: var(--hw-green-deep);    /* TEXT-safe semantics flip to deep */
+  --hw-warning: var(--hw-orange-deep);
+  --hw-danger: var(--hw-pink-deep);
+  --hw-info: var(--hw-blue-deep);
+  --hw-focus-ring: var(--hw-gold-deep);
+}
+
+/* ---- signature motif helpers ---- */
+.hw-rule { width: var(--hw-rule-w); height: var(--hw-rule-h); background: var(--hw-accent); }
+
+.hw-card {
+  background: var(--hw-surface-1);
+  border-left: var(--hw-accent-border) solid var(--hw-accent);
+  border-radius: var(--hw-radius-card);
+  transition: background var(--hw-dur-fast) var(--hw-ease);
+}
+.hw-card:hover { background: var(--hw-surface-2); }
+
+.hw-eyebrow {
+  font-family: var(--hw-font-label); font-weight: 300;
+  letter-spacing: var(--hw-track-eyebrow); text-transform: uppercase;
+  font-size: 12px; color: var(--hw-text-3);
+}
+.hw-label {
+  font-family: var(--hw-font-label); font-weight: 400;
+  letter-spacing: var(--hw-track-label); text-transform: uppercase;
+  font-size: 11px;
+}
+
+.hw-dots { display: inline-flex; gap: 9px; }
+.hw-dots i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.hw-dots i:nth-child(1){background:var(--hw-pal-1)} .hw-dots i:nth-child(2){background:var(--hw-pal-2)}
+.hw-dots i:nth-child(3){background:var(--hw-pal-3)} .hw-dots i:nth-child(4){background:var(--hw-pal-4)}
+.hw-dots i:nth-child(5){background:var(--hw-pal-5)} .hw-dots i:nth-child(6){background:var(--hw-pal-6)}
+.hw-dots i:nth-child(7){background:var(--hw-pal-7)}
+
+.hw-write {  /* the ruled write-surface (inputs of record) */
+  background: #FFFFFF;
+  background-image: repeating-linear-gradient(
+    to bottom, transparent, transparent 28px, var(--hw-rule-paper) 28px, var(--hw-rule-paper) 29px);
+  border-left: var(--hw-accent-border) solid var(--hw-accent);
+  border-radius: 4px;
+  color: var(--hw-ink);
+}
+
+:where(button, a, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--hw-focus-ring);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}

@@ -123,7 +123,7 @@ export default async function ShowSettlementPage({ params }: { params: Promise<{
                 >
                   <div
                     className="grid h-6 w-6 flex-none place-items-center rounded-[6px] text-[11px] font-bold text-ink"
-                    style={{ background: meta?.color ?? "#3fe87a" }}
+                    style={{ background: meta?.color ?? "#3FCB86" }}
                   >
                     {meta?.glyph ?? "M"}
                   </div>
@@ -184,7 +184,7 @@ function Ledger({
 }) {
   return (
     <div className="rounded-card border border-border bg-surface px-5 py-[18px]">
-      <div className="mb-3.5 font-mono text-[10.5px] tracking-[.1em] text-text/40">{title.toUpperCase()}</div>
+      <div className="mb-3.5 font-label text-[10.5px] tracking-[.1em] text-text/40">{title.toUpperCase()}</div>
       {lines.length === 0 ? (
         <div className="py-2 text-[12.5px] text-text/40">{empty}</div>
       ) : (

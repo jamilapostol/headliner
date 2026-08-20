@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { LogoGlyph } from "@/components/logo-glyph";
 import Image from "next/image";
 import { useState, useTransition } from "react";
 import { money, fmtDateUTC } from "@/lib/format";
@@ -103,7 +104,7 @@ export function MobileDayView({
     >
       <div className="mb-1 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Image src="/logo.svg" alt="HEADLINE.WORLD" width={24} height={24} />
+          <LogoGlyph size={24} />
           <span className="text-[14px] font-bold">Show day</span>
         </div>
         <div className="flex items-center gap-3">
@@ -124,7 +125,7 @@ export function MobileDayView({
             className="mb-3.5 rounded-2xl border border-accent/30 p-4"
             style={{ background: "linear-gradient(160deg, rgba(63,232,122,.14), rgba(63,232,122,.03))" }}
           >
-            <div className="mb-1.5 font-mono text-[10px] tracking-[.12em] text-accent">
+            <div className="mb-1.5 font-label text-[10px] tracking-[.12em] text-accent">
               NEXT SHOW · {nextShow.dateLabel}
             </div>
             <div className="mb-0.5 text-[19px] font-bold tracking-[-.02em]">{nextShow.venue}</div>
@@ -199,7 +200,7 @@ export function MobileDayView({
 
       {nextShow && (
         <>
-          <div className="mb-2.5 font-mono text-[10.5px] tracking-[.12em] text-text/40">
+          <div className="mb-2.5 font-label text-[10.5px] tracking-[.12em] text-text/40">
             {nextShow.isToday ? "TODAY — SHOW DAY" : `TODAY — HEADING TO ${nextShow.city.split(",")[0].toUpperCase()}`}
           </div>
           <div className="mb-4 rounded-[14px] border border-border bg-surface px-4">
@@ -217,7 +218,7 @@ export function MobileDayView({
         </>
       )}
 
-      <div className="mb-2.5 font-mono text-[10.5px] tracking-[.12em] text-text/40">ON THE ROAD</div>
+      <div className="mb-2.5 font-label text-[10.5px] tracking-[.12em] text-text/40">ON THE ROAD</div>
       <div className="mb-4 grid grid-cols-2 gap-2.5">
         <div className="rounded-[14px] border border-border bg-surface px-[15px] py-3.5">
           <div className="mb-1 font-mono text-[10px] text-text/45">PER DIEM LEFT</div>
@@ -233,7 +234,7 @@ export function MobileDayView({
         </div>
       </div>
 
-      <div className="mb-2.5 font-mono text-[10.5px] tracking-[.12em] text-text/40">RECENT EXPENSES</div>
+      <div className="mb-2.5 font-label text-[10.5px] tracking-[.12em] text-text/40">RECENT EXPENSES</div>
       <div className="mb-4 rounded-[14px] border border-border bg-surface px-4">
         {recentExpenses.length === 0 && <div className="py-3 text-center text-[12.5px] text-text/40">No expenses logged yet.</div>}
         {recentExpenses.map((exp) => (

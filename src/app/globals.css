@@ -1,54 +1,69 @@
 @import "tailwindcss";
+@import "./brand-tokens.css";
+
+/* HEADLINE.WORLD app theme.
+ *
+ * The brand system (.claude/skills/headline-brand) owns every value; this
+ * file only maps the app's long-standing semantic names onto it, so the
+ * hundreds of existing `bg-surface` / `text-text` / `text-accent` usages
+ * inherit the brand instead of needing to be rewritten one by one.
+ *
+ * Dark is "stage" and is the default. Light is "paper" — cream, never
+ * white, with white reserved for ruled write-surfaces. */
 
 :root {
-  --canvas: #0d110e;
-  --sidebar: #101512;
-  --surface: #151b16;
-  --surface-nested: #171e18;
-  --elevated: #1a211b;
-  --border: rgba(255, 255, 255, 0.07);
-  --border-hover: rgba(255, 255, 255, 0.1);
-  --text: #e9ece8;
-  --muted: rgba(233, 236, 232, 0.5);
-  --fg-rgb: 233, 236, 232;
-  --border-rgb: 255, 255, 255;
-  --scrollbar-thumb: #232b24;
+  --canvas: var(--hw-ink);
+  --sidebar: var(--hw-ink);
+  --surface: var(--hw-surface-1);
+  --surface-nested: var(--hw-surface-2);
+  --elevated: var(--hw-ink-2);
+  --border: var(--hw-gray-800);
+  --border-hover: var(--hw-gray-700);
+  --text: var(--hw-cream);
+  --muted: var(--hw-gray-400);
+  --fg-rgb: 247, 241, 230;
+  --border-rgb: 247, 241, 230;
+  --scrollbar-thumb: var(--hw-gray-800);
 }
 
-/* explicit dark override — lets a page force dark regardless of an ancestor's data-theme */
 [data-theme="dark"] {
-  --canvas: #0d110e;
-  --sidebar: #101512;
-  --surface: #151b16;
-  --surface-nested: #171e18;
-  --elevated: #1a211b;
-  --border: rgba(255, 255, 255, 0.07);
-  --border-hover: rgba(255, 255, 255, 0.1);
-  --text: #e9ece8;
-  --muted: rgba(233, 236, 232, 0.5);
-  --fg-rgb: 233, 236, 232;
-  --border-rgb: 255, 255, 255;
-  --scrollbar-thumb: #232b24;
+  --canvas: var(--hw-ink);
+  --sidebar: var(--hw-ink);
+  --surface: var(--hw-surface-1);
+  --surface-nested: var(--hw-surface-2);
+  --elevated: var(--hw-ink-2);
+  --border: var(--hw-gray-800);
+  --border-hover: var(--hw-gray-700);
+  --text: var(--hw-cream);
+  --muted: var(--hw-gray-400);
+  --fg-rgb: 247, 241, 230;
+  --border-rgb: 247, 241, 230;
+  --scrollbar-thumb: var(--hw-gray-800);
 }
 
+/* Paper. Cream ground, ink text, white only where the user writes. */
 [data-theme="light"] {
-  --canvas: #f6f7f4;
-  --sidebar: #eef0ea;
-  --surface: #ffffff;
-  --surface-nested: #f2f3ef;
-  --elevated: #ffffff;
-  --border: rgba(13, 17, 14, 0.1);
-  --border-hover: rgba(13, 17, 14, 0.16);
-  --text: #10140f;
-  --muted: rgba(16, 20, 15, 0.55);
-  --fg-rgb: 16, 20, 15;
-  --border-rgb: 13, 17, 14;
-  --scrollbar-thumb: #d8dad4;
+  --canvas: var(--hw-cream);
+  --sidebar: #EFE7D8;
+  --surface: #FFFFFF;
+  --surface-nested: #FBF7EF;
+  --elevated: #FFFFFF;
+  --border: rgba(11, 10, 14, 0.14);
+  --border-hover: rgba(11, 10, 14, 0.24);
+  --text: var(--hw-ink);
+  --muted: #5C564C;
+  --fg-rgb: 11, 10, 14;
+  --border-rgb: 11, 10, 14;
+  --scrollbar-thumb: #D6CEBE;
 }
 
 @theme inline {
-  --font-sans: var(--font-space-grotesk), sans-serif;
-  --font-mono: var(--font-spline-mono), monospace;
+  --font-sans: var(--font-archivo), "Archivo", system-ui, sans-serif;
+  /* The app's `font-mono` slot carries figures, not code. Archivo with
+     tabular-nums is the brand's answer for numbers; the tracked uppercase
+     labels that also used this slot now use `font-label` (Oswald). */
+  --font-mono: var(--font-archivo), "Archivo", system-ui, sans-serif;
+  --font-label: var(--font-oswald), "Oswald", "Archivo Narrow", sans-serif;
 
   --color-canvas: var(--canvas);
   --color-sidebar: var(--sidebar);
@@ -61,22 +76,50 @@
   --color-text: var(--text);
   --color-muted: var(--muted);
 
-  /* fixed ink color for text on accent-colored surfaces (buttons, badges) — stays constant across themes */
-  --color-ink: #0d110e;
+  /* Text that sits on gold. Ink, always — never cream on gold. */
+  --color-ink: var(--hw-ink);
 
-  --color-accent: #3fe87a;
-  --color-accent-soft: rgba(63, 232, 122, 0.07);
-  --color-yellow: #e8e43f;
-  --color-yellow-soft: rgba(232, 228, 63, 0.06);
-  --color-orange: #e8983f;
-  --color-orange-soft: rgba(232, 152, 63, 0.1);
-  --color-blue: #7ab8e8;
-  --color-purple: #c99df5;
-  --color-pink: #e87a9a;
+  /* Gold is the accent. It was green; green now means money-in and success,
+     which is what the brand reserves it for. */
+  --color-accent: var(--hw-gold);
+  --color-accent-soft: rgba(255, 201, 60, 0.09);
 
-  --radius-card: 12px;
-  --radius-tile: 16px;
-  --radius-pill: 20px;
+  --color-green: var(--hw-green);
+  --color-green-soft: rgba(63, 203, 134, 0.1);
+  --color-yellow: var(--hw-gold);
+  --color-yellow-soft: rgba(255, 201, 60, 0.08);
+  --color-orange: var(--hw-orange);
+  --color-orange-soft: rgba(255, 122, 47, 0.1);
+  --color-blue: var(--hw-blue);
+  --color-purple: var(--hw-purple);
+  --color-pink: var(--hw-pink);
+  --color-magenta: var(--hw-magenta);
+
+  --radius-card: var(--hw-radius);
+  --radius-tile: 8px;
+  --radius-pill: 999px;
+}
+
+/* BRAND.md §3.4 — on cream, coloured TEXT must use the darkened variants;
+ * the bright palette is for borders, fills, chart marks and display type
+ * only. Gold text on cream measures 1.37:1, so this is not cosmetic.
+ *
+ * Done as overrides on the generated utilities rather than by re-pointing
+ * --color-accent, because fills must STAY bright in both modes — a gold
+ * button is still gold on paper, it is only gold lettering that has to
+ * darken. One rule per colour beats rewriting 149 call sites. */
+[data-theme="light"] {
+  .text-accent, a { color: var(--hw-gold-deep); }
+  .text-yellow { color: var(--hw-gold-deep); }
+  .text-green { color: var(--hw-green-deep); }
+  .text-orange { color: var(--hw-orange-deep); }
+  .text-blue { color: var(--hw-blue-deep); }
+  .text-purple { color: var(--hw-purple-deep); }
+  .text-pink { color: var(--hw-pink-deep); }
+  .text-magenta { color: var(--hw-magenta-deep); }
+
+  /* Focus ring needs the darker gold to stay visible on cream. */
+  :focus-visible { outline-color: var(--hw-gold-deep); }
 }
 
 @layer base {
@@ -84,10 +127,64 @@
     background: var(--color-canvas);
     color: var(--color-text);
     font-family: var(--font-sans);
+    text-wrap: pretty;
+  }
+
+  /* Archivo for statements; headings never letterspaced, never orphaned. */
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+  h1, h2 {
+    text-transform: uppercase;
+    font-weight: 800;
+  }
+  h3 {
+    font-weight: 700;
   }
 
   a {
     color: var(--color-accent);
+  }
+
+  /* BRAND.md §5.1 — every page title carries the gold rule. Applied here
+     rather than per-component so it cannot be forgotten on a new page; opt
+     a title out with `data-no-rule` where a rule would be wrong (inside a
+     dialog header, for instance). */
+  h1:not([data-no-rule])::after {
+    content: "";
+    display: block;
+    width: var(--hw-rule-w);
+    height: var(--hw-rule-h);
+    background: var(--color-accent);
+    margin-top: 12px;
+  }
+
+  /* Follow the heading's alignment. A block ::after otherwise pins itself to
+     the left edge, which reads as a mistake under a centred title. */
+  .text-center h1:not([data-no-rule])::after,
+  h1.text-center:not([data-no-rule])::after {
+    margin-inline: auto;
+  }
+  .text-right h1:not([data-no-rule])::after,
+  h1.text-right:not([data-no-rule])::after {
+    margin-inline-start: auto;
+  }
+
+  /* Numbers are content in this product — keep columns aligned. */
+  .font-mono {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Oswald is only ever uppercase and tracked. */
+  .font-label {
+    text-transform: uppercase;
+    letter-spacing: var(--hw-track-label);
+  }
+
+  /* AA: visible focus on everything interactive, 2px gold. */
+  :focus-visible {
+    outline: 2px solid var(--hw-focus-ring);
+    outline-offset: 2px;
   }
 }
 
@@ -103,41 +200,33 @@
   background: transparent;
 }
 
+/* The signature rule under a page title. */
+.hw-rule {
+  width: var(--hw-rule-w);
+  height: var(--hw-rule-h);
+  background: var(--color-accent);
+  border-radius: 0;
+}
+
 @keyframes tp-pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.4;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }
-.animate-tp-pulse {
-  animation: tp-pulse 2s infinite;
-}
+.animate-tp-pulse { animation: tp-pulse 2s infinite; }
 
 @keyframes tp-fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
-.animate-tp-fade {
-  animation: tp-fade-in 0.18s ease-out;
-}
+.animate-tp-fade { animation: tp-fade-in 0.18s ease-out; }
 
 @keyframes tp-sheet-in {
-  from {
-    transform: translateY(24px);
-    opacity: 0.6;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  from { transform: translateY(24px); opacity: 0.6; }
+  to { transform: translateY(0); opacity: 1; }
 }
-.animate-tp-sheet {
-  animation: tp-sheet-in 0.22s ease-out;
+.animate-tp-sheet { animation: tp-sheet-in 0.22s ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-tp-sheet, .animate-tp-pulse { animation: none; }
+  * { transition-duration: 0.01ms !important; }
 }

@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { LogoGlyph } from "@/components/logo-glyph";
 import Link from "next/link";
 
 // The brand lockup: logo + wordmark with the tagline underneath, aligned to
@@ -21,7 +21,7 @@ export function BrandLockup({
   const inner = (
     <span className={`flex flex-col gap-0.5 ${centered ? "items-center" : "items-start"}`}>
       <span className="flex items-center gap-2.5">
-        <Image src="/logo.svg" alt="HEADLINE.WORLD" width={size} height={size} />
+        <LogoGlyph size={size} />
         <span className="text-[15px] font-bold tracking-[-.01em]">HEADLINE.WORLD</span>
       </span>
       {tagline && (

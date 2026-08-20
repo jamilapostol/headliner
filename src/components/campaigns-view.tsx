@@ -35,9 +35,9 @@ const TIERS = ["VIP", "Patron", "Donor", "Fan"] as const;
 
 const STATUS_STYLE: Record<CampaignDTO["status"], { bg: string; color: string }> = {
   Draft: { bg: "rgba(var(--border-rgb),.08)", color: "rgba(var(--fg-rgb),.6)" },
-  Sending: { bg: "rgba(232,228,63,.1)", color: "#e8e43f" },
-  Sent: { bg: "rgba(63,232,122,.1)", color: "#3fe87a" },
-  Failed: { bg: "rgba(232,83,63,.1)", color: "#e8533f" },
+  Sending: { bg: "rgba(232,228,63,.1)", color: "#FFC93C" },
+  Sent: { bg: "rgba(63,232,122,.1)", color: "#3FCB86" },
+  Failed: { bg: "rgba(232,83,63,.1)", color: "#F4356E" },
 };
 
 export function CampaignsView({
@@ -97,7 +97,7 @@ export function CampaignsView({
                   </div>
                   <div>
                     <span
-                      className="inline-block rounded-full px-2.5 py-[3px] font-mono text-[10px] tracking-[.05em]"
+                      className="inline-block rounded-full px-2.5 py-[3px] font-label text-[10px] tracking-[.05em]"
                       style={{ background: STATUS_STYLE[c.status].bg, color: STATUS_STYLE[c.status].color }}
                     >
                       {c.status.toUpperCase()}
