@@ -177,8 +177,9 @@ export function PointOfSale({
                   <>
                     <div className="mb-2 text-[15px] font-semibold text-yellow">Sale saved — syncing…</div>
                     <div className="mb-5 text-[13px] leading-relaxed text-text/55">
-                      {money(total)} is saved on this device and will log to Finance the moment it reaches the server. Safe to keep
-                      selling — it won&rsquo;t be lost if you close this.
+                      {money(total)}{" "}
+                      is saved on this device and will log to Finance the moment it reaches the server. Safe to keep selling — it
+                      won&rsquo;t be lost if you close this.
                     </div>
                     <button onClick={close} className="cursor-pointer rounded-[10px] bg-accent px-5 py-2.5 text-[13.5px] font-semibold text-ink">
                       Done
